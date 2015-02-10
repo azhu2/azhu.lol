@@ -56,8 +56,14 @@ public class RiotAPI{
     private static final String USER = "lol";
     private static final String PASS = "lol_pass";
     private Connection db;
+    
+    private static RiotAPI _instance = new RiotAPI();
 
-    public RiotAPI(){
+    public static RiotAPI getInstance(){
+        return _instance;
+    }
+    
+    private RiotAPI(){
         System.setProperty("javax.net.ssl.trustStoreType", "JCEKS");
         mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         client = new JerseyClientBuilder().build();

@@ -25,7 +25,7 @@ import org.codehaus.jackson.map.SerializationConfig;
 
 @Path("/")
 public class LeagueResource{
-    private static RiotAPI api = new RiotAPI();
+    private static RiotAPI api = RiotAPI.getInstance();
     private static ObjectMapper mapper = new ObjectMapper();
 
     public LeagueResource(){
