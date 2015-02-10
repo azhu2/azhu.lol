@@ -1,0 +1,14 @@
+<div id="rankedStats" ng-show="showRankedResults">
+	<h2>Ranked Stats</h2>
+	<ul id="rankedMatches">
+		<li ng-repeat="match in rankedData track by $index"><div
+				class="match_{{match.matchId}}">
+				<div class="queue">{{ match.queueType | queueFilter}}</div>
+				<div class="matchLength">{{ (match.matchDuration / 60) |
+					number:0}} min</div>
+				<div class="champion">{{ match.champion.name }}</div>
+				<img id="championImage"
+					ng-src="https://ddragon.leagueoflegends.com/cdn/5.2.2/img/champion/{{ match.champion.key }}.png">
+			</div></li>
+	</ul>
+</div>

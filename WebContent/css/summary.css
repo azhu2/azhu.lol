@@ -1,0 +1,32 @@
+#summaryData {
+	text-align: left;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 20px;
+	margin-bottom: 20px;
+	padding: 10px;
+	width: 400px;
+	background-color: #bbbbff
+}
+
+#summaryData #summonerIcon {
+	height: 80px;
+	width: 80px;
+	display: inline-block;
+}
+
+#summaryData #summonerData {
+	display: inline-block;
+}
+
+#summaryData #summonerName {
+	font-weight: bold;
+	font-size: 2em;
+	margin-bottom: 20px;
+}
+
+#summaryData #summonerLevel {
+	font-style: italic;
+	color: #666666;
+	padding-left: 10px;
+}

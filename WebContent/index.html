@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Zedenstein's League Analysis</title>
+
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular-resource.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular-route.js"></script>
+
+<link href="css/index.css" rel="stylesheet">
+<link href="css/match.css" rel="stylesheet">
+<link href="css/summary.css" rel="stylesheet">
+</head>
+<body ng-app="leagueApp">
+
+	<h1 id="title">
+		<a href="index.html">Zedenstein's League Analysis</a>
+	</h1>
+
+	<div id="lookupSummoner" ng-controller="lookupController">
+		<form ng-submit="lookup()">
+			Find summoner <input type="text" ng-model="summonerName">
+			<button>Submit</button>
+		</form>
+
+		<div id="lookupResults" ng-show="showLookupResults">
+			<div id="panels">
+				<div id="panelSelector">
+					<div id="summaryData">
+						<img id="summonerIcon"
+							ng-src="{{ summoner == null ? '' : 'http://ddragon.leagueoflegends.com/cdn/4.20.1/img/profileicon/' + summoner.profileIconId + '.png' }}">
+						<div id="summonerData">
+							<div id="summonerName">{{ summoner.name }}</div>
+							<div id="summonerLevel">Level {{ summoner.summonerLevel }}</div>
+						</div>
+					</div>
+
+					<div id="panelOptions">
+						<a href="#matches" ng-click="lookupMatches(summoner.id)" title="Use this one">Match History</a>
+						<a href="#ranked" ng-click="lookupRanked(summoner.id)" title="Not working particularly well">Ranked Stats</a>
+					</div>
+				</div>
+			</div>
+
+			<div id="main" class="panel">
+				<div ng-view></div>
+			</div>
+		</div>
+	</div>
+
+	<script src="js/leagueController.js"></script>
+
+</body>
+</html>

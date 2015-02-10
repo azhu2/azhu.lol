@@ -1,0 +1,78 @@
+<div id="matches" ng-show="showMatchHistory">
+	<h2>Match History</h2>
+	<ul id="matches-list">
+		<li	ng-repeat="match in matchData  | orderBy:'createDate':true track by $index ">
+			<div class="match id_{{ match.gameId }}" ng-class="(match.stats.win==1) ? 'win' : 'loss'">
+
+				<div class="topRow">
+					<div class="queue box">{{ match.subType | subTypeFilter }}</div>
+					<div class="time box">{{ match.createDate | date:'MM/dd/yy h:mm a' }}</div>
+					<div class="game-win box" ng-show="match.stats.win">Win</div>
+					<div class="game-win box" ng-hide="match.stats.win">Loss</div>
+				</div>
+
+				<div class="midRow">
+					<img class="championImage"
+						ng-src="{{ match.champion == null ? '' : 'https://ddragon.leagueoflegends.com/cdn/5.2.2/img/champion/' + match.champion.key + '.png' }}">
+
+					<div class="rightStatsBox">
+						<div class="scorePanel">
+							<div class="score box">{{ match.stats.championsKilled }}/{{ match.stats.numDeaths }}/{{ match.stats.assists }}
+							</div>
+						</div>
+						<div class="gold box">Gold: 
+							{{ (match.stats.goldEarned / 1000) | number:0}}.{{ (match.stats.timePlayed % 1000) / 100 | number:0}}k</div>
+						<div class="cs box">CS: {{ match.stats.minionsKilled + match.stats.neutralMinionsKilled }}</div>
+						<div class="matchLength box">Game Length: 
+							{{ (match.stats.timePlayed / 60) | number:0}}:{{ (match.stats.timePlayed % 60) | number:0}}</div>
+					</div>
+				</div>
+
+				<div class="bottomRow">
+					<div class="items">
+						<img class="item item0"
+							ng-src="{{ (match.stats.item0 === 0 || match.stats == null) ? 'img/item_0.png' : 'http://ddragon.leagueoflegends.com/cdn/4.20.1/img/item/' + match.stats.item0 + '.png' }}">
+						<img class="item item1"
+							ng-src="{{ (match.stats.item1 === 0 || match.stats == null) ? 'img/item_0.png' : 'http://ddragon.leagueoflegends.com/cdn/4.20.1/img/item/' + match.stats.item1 + '.png' }}">
+						<img class="item item2"
+							ng-src="{{ (match.stats.item2 === 0 || match.stats == null) ? 'img/item_0.png' : 'http://ddragon.leagueoflegends.com/cdn/4.20.1/img/item/' + match.stats.item2 + '.png' }}">
+						<img class="item item3"
+							ng-src="{{ (match.stats.item3 === 0 || match.stats == null) ? 'img/item_0.png' : 'http://ddragon.leagueoflegends.com/cdn/4.20.1/img/item/' + match.stats.item3 + '.png' }}">
+						<img class="item item4"
+							ng-src="{{ (match.stats.item4 === 0 || match.stats == null) ? 'img/item_0.png' : 'http://ddragon.leagueoflegends.com/cdn/4.20.1/img/item/' + match.stats.item4 + '.png' }}">
+						<img class="item item5"
+							ng-src="{{ (match.stats.item5 === 0 || match.stats == null) ? 'img/item_0.png' : 'http://ddragon.leagueoflegends.com/cdn/4.20.1/img/item/' + match.stats.item5 + '.png' }}">
+						<img class="item item6"
+							ng-src="{{ (match.stats.item6 === 0 || match.stats == null) ? 'img/item_0.png' : 'http://ddragon.leagueoflegends.com/cdn/4.20.1/img/item/' + match.stats.item6 + '.png' }}">
+					</div>
+					
+					<div class="expandMatchButton">
+						<button class="expandButton" ng-click="expandMatch(match)">Details</button>
+					</div>
+				</div>
+				
+				<div class="expandMatch" ng-show="match.showExpand">
+					<div class="expandTitle">Match Details</div>
+						<ul class="expandPlayers">
+							<li ng-repeat="player in matchPlayerData">
+								<div class="playerInfo">
+									<img class="playerChampionImage"
+										ng-src="{{ (player == null || player.champ == null) ? '' : 'https://ddragon.leagueoflegends.com/cdn/5.2.2/img/champion/' + player.champ.key + '.png' }}">
+										{{ player.summoner.name }}
+								</div> 								
+							</li>
+							
+							
+						<!-- This only works with ranked games... 
+						<li ng-repeat="playerId in matchDetails.participantIdentities"
+							ng-init="player = matchDetails.participant[playerId.participantId - 1]">
+							{{ playerId.participantId }}, {{ playerId.player.summonerId }}
+							{{ player.championId }}
+						</li>
+						 -->
+					</ul>
+				</div>
+			</div>
+		</li>
+	</ul>
+</div>
