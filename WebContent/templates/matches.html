@@ -15,6 +15,7 @@
 					<div class="championImages">
 						<img class="championImage" alt="{{ match.champion == null ? 'champion' : match.champion.name }}"
 							ng-src="{{ match.champion == null ? '' : 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/champion/' + match.champion.key + '.png' }}">
+						<div class="championLevel">{{ match.stats.level }}</div>
 						<div class="summonerSpells">
 							<img class="summonerSpell spell1" alt="{{ match.sumSpell1 == null ? 'summoner spell 1' : match.summSpell1.name }}"
 								ng-src="{{ match.sumSpell1 == null ? '' : 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/spell/' + match.sumSpell1.image.full }}">
@@ -97,35 +98,50 @@
 					</ul>
 					
 					<div class="moreMatchStats">
-						<div class="stats level">Level: {{ match.stats.level }}</div>
-						<div class="stats damageGraph total">
-							<div class="textOverlay">Damage dealt</div>
-							<img class="damage physical" src="img/damage_physical.png" ng-attr-title="Physical: {{ match.stats.physicalDamageDealtPlayer }}"
+						<div class="stats damageGraph total" ng-mouseover="showHoverText1 = false" ng-mouseout="showHoverText1 = true" ng-init="showHoverText1 = true">
+							<div class="textOverlay">
+								Damage dealt {{ showHoverText1 ? '(hover for details)' : '' }}
+							</div>
+							<img class="damage physical" src="img/damage_physical.png" 
+								ng-attr-title="Physical: {{ match.stats.physicalDamageDealtPlayer }} ({{ match.stats.physicalDamageDealtPlayer / match.stats.totalDamageDealt * 100 | number:1 }}%)"
 								ng-style="{ 'width': (match.stats.physicalDamageDealtPlayer / match.stats.totalDamageDealt * 100) + '%' }">
-							<img class="damage magic" src="img/damage_magic.png" ng-attr-title="Magic: {{ match.stats.magicDamageDealtPlayer }}"
+							<img class="damage magic" src="img/damage_magic.png" 
+								ng-attr-title="Magic: {{ match.stats.magicDamageDealtPlayer }} ({{ match.stats.magicDamageDealtPlayer / match.stats.totalDamageDealt * 100 | number:1 }}%)"
 								ng-style="{ 'width': (match.stats.magicDamageDealtPlayer / match.stats.totalDamageDealt * 100) + '%' }">
-							<img class="damage true" src="img/damage_true.png" ng-attr-title="True: {{ match.stats.trueDamageDealtPlayer }}"
+							<img class="damage true" src="img/damage_true.png" 
+								ng-attr-title="True: {{ match.stats.trueDamageDealtPlayer }} ({{ match.stats.trueDamageDealtPlayer / match.stats.totalDamageDealt * 100 | number:1 }}%)"
 								ng-style="{ 'width': (match.stats.trueDamageDealtPlayer / match.stats.totalDamageDealt * 100) + '%' }">
 						</div>
-						<div class="stats damageGraph champs">
-							<div class="textOverlay">Damage dealt to champions</div>
-							<img class="damage physical" src="img/damage_physical.png" ng-attr-title="Physical: {{ match.stats.physicalDamageDealtToChampions }}"
+						<div class="stats damageGraph champs" ng-mouseover="showHoverText2 = false" ng-mouseout="showHoverText2 = true" ng-init="showHoverText2 = true">
+							<div class="textOverlay">
+								Damage dealt to champions {{ showHoverText2 ? '(hover for details)' : '' }}
+							</div>
+							<img class="damage physical" src="img/damage_physical.png" 
+								ng-attr-title="Physical: {{ match.stats.physicalDamageDealtToChampions }} ({{ match.stats.physicalDamageDealtToChampions / match.stats.totalDamageDealtToChampions * 100 | number:1 }}%)"
 								ng-style="{ 'width': (match.stats.physicalDamageDealtToChampions / match.stats.totalDamageDealtToChampions * 100) + '%' }">
-							<img class="damage magic" src="img/damage_magic.png" ng-attr-title="Magic: {{ match.stats.magicDamageDealtToChampions }}"
+							<img class="damage magic" src="img/damage_magic.png" 
+								ng-attr-title="Magic: {{ match.stats.magicDamageDealtToChampions }} ({{ match.stats.magicDamageDealtToChampions / match.stats.totalDamageDealtToChampions * 100 | number:1 }}%)"
 								ng-style="{ 'width': (match.stats.magicDamageDealtToChampions / match.stats.totalDamageDealtToChampions * 100) + '%' }">
-							<img class="damage true" src="img/damage_true.png" ng-attr-title="True: {{ match.stats.trueDamageDealtToChampions }}"
+							<img class="damage true" src="img/damage_true.png"
+								ng-attr-title="True: {{ match.stats.trueDamageDealtToChampions }} ({{ match.stats.trueDamageDealtToChampions / match.stats.totalDamageDealtToChampions * 100 | number:1 }}%)"
 								ng-style="{ 'width': (match.stats.trueDamageDealtToChampions / match.stats.totalDamageDealtToChampions * 100) + '%' }">
 						</div>						
-						<div class="stats damageGraph taken">
-							<div class="textOverlay">Damage taken</div>
-							<img class="damage physical" src="img/damage_physical.png" ng-attr-title="Physical: {{ match.stats.physicalDamageTaken }}"
+						<div class="stats damageGraph taken"  ng-mouseover="showHoverText3 = false" ng-mouseout="showHoverText3 = true" ng-init="showHoverText3 = true">
+							<div class="textOverlay">
+								Damage taken {{ showHoverText3 ? '(hover for details)' : '' }}
+							</div>
+							<img class="damage physical" src="img/damage_physical.png" 
+								ng-attr-title="Physical: {{ match.stats.physicalDamageTaken }} ({{ match.stats.physicalDamageTaken / match.stats.totalDamageTaken * 100 | number:1 }}%)"
 								ng-style="{ 'width': (match.stats.physicalDamageTaken / match.stats.totalDamageTaken * 100) + '%' }">
-							<img class="damage magic" src="img/damage_magic.png" ng-attr-title="Magic: {{ match.stats.magicDamageTaken }}"
+							<img class="damage magic" src="img/damage_magic.png" 
+								ng-attr-title="Magic: {{ match.stats.magicDamageTaken }} ({{ match.stats.magicDamageTaken / match.stats.totalDamageTaken * 100 | number:1 }}%)"
 								ng-style="{ 'width': (match.stats.magicDamageTaken / match.stats.totalDamageTaken * 100) + '%' }">
-							<img class="damage true" src="img/damage_true.png" ng-attr-title="True: {{ match.stats.trueDamageTaken }}"
+							<img class="damage true" src="img/damage_true.png" 
+								ng-attr-title="True: {{ match.stats.trueDamageTaken }} ({{ match.stats.trueDamageTaken / match.stats.totalDamageTaken * 100 | number:1 }}%)"
 								ng-style="{ 'width': (match.stats.trueDamageTaken / match.stats.totalDamageTaken * 100) + '%' }">
 						</div>						
-												
+
+						<div class="stats level">Level: {{ match.stats.level }}</div>												
 						<div class="stats killingSpreee">Largest killing spree: {{ match.stats.largestKillingSpree }}</div>
 						
 					</div>
