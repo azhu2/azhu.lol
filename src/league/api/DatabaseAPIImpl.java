@@ -42,6 +42,7 @@ public class DatabaseAPIImpl implements LeagueAPI{
         }
     }
 
+    @Override
     public SummonerDto searchSummoner(String summonerName){
         summonerName = summonerName.toLowerCase().replace(" ", "");
 
@@ -71,6 +72,7 @@ public class DatabaseAPIImpl implements LeagueAPI{
         return null;
     }
 
+    @Override
     public SummonerDto getSummonerFromId(long summonerId){
         try{
             Statement stmt = db.createStatement();
@@ -121,22 +123,27 @@ public class DatabaseAPIImpl implements LeagueAPI{
         }
     }
 
+    @Override
     public List<MatchSummary> getRankedMatches(long summonerId){
         return null;
     }
 
+    @Override
     public Set<GameDto> getMatchHistory(long summonerId){
         return null;
     }
 
+    @Override
     public ChampionDto getChampFromId(long id){
         return null;
     }
 
+    @Override
     public SummonerSpellDto getSummonerSpellFromId(long id){
         return null;
     }
 
+    @Override
     public MatchDetail getMatchDetail(long id){
         return null;
     }
