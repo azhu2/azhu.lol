@@ -39,9 +39,9 @@ public class RiotAPIImpl implements LeagueAPI{
     private static final String CHAMP_QUERY = "/api/lol/static-data/na/v1.2/champion/%d";
     private static final String SUMMONERSPELL_QUERY = "/api/lol/static-data/na/v1.2/summoner-spell/%d";
     private static final String MATCH_QUERY = "/api/lol/na/v2.2/match/%d";
-    
-    private static final String OK = "ok";
 
+    private static final int OK = 200;
+    
     private JerseyClient client;
     private ObjectMapper mapper = new ObjectMapper();
     
@@ -59,15 +59,10 @@ public class RiotAPIImpl implements LeagueAPI{
 
     public SummonerDto searchSummoner(String summonerName){
         summonerName = summonerName.toLowerCase().replace(" ", "");
-
         String uri = String.format(buildUri(SUMMONER_BYNAME_QUERY), summonerName);
-        Response response = query(uri);
-        String status = handleResponse(response.getStatus());
-        if(status != OK)
-            return null;
+        String entity = getEntity(uri);
 
         try{
-            String entity = response.readEntity(String.class);
             Map<String, SummonerDto> map = mapper.readValue(entity,
                 new TypeReference<Map<String, SummonerDto>>(){
                 });
@@ -81,13 +76,9 @@ public class RiotAPIImpl implements LeagueAPI{
 
     public SummonerDto getSummonerFromId(long summonerId){
         String uri = String.format(buildUri(SUMMONER_QUERY), summonerId);
-        Response response = query(uri);
-        String status = handleResponse(response.getStatus());
-        if(status != OK)
-            return null;
+        String entity = getEntity(uri);
 
         try{
-            String entity = response.readEntity(String.class);
             Map<String, SummonerDto> map = mapper.readValue(entity,
                 new TypeReference<Map<String, SummonerDto>>(){
                 });
@@ -101,13 +92,9 @@ public class RiotAPIImpl implements LeagueAPI{
 
     public List<MatchSummary> getRankedMatches(long summonerId){
         String uri = buildUri(String.format(RANKED_QUERY, summonerId));
-        Response response = query(uri);
-        String status = handleResponse(response.getStatus());
-        if(status != OK)
-            return null;
+        String entity = getEntity(uri);
 
         try{
-            String entity = response.readEntity(String.class);
             PlayerHistory history = mapper.readValue(entity, PlayerHistory.class);
             return history.getMatches();
         } catch(IOException e){
@@ -118,13 +105,9 @@ public class RiotAPIImpl implements LeagueAPI{
 
     public Set<GameDto> getMatchHistory(long summonerId){
         String uri = buildUri(String.format(MATCHHISTORY_QUERY, summonerId));
-        Response response = query(uri);
-        String status = handleResponse(response.getStatus());
-        if(status != OK)
-            return null;
+        String entity = getEntity(uri);
 
         try{
-            String entity = response.readEntity(String.class);
             RecentGamesDto history = mapper.readValue(entity, RecentGamesDto.class);
             return history.getGames();
         } catch(IOException e){
@@ -137,13 +120,9 @@ public class RiotAPIImpl implements LeagueAPI{
         String uri = buildUri(String.format(CHAMP_QUERY, id));
         Map<String, String> params = new HashMap<>();
         params.put("includeTimeline", "false");
-        Response response = query(uri, params);
-        String status = handleResponse(response.getStatus());
-        if(status != OK)
-            return null;
+        String entity = getEntity(uri, params);
 
         try{
-            String entity = response.readEntity(String.class);
             ChampionDto champ = mapper.readValue(entity, ChampionDto.class);
             return champ;
         } catch(IOException e){
@@ -156,13 +135,9 @@ public class RiotAPIImpl implements LeagueAPI{
         String uri = buildUri(String.format(SUMMONERSPELL_QUERY, id));
         Map<String, String> params = new HashMap<>();
         params.put("spellData", "image");
-        Response response = query(uri, params);
-        String status = handleResponse(response.getStatus());
-        if(status != OK)
-            return null;
+        String entity = getEntity(uri, params);
 
         try{
-            String entity = response.readEntity(String.class);
             SummonerSpellDto champ = mapper.readValue(entity, SummonerSpellDto.class);
             return champ;
         } catch(IOException e){
@@ -173,13 +148,9 @@ public class RiotAPIImpl implements LeagueAPI{
 
     public MatchDetail getMatchDetail(long id){
         String uri = buildUri(String.format(MATCH_QUERY, id));
-        Response response = query(uri);
-        String status = handleResponse(response.getStatus());
-        if(status != OK)
-            return null;
+        String entity = getEntity(uri);
 
         try{
-            String entity = response.readEntity(String.class);
             MatchDetail match = mapper.readValue(entity, MatchDetail.class);
             return match;
         } catch(IOException e){
@@ -190,6 +161,20 @@ public class RiotAPIImpl implements LeagueAPI{
 
     private static String buildUri(String method){
         return BASE_URL + method + "?api_key=" + API_KEY;
+    }
+
+    private String getEntity(String uri){
+        return getEntity(uri, null);
+    }
+
+    private String getEntity(String uri, Map<String, String> params){
+        Response response = query(uri, params);
+        int status = response.getStatus();
+        if(status != OK)
+            return null;
+    
+        String entity = response.readEntity(String.class);
+        return entity;
     }
 
     private Response query(String uri){
@@ -210,24 +195,25 @@ public class RiotAPIImpl implements LeagueAPI{
     private static String handleResponse(int status){
         switch(status){
             case 200:
-                return OK;
+                return "200 OK";
             case 401:
                 return "401 Unauthorized - did you forget the API key?";
             case 404:
                 return "404 Not found";
             case 429:
-                return "429 Ratelimit hit";
+                return "429 Ratelimit hit oops";
             case 500:
                 return "500 Rito pls. They broke something";
             case 503:
                 return "503 Riot API unavailable";
             default:
-                return status + " Something broke";
+                return status + " Something else broke";
         }
     }
 
     public static void main(String[] args){
         RiotAPIImpl r = new RiotAPIImpl();
         System.out.println(r.searchSummoner("Zedenstein"));
+        System.out.println(r.getMatchHistory(31569637));
     }
 }
