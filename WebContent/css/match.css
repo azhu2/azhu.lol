@@ -62,16 +62,17 @@
 #matches .match .summonerSpells {
 	display: inline-block;
 	position: relative;
-	left: -41px;
-	top: -1px;
+	left: -44px;
+	top: -2px;
 }
 
 #matches .match .summonerSpell {
 	height: 30px;
 	width: 30px;
-	border: 3px;
-	border-style: groove;
+	border: 4px;
+	border-style: outset;
 	border-color: rgba(150, 150, 100, 0.5);
+	opacity: 0.75;
 }
 
 #matches .match .rightStatsBox {
