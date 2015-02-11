@@ -22,6 +22,7 @@ import league.entities.MatchSummary;
 import league.entities.PlayerHistory;
 import league.entities.RecentGamesDto;
 import league.entities.SummonerDto;
+import league.entities.SummonerSpellDto;
 
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -43,6 +44,7 @@ public class RiotAPI{
     private static final String MATCHHISTORY_QUERY = "/api/lol/na/v1.3/game/by-summoner/%d/recent";
     private static final String RANKED_QUERY = "/api/lol/na/v2.2/matchhistory/%d";
     private static final String CHAMP_QUERY = "/api/lol/static-data/na/v1.2/champion/%d";
+    private static final String SUMMONERSPELL_QUERY = "/api/lol/static-data/na/v1.2/summoner-spell/%d";
     private static final String MATCH_QUERY = "/api/lol/na/v2.2/match/%d";
     
     private static final String OK = "ok";
@@ -243,6 +245,25 @@ public class RiotAPI{
         }
     }
 
+    public SummonerSpellDto getSummonerSpellFromId(long id){
+        String uri = buildUri(String.format(SUMMONERSPELL_QUERY, id));
+        Map<String, String> params = new HashMap<>();
+        params.put("spellData", "image");
+        Response response = query(uri, params);
+        String status = handleResponse(response.getStatus());
+        if(status != OK)
+            return null;
+
+        try{
+            String entity = response.readEntity(String.class);
+            SummonerSpellDto champ = mapper.readValue(entity, SummonerSpellDto.class);
+            return champ;
+        } catch(IOException e){
+            log.log(Level.SEVERE, e.getMessage(), e);
+            return null;
+        }
+    }
+
     public MatchDetail getMatchDetail(long id){
         String uri = buildUri(String.format(MATCH_QUERY, id));
         Response response = query(uri);
@@ -273,7 +294,7 @@ public class RiotAPI{
 
         if(params != null)
             for(String param : params.keySet())
-                resource.queryParam(param, params.get(param));
+                resource = resource.queryParam(param, params.get(param));
 
         Response response = resource.request().get();
         return response;

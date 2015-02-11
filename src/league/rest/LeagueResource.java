@@ -19,6 +19,7 @@ import league.entities.GameDto;
 import league.entities.MatchDetail;
 import league.entities.MatchSummary;
 import league.entities.SummonerDto;
+import league.entities.SummonerSpellDto;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig;
@@ -88,6 +89,16 @@ public class LeagueResource{
     public Response getMatchDetail(@PathParam("id") long id) throws ServletException,
             IOException{
         MatchDetail history = api.getMatchDetail(id);
+        return Response.status(HttpServletResponse.SC_OK)
+                       .entity(mapper.writeValueAsString(history)).build();
+    }
+    
+    @GET
+    @Path("/summoner-spell/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getSummonerSpellFromId(@PathParam("id") long id) throws ServletException,
+            IOException{
+        SummonerSpellDto history = api.getSummonerSpellFromId(id);
         return Response.status(HttpServletResponse.SC_OK)
                        .entity(mapper.writeValueAsString(history)).build();
     }

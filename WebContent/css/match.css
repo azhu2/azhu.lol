@@ -29,6 +29,7 @@
 #matches .match .box {
 	display: inline-block;
 	padding: 5px;
+	font-size: 0.8em;
 }
 
 #matches .match .queue {
@@ -48,10 +49,25 @@
 	margin-left: 10px;
 }
 
+#matches .match .championImages {
+	display: inline-block;
+}
+
 #matches .match .championImage {
 	display: inline-block;
 	height: 100px;
 	width: 100px;
+}
+
+#matches .match .summonerSpells {
+	display: inline-block;
+	position: relative;
+	left: -35px;
+}
+
+#matches .match .summonerSpell {
+	height: 30px;
+	width: 30px;
 }
 
 #matches .match .score {
@@ -64,7 +80,9 @@
 
 #matches .match .rightStatsBox {
 	display: inline-block;
-	width: 295px;
+	width: 256px;
+	position: relative;
+	left: -15px;
 }
 
 #matches .match .bottomRow {
@@ -88,7 +106,7 @@
 	display: inline-block;
 	vertical-align: top;
 	margin-top: 10px;
-	margin-left: 20px;
+	margin-left: 15px;
 }
 
 #matches .match .expandMatchButton .expandButton {

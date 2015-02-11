@@ -68,8 +68,21 @@ leagueApp.controller('lookupController',
 				id : match.championId
 			}, function(champData) {
 				match.champion = champData;
-				$scope.matchData[index] = match;
 			});
+			
+			LeagueResource.summSpellFromId().get({
+				id : match.spell1
+			}, function(champData) {
+				match.sumSpell1 = champData;
+			});
+
+			LeagueResource.summSpellFromId().get({
+				id : match.spell2
+			}, function(champData) {
+				match.sumSpell2 = champData;
+			});
+			
+			$scope.matchData[index] = match;
 		};
 
 		$scope.expandMatch = function(match, summoner) {
@@ -88,7 +101,7 @@ leagueApp.controller('lookupController',
 					- i - 1);
 			}
 
-			// Add player
+			// Add current player
 			var player = {champ : match.champion, summoner : summoner};
 			if(match.teamId === 100)
 				$scope.matchPlayerBlue.push(player);
@@ -158,6 +171,10 @@ leagueApp.service('LeagueResource', function($resource) {
 	this.matchDetail = function() {
 		return $resource('/azhu.lol/rest/match/:id');
 	};
+	
+	this.summSpellFromId = function() {
+		return $resource('/azhu.lol/rest/summoner-spell/:id');
+	}
 });
 
 leagueApp.filter("queueFilter", function() {
