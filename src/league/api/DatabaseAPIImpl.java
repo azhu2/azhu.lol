@@ -22,8 +22,8 @@ public class DatabaseAPIImpl implements LeagueAPI{
 
     private static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
     private static final String DB_URL = "jdbc:mysql://localhost/lol";
-    private static final String USER = APIConstants.DB_USER;
-    private static final String PASS = APIConstants.DB_PASS;
+    private static final String USER = SecurityConstants.DB_USER;
+    private static final String PASS = SecurityConstants.DB_PASS;
     private Connection db;
 
     private static DatabaseAPIImpl _instance = new DatabaseAPIImpl();

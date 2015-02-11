@@ -28,8 +28,8 @@ import org.glassfish.jersey.client.JerseyWebTarget;
 
 public class RiotAPIImpl implements LeagueAPI{
     private static Logger log = Logger.getLogger(RiotAPIImpl.class.getName());
-    
-    private static final String API_KEY = APIConstants.API_KEY;
+
+    private static final String API_KEY = SecurityConstants.API_KEY;
 
     private static final String BASE_URL = "https://na.api.pvp.net";
     private static final String SUMMONER_BYNAME_QUERY = "/api/lol/na/v1.4/summoner/by-name/%s";
@@ -40,17 +40,18 @@ public class RiotAPIImpl implements LeagueAPI{
     private static final String SUMMONERSPELL_QUERY = "/api/lol/static-data/na/v1.2/summoner-spell/%d";
     private static final String MATCH_QUERY = "/api/lol/na/v2.2/match/%d";
 
-    private static final int OK = 200;
-    
+    private static final int MAX_ATTEMPTS = 15;
+    private static final long ATTEMPT_INTERVAL = 1000;      // in ms
+
     private JerseyClient client;
     private ObjectMapper mapper = new ObjectMapper();
-    
+
     private static RiotAPIImpl _instance = new RiotAPIImpl();
 
     public static RiotAPIImpl getInstance(){
         return _instance;
     }
-    
+
     private RiotAPIImpl(){
         System.setProperty("javax.net.ssl.trustStoreType", "JCEKS");
         mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -61,6 +62,9 @@ public class RiotAPIImpl implements LeagueAPI{
         summonerName = summonerName.toLowerCase().replace(" ", "");
         String uri = String.format(buildUri(SUMMONER_BYNAME_QUERY), summonerName);
         String entity = getEntity(uri);
+
+        if(entity == null)
+            return null;
 
         try{
             Map<String, SummonerDto> map = mapper.readValue(entity,
@@ -78,6 +82,9 @@ public class RiotAPIImpl implements LeagueAPI{
         String uri = String.format(buildUri(SUMMONER_QUERY), summonerId);
         String entity = getEntity(uri);
 
+        if(entity == null)
+            return null;
+
         try{
             Map<String, SummonerDto> map = mapper.readValue(entity,
                 new TypeReference<Map<String, SummonerDto>>(){
@@ -94,6 +101,9 @@ public class RiotAPIImpl implements LeagueAPI{
         String uri = buildUri(String.format(RANKED_QUERY, summonerId));
         String entity = getEntity(uri);
 
+        if(entity == null)
+            return null;
+
         try{
             PlayerHistory history = mapper.readValue(entity, PlayerHistory.class);
             return history.getMatches();
@@ -106,6 +116,9 @@ public class RiotAPIImpl implements LeagueAPI{
     public Set<GameDto> getMatchHistory(long summonerId){
         String uri = buildUri(String.format(MATCHHISTORY_QUERY, summonerId));
         String entity = getEntity(uri);
+
+        if(entity == null)
+            return null;
 
         try{
             RecentGamesDto history = mapper.readValue(entity, RecentGamesDto.class);
@@ -150,6 +163,9 @@ public class RiotAPIImpl implements LeagueAPI{
         String uri = buildUri(String.format(MATCH_QUERY, id));
         String entity = getEntity(uri);
 
+        if(entity == null)
+            return null;
+
         try{
             MatchDetail match = mapper.readValue(entity, MatchDetail.class);
             return match;
@@ -167,48 +183,71 @@ public class RiotAPIImpl implements LeagueAPI{
         return getEntity(uri, null);
     }
 
-    private String getEntity(String uri, Map<String, String> params){
-        Response response = query(uri, params);
-        int status = response.getStatus();
-        if(status != OK)
+    private String retryGetEntity(JerseyWebTarget target, int tries){
+        String uri = target.getUri().toString();
+        if(tries > MAX_ATTEMPTS){
+            log.warning(String.format("Maximum attempts for uri %s failed", uri));
             return null;
-    
-        String entity = response.readEntity(String.class);
-        return entity;
+        }
+
+        try{
+            Thread.sleep(ATTEMPT_INTERVAL);
+        } catch(InterruptedException e){
+            log.log(Level.SEVERE, e.getMessage(), e);
+        }
+
+        Response response = target.request().get();
+        int status = response.getStatus();
+
+        if(status == APIConstants.HTTP_OK){
+            log.info(String.format("Successful retry for uri %s", uri));
+            return response.readEntity(String.class);
+        } else if(status == APIConstants.HTTP_RATELIMIT){
+            log.warning(String.format("Attempt %d for uri %s failed", tries, uri));
+            return retryGetEntity(target, tries + 1);
+        } else
+            return null;
     }
 
-    private Response query(String uri){
-        return query(uri, null);
+    private String getEntity(String uri, Map<String, String> params){
+        JerseyWebTarget target = query(uri, params);
+        Response response = target.request().get();
+        String uriStr = target.getUri().toString();
+        int status = response.getStatus();
+
+        switch(status){
+            case APIConstants.HTTP_OK:
+                log.info("Success for uri " + uriStr);
+                return response.readEntity(String.class);
+            case APIConstants.HTTP_UNAUTHORIZED:
+                log.warning("401 Unauthorized - did you forget the API key? | URI: " + uriStr);
+                return null;
+            case APIConstants.HTTP_NOT_FOUND:
+                log.warning("404 Not found | URI: " + uriStr);
+                return null;
+            case APIConstants.HTTP_RATELIMIT:
+                log.warning("429 Ratelimit hit oops | URI: " + uriStr);
+                return retryGetEntity(target, 1);
+            case APIConstants.HTTP_INTERNAL_SERVER_ERROR:
+                log.warning("500 Rito pls. They broke something | URI: " + uriStr);
+                return null;
+            case APIConstants.HTTP_UNAVAILABLE:
+                log.warning("503 Riot API unavailable | URI: " + uriStr);
+                return null;
+            default:
+                log.warning(status + " Something else broke | URI: " + uriStr);
+                return null;
+        }
     }
 
-    private Response query(String uri, Map<String, String> params){
+    private JerseyWebTarget query(String uri, Map<String, String> params){
         JerseyWebTarget resource = client.target(uri);
 
         if(params != null)
             for(String param : params.keySet())
                 resource = resource.queryParam(param, params.get(param));
 
-        Response response = resource.request().get();
-        return response;
-    }
-
-    private static String handleResponse(int status){
-        switch(status){
-            case 200:
-                return "200 OK";
-            case 401:
-                return "401 Unauthorized - did you forget the API key?";
-            case 404:
-                return "404 Not found";
-            case 429:
-                return "429 Ratelimit hit oops";
-            case 500:
-                return "500 Rito pls. They broke something";
-            case 503:
-                return "503 Riot API unavailable";
-            default:
-                return status + " Something else broke";
-        }
+        return resource;
     }
 
     public static void main(String[] args){

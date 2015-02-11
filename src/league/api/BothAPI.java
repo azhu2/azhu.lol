@@ -32,10 +32,10 @@ import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.glassfish.jersey.client.JerseyWebTarget;
 
 @Deprecated
-public class BothAPI{
+public class BothAPI implements LeagueAPI{
     private static Logger log = Logger.getLogger(BothAPI.class.getName());
     
-    private static final String API_KEY = APIConstants.API_KEY;
+    private static final String API_KEY = SecurityConstants.API_KEY;
     public static final int INVALID = -1;
 
     private static final String BASE_URL = "https://na.api.pvp.net";
@@ -55,8 +55,8 @@ public class BothAPI{
     // DB Stuff
     private static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
     private static final String DB_URL = "jdbc:mysql://localhost/lol";
-    private static final String USER = APIConstants.DB_USER;
-    private static final String PASS = APIConstants.DB_PASS;
+    private static final String USER = SecurityConstants.DB_USER;
+    private static final String PASS = SecurityConstants.DB_PASS;
     private Connection db;
     
     private static BothAPI _instance = new BothAPI();
