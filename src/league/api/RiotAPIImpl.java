@@ -199,10 +199,10 @@ public class RiotAPIImpl implements LeagueAPI{
         Response response = target.request().get();
         int status = response.getStatus();
 
-        if(status == APIConstants.HTTP_OK){
+        if(status == LeagueAPIConstants.HTTP_OK){
             log.info(String.format("Successful retry for uri %s", uri));
             return response.readEntity(String.class);
-        } else if(status == APIConstants.HTTP_RATELIMIT){
+        } else if(status == LeagueAPIConstants.HTTP_RATELIMIT){
             log.warning(String.format("Attempt %d for uri %s failed", tries, uri));
             return retryGetEntity(target, tries + 1);
         } else
@@ -216,22 +216,22 @@ public class RiotAPIImpl implements LeagueAPI{
         int status = response.getStatus();
 
         switch(status){
-            case APIConstants.HTTP_OK:
+            case LeagueAPIConstants.HTTP_OK:
                 log.info("Success for uri " + uriStr);
                 return response.readEntity(String.class);
-            case APIConstants.HTTP_UNAUTHORIZED:
+            case LeagueAPIConstants.HTTP_UNAUTHORIZED:
                 log.warning("401 Unauthorized - did you forget the API key? | URI: " + uriStr);
                 return null;
-            case APIConstants.HTTP_NOT_FOUND:
+            case LeagueAPIConstants.HTTP_NOT_FOUND:
                 log.warning("404 Not found | URI: " + uriStr);
                 return null;
-            case APIConstants.HTTP_RATELIMIT:
+            case LeagueAPIConstants.HTTP_RATELIMIT:
                 log.warning("429 Ratelimit hit oops | URI: " + uriStr);
                 return retryGetEntity(target, 1);
-            case APIConstants.HTTP_INTERNAL_SERVER_ERROR:
+            case LeagueAPIConstants.HTTP_INTERNAL_SERVER_ERROR:
                 log.warning("500 Rito pls. They broke something | URI: " + uriStr);
                 return null;
-            case APIConstants.HTTP_UNAVAILABLE:
+            case LeagueAPIConstants.HTTP_UNAVAILABLE:
                 log.warning("503 Riot API unavailable | URI: " + uriStr);
                 return null;
             default:
