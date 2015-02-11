@@ -58,6 +58,7 @@ public class RiotAPIImpl implements LeagueAPI{
         client = new JerseyClientBuilder().build();
     }
 
+    @Override
     public SummonerDto searchSummoner(String summonerName){
         summonerName = summonerName.toLowerCase().replace(" ", "");
         String uri = String.format(buildUri(SUMMONER_BYNAME_QUERY), summonerName);
@@ -78,6 +79,7 @@ public class RiotAPIImpl implements LeagueAPI{
         }
     }
 
+    @Override
     public SummonerDto getSummonerFromId(long summonerId){
         String uri = String.format(buildUri(SUMMONER_QUERY), summonerId);
         String entity = getEntity(uri);
@@ -97,6 +99,7 @@ public class RiotAPIImpl implements LeagueAPI{
         }
     }
 
+    @Override
     public List<MatchSummary> getRankedMatches(long summonerId){
         String uri = buildUri(String.format(RANKED_QUERY, summonerId));
         String entity = getEntity(uri);
@@ -113,6 +116,7 @@ public class RiotAPIImpl implements LeagueAPI{
         }
     }
 
+    @Override
     public Set<GameDto> getMatchHistory(long summonerId){
         String uri = buildUri(String.format(MATCHHISTORY_QUERY, summonerId));
         String entity = getEntity(uri);
@@ -129,6 +133,7 @@ public class RiotAPIImpl implements LeagueAPI{
         }
     }
 
+    @Override
     public ChampionDto getChampFromId(long id){
         String uri = buildUri(String.format(CHAMP_QUERY, id));
         Map<String, String> params = new HashMap<>();
@@ -144,6 +149,7 @@ public class RiotAPIImpl implements LeagueAPI{
         }
     }
 
+    @Override
     public SummonerSpellDto getSummonerSpellFromId(long id){
         String uri = buildUri(String.format(SUMMONERSPELL_QUERY, id));
         Map<String, String> params = new HashMap<>();
@@ -159,6 +165,7 @@ public class RiotAPIImpl implements LeagueAPI{
         }
     }
 
+    @Override
     public MatchDetail getMatchDetail(long id){
         String uri = buildUri(String.format(MATCH_QUERY, id));
         String entity = getEntity(uri);
