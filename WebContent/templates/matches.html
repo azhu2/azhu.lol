@@ -34,7 +34,7 @@
 							{{ (match.stats.goldEarned / 1000) | number:0}}.{{ (match.stats.timePlayed % 1000) / 100 | number:0}}k</div>
 						<div class="cs box">CS: {{ match.stats.minionsKilled + match.stats.neutralMinionsKilled }}</div>
 						<div class="matchLength box">Game Length: 
-							{{ (match.stats.timePlayed / 60) | number:0}}:{{ (match.stats.timePlayed % 60) | number:0}}</div>
+							{{ match.stats.timePlayed / 60 | number:0}}:{{ (match.stats.timePlayed % 60) | numberFixedLen:2}}</div>
 					</div>
 				</div>
 
