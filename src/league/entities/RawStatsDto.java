@@ -45,7 +45,7 @@ public class RawStatsDto{
     private int pentakills;
     private int physicalDamageDealtPlayer;
     private int physicalDamageDealtToChampions;
-    private int phyiscalDamageTaken;
+    private int physicalDamageTaken;
     private int quadrakills;
     private int sightWardsBought;
     private int spell1Cast;
@@ -430,12 +430,12 @@ public class RawStatsDto{
         this.physicalDamageDealtToChampions = physicalDamageDealtToChampions;
     }
 
-    public int getPhyiscalDamageTaken(){
-        return phyiscalDamageTaken;
+    public int getPhysicalDamageTaken(){
+        return physicalDamageTaken;
     }
 
-    public void setPhyiscalDamageTaken(int phyiscalDamageTaken){
-        this.phyiscalDamageTaken = phyiscalDamageTaken;
+    public void setPhysicalDamageTaken(int phyiscalDamageTaken){
+        this.physicalDamageTaken = phyiscalDamageTaken;
     }
 
     public int getQuadrakills(){
