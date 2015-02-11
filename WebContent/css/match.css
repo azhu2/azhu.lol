@@ -15,11 +15,11 @@
 }
 
 #matches .win {
-	background-color: #99ff99;
+	background: rgba(153, 255, 153, 0.9);
 }
 
 #matches .loss {
-	background-color: #ff9999;
+	background: rgba(255, 153, 153, 0.9);
 }
 
 #matches .match .topRow {
@@ -62,27 +62,31 @@
 #matches .match .summonerSpells {
 	display: inline-block;
 	position: relative;
-	left: -35px;
+	left: -41px;
+	top: -1px;
 }
 
 #matches .match .summonerSpell {
 	height: 30px;
 	width: 30px;
-}
-
-#matches .match .score {
-	font-size: 2em;
-	font-weight: bold;
-	width: 250px;
-	text-align: center;
-	margin: 10px;
+	border: 3px;
+	border-style: groove;
+	border-color: rgba(150, 150, 100, 0.5);
 }
 
 #matches .match .rightStatsBox {
 	display: inline-block;
-	width: 256px;
+	width: 250px;
 	position: relative;
 	left: -15px;
+	vertical-align: top;
+}
+
+#matches .match .score {
+	font-size: 2.4em;
+	font-weight: bold;
+	width: 100%;
+	text-align: center;
 }
 
 #matches .match .bottomRow {
@@ -140,17 +144,25 @@
 	width: 45%;
 }
 
+#matches .match .expandMatch .teamTitle {
+	font-style: italic;
+	margin-bottom: 4px;
+	background: rgba(0, 0, 0, 0.2);
+}
+
 #matches .match .expandMatch .red {
-	background: rgba(128, 0, 192, 0.4);
+	background: rgba(128, 0, 192, 0.6);
 	text-align: left;
 }
 
 #matches .match .expandMatch .blue {
-	background: rgba(0, 64, 192, 0.4);
+	background: rgba(0, 64, 192, 0.6);
 	text-align: right;
 }
 
 #matches .match .expandMatch .playerChampionImage {
 	height: 20px;
 	width: 20px;
+	position: relative;
+	top: 3px;
 }

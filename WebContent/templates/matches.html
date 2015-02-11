@@ -64,6 +64,9 @@
 					<div class="expandTitle">Match Details</div>
 						<ul class="expandPlayers">
 							<div class="team blue">
+								<div class="teamTitle">
+									Blue Team ({{ (match.teamId === 100 && match.stats.win || match.teamId === 200 && !match.stats.win) ? "WIN" : "LOSS" }})
+								</div>
 								<li ng-repeat="player in matchPlayerBlue">
 									<div class="playerInfo">
 										{{ player.summoner.name }}
@@ -73,6 +76,9 @@
 								</li>
 							</div>
 							<div class="team red">
+								<div class="teamTitle">
+									Purple Team ({{ (match.teamId === 200 && match.stats.win || match.teamId === 100 && !match.stats.win) ? "WIN" : "LOSS" }})
+								</div>
 								<li class="redTeam" ng-repeat="player in matchPlayerRed">
 									<div class="playerInfo">
 										<img class="playerChampionImage" alt="{{ (player == null || player.champ == null) ? 'champion' : player.champ.name }}"

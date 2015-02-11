@@ -17,16 +17,16 @@
 
 #summaryData #summonerData {
 	display: inline-block;
+	vertical-align: top;
 }
 
 #summaryData #summonerName {
 	font-weight: bold;
 	font-size: 2em;
-	margin-bottom: 20px;
 }
 
 #summaryData #summonerLevel {
 	font-style: italic;
 	color: #666666;
-	padding-left: 10px;
+	padding-left: 20px;
 }
