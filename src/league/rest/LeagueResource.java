@@ -13,7 +13,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import league.api.RiotAPI;
+import league.api.BothAPI;
 import league.entities.ChampionDto;
 import league.entities.GameDto;
 import league.entities.MatchDetail;
@@ -26,7 +26,7 @@ import org.codehaus.jackson.map.SerializationConfig;
 
 @Path("/")
 public class LeagueResource{
-    private static RiotAPI api = RiotAPI.getInstance();
+    private static BothAPI api = BothAPI.getInstance();
     private static ObjectMapper mapper = new ObjectMapper();
 
     public LeagueResource(){

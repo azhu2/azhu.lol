@@ -54,7 +54,8 @@
 }
 
 #matches .match .championImage {
-	float: left; height : 100px;
+	float: left;
+	height: 100px;
 	width: 100px;
 	height: 100px;
 }

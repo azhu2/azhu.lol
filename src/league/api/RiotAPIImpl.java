@@ -1,11 +1,6 @@
 package league.api;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,11 +26,10 @@ import org.glassfish.jersey.client.JerseyClient;
 import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.glassfish.jersey.client.JerseyWebTarget;
 
-public class RiotAPI{
-    private static Logger log = Logger.getLogger(RiotAPI.class.getName());
+public class RiotAPIImpl implements LeagueAPI{
+    private static Logger log = Logger.getLogger(RiotAPIImpl.class.getName());
     
     private static final String API_KEY = APIConstants.API_KEY;
-    public static final int INVALID = -1;
 
     private static final String BASE_URL = "https://na.api.pvp.net";
     private static final String SUMMONER_BYNAME_QUERY = "/api/lol/na/v1.4/summoner/by-name/%s";
@@ -50,65 +44,27 @@ public class RiotAPI{
 
     private JerseyClient client;
     private ObjectMapper mapper = new ObjectMapper();
-
-    // DB Stuff
-    private static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-    private static final String DB_URL = "jdbc:mysql://localhost/lol";
-    private static final String USER = APIConstants.DB_USER;
-    private static final String PASS = APIConstants.DB_PASS;
-    private Connection db;
     
-    private static RiotAPI _instance = new RiotAPI();
+    private static RiotAPIImpl _instance = new RiotAPIImpl();
 
-    public static RiotAPI getInstance(){
+    public static RiotAPIImpl getInstance(){
         return _instance;
     }
     
-    private RiotAPI(){
+    private RiotAPIImpl(){
         System.setProperty("javax.net.ssl.trustStoreType", "JCEKS");
         mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         client = new JerseyClientBuilder().build();
-
-        try{
-            Class.forName(JDBC_DRIVER);
-            log.info("Connecting to database...");
-            db = DriverManager.getConnection(DB_URL, USER, PASS);
-        } catch(ClassNotFoundException | SQLException e){
-            log.log(Level.SEVERE, e.getMessage(), e);
-        }
     }
 
     public SummonerDto searchSummoner(String summonerName){
         summonerName = summonerName.toLowerCase().replace(" ", "");
 
-        try{
-            Statement stmt = db.createStatement();
-            String sql;
-            sql = String.format(
-                "SELECT id, name, profileIconId, summonerLevel, revisionDate FROM summoners WHERE name = '%s'",
-                summonerName);
-            ResultSet rs = stmt.executeQuery(sql);
-            if(rs.next()){
-                long id = rs.getLong("id");
-                String name = rs.getString("name");
-                int profileIconId = rs.getInt("profileIconId");
-                long summonerLevel = rs.getLong("summonerLevel");
-                long revisionDate = rs.getLong("revisionDate");
-
-                SummonerDto summoner = new SummonerDto(id, name, profileIconId, summonerLevel,
-                        revisionDate);
-                log.info("Fetched summoner " + summoner + " from db.");
-                return summoner;
-            }
-        } catch(SQLException e){
-            log.log(Level.SEVERE, e.getMessage(), e);
-        }
-
         String uri = String.format(buildUri(SUMMONER_BYNAME_QUERY), summonerName);
         Response response = query(uri);
         String status = handleResponse(response.getStatus());
         if(status != OK)
-            return new SummonerDto(INVALID, status, INVALID, INVALID, INVALID);
+            return null;
 
         try{
             String entity = response.readEntity(String.class);
@@ -116,7 +72,6 @@ public class RiotAPI{
                 new TypeReference<Map<String, SummonerDto>>(){
                 });
             SummonerDto summoner = map.get(summonerName);
-            addSummonerToDb(summoner);
             return summoner;
         } catch(IOException e){
             e.printStackTrace();
@@ -125,34 +80,11 @@ public class RiotAPI{
     }
 
     public SummonerDto getSummonerFromId(long summonerId){
-        try{
-            Statement stmt = db.createStatement();
-            String sql;
-            sql = String.format(
-                "SELECT id, name, profileIconId, summonerLevel, revisionDate FROM summoners WHERE id = %d",
-                summonerId);
-            ResultSet rs = stmt.executeQuery(sql);
-            if(rs.next()){
-                long id = rs.getLong("id");
-                String name = rs.getString("name");
-                int profileIconId = rs.getInt("profileIconId");
-                long summonerLevel = rs.getLong("summonerLevel");
-                long revisionDate = rs.getLong("revisionDate");
-
-                SummonerDto summoner = new SummonerDto(id, name, profileIconId, summonerLevel,
-                        revisionDate);
-                log.info("Fetched summoner " + summoner + " from db.");
-                return summoner;
-            }
-        } catch(SQLException e){
-            log.log(Level.SEVERE, e.getMessage(), e);
-        }
-
         String uri = String.format(buildUri(SUMMONER_QUERY), summonerId);
         Response response = query(uri);
         String status = handleResponse(response.getStatus());
         if(status != OK)
-            return new SummonerDto(INVALID, status, INVALID, INVALID, INVALID);
+            return null;
 
         try{
             String entity = response.readEntity(String.class);
@@ -160,34 +92,10 @@ public class RiotAPI{
                 new TypeReference<Map<String, SummonerDto>>(){
                 });
             SummonerDto summoner = map.get(summonerId + "");
-            addSummonerToDb(summoner);
             return summoner;
         } catch(IOException e){
             log.log(Level.SEVERE, e.getMessage(), e);
             return null;
-        }
-    }
-
-    private boolean addSummonerToDb(SummonerDto summoner){
-        if(summoner.getId() == INVALID)
-            return false;
-        
-        try{
-            Statement stmt = db.createStatement();
-            String sql;
-            sql = String.format("INSERT INTO summoners VALUES (%d, '%s', %d, %d, %d)",
-                summoner.getId(), summoner.getName(), summoner.getProfileIconId(),
-                summoner.getSummonerLevel(), summoner.getRevisionDate());
-            int updated = stmt.executeUpdate(sql);
-            if(updated < 1){
-                log.log(Level.WARNING, "Update summoner " + summoner + " failed.");
-                return false;
-            }
-            log.info("Update summoner " + summoner + " success.");
-            return true;
-        } catch(SQLException e){
-            log.log(Level.SEVERE, e.getMessage(), e);
-            return false;
         }
     }
 
@@ -319,7 +227,7 @@ public class RiotAPI{
     }
 
     public static void main(String[] args){
-        RiotAPI r = new RiotAPI();
+        RiotAPIImpl r = new RiotAPIImpl();
         System.out.println(r.searchSummoner("Zedenstein"));
     }
 }
