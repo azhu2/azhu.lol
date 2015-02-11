@@ -66,5 +66,4 @@ public class DynamicLeagueAPIImpl implements LeagueAPI{
         SummonerSpellDto result = dbApi.getSummonerSpellFromId(spellId);
         return result == null ? riotApi.getSummonerSpellFromId(spellId) : result;
     }
-
 }
