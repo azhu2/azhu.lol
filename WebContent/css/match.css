@@ -116,3 +116,16 @@
 	height: 20px;
 	width: 20px;
 }
+
+#matches .match .expandMatch .team {
+	display: inline-block;
+	width: 49%;
+}
+
+#matches .match .expandMatch .red {
+	background: rgba(128, 0, 192, 0.4);
+}
+
+#matches .match .expandMatch .blue {
+	background: rgba(0, 64, 192, 0.4);
+}

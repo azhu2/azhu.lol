@@ -12,10 +12,11 @@ leagueApp.config(function($routeProvider) {
 
 leagueApp.controller('lookupController',
 	function($scope, LeagueResource) {
+		$scope.version = "5.2.2";
 		$scope.showLookupResults = false;
 		$scope.showRankedResults = false;
 		$scope.showMatchHIstory = false;
-
+		
 		$scope.lookup = function() {
 			LeagueResource.lookupSummoner().get({
 				name : $scope.summonerName
@@ -71,7 +72,7 @@ leagueApp.controller('lookupController',
 			});
 		};
 
-		$scope.expandMatch = function(match) {
+		$scope.expandMatch = function(match, summoner) {
 			if (match.showExpand) {
 				match.showExpand = false;
 				return;
@@ -80,12 +81,20 @@ leagueApp.controller('lookupController',
 			closeAllMatches($scope);
 			match.showExpand = true;
 
-			$scope.matchPlayerData = [];
+			$scope.matchPlayerBlue = [];
+			$scope.matchPlayerRed = [];
 			for (var i = 0; i < match.fellowPlayers.length; i++) {
 				parsePlayer($scope, match.fellowPlayers[i], match.fellowPlayers.length
 					- i - 1);
 			}
 
+			// Add player
+			var player = {champ : match.champion, summoner : summoner};
+			if(match.teamId === 100)
+				$scope.matchPlayerBlue.push(player);
+			else
+				$scope.matchPlayerRed.push(player);
+			
 			// lookupMatch($scope, match); Only useful for ranked
 		};
 
@@ -104,7 +113,10 @@ leagueApp.controller('lookupController',
 				playerData.champ = champData;
 			});
 
-			$scope.matchPlayerData.push(playerData);
+			if(player.teamId === 100)
+				$scope.matchPlayerBlue.push(playerData);
+			else
+				$scope.matchPlayerRed.push(playerData);
 		};
 
 		var lookupMatch = function($scope, match) {

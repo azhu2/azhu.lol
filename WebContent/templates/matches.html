@@ -13,7 +13,7 @@
 
 				<div class="midRow">
 					<img class="championImage"
-						ng-src="{{ match.champion == null ? '' : 'https://ddragon.leagueoflegends.com/cdn/5.2.2/img/champion/' + match.champion.key + '.png' }}">
+						ng-src="{{ match.champion == null ? '' : 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/champion/' + match.champion.key + '.png' }}">
 
 					<div class="rightStatsBox">
 						<div class="scorePanel">
@@ -31,36 +31,47 @@
 				<div class="bottomRow">
 					<div class="items">
 						<img class="item item0"
-							ng-src="{{ (match.stats.item0 === 0 || match.stats == null) ? 'img/item_0.png' : 'http://ddragon.leagueoflegends.com/cdn/4.20.1/img/item/' + match.stats.item0 + '.png' }}">
+							ng-src="{{ (match.stats.item0 === 0 || match.stats == null) ? 'img/item_0.png' : 'http://ddragon.leagueoflegends.com/cdn/' + version + '/img/item/' + match.stats.item0 + '.png' }}">
 						<img class="item item1"
-							ng-src="{{ (match.stats.item1 === 0 || match.stats == null) ? 'img/item_0.png' : 'http://ddragon.leagueoflegends.com/cdn/4.20.1/img/item/' + match.stats.item1 + '.png' }}">
+							ng-src="{{ (match.stats.item1 === 0 || match.stats == null) ? 'img/item_0.png' : 'http://ddragon.leagueoflegends.com/cdn/' + version + '/img/item/' + match.stats.item1 + '.png' }}">
 						<img class="item item2"
-							ng-src="{{ (match.stats.item2 === 0 || match.stats == null) ? 'img/item_0.png' : 'http://ddragon.leagueoflegends.com/cdn/4.20.1/img/item/' + match.stats.item2 + '.png' }}">
+							ng-src="{{ (match.stats.item2 === 0 || match.stats == null) ? 'img/item_0.png' : 'http://ddragon.leagueoflegends.com/cdn/' + version + '/img/item/' + match.stats.item2 + '.png' }}">
 						<img class="item item3"
-							ng-src="{{ (match.stats.item3 === 0 || match.stats == null) ? 'img/item_0.png' : 'http://ddragon.leagueoflegends.com/cdn/4.20.1/img/item/' + match.stats.item3 + '.png' }}">
+							ng-src="{{ (match.stats.item3 === 0 || match.stats == null) ? 'img/item_0.png' : 'http://ddragon.leagueoflegends.com/cdn/' + version + '/img/item/' + match.stats.item3 + '.png' }}">
 						<img class="item item4"
-							ng-src="{{ (match.stats.item4 === 0 || match.stats == null) ? 'img/item_0.png' : 'http://ddragon.leagueoflegends.com/cdn/4.20.1/img/item/' + match.stats.item4 + '.png' }}">
+							ng-src="{{ (match.stats.item4 === 0 || match.stats == null) ? 'img/item_0.png' : 'http://ddragon.leagueoflegends.com/cdn/' + version + '/img/item/' + match.stats.item4 + '.png' }}">
 						<img class="item item5"
-							ng-src="{{ (match.stats.item5 === 0 || match.stats == null) ? 'img/item_0.png' : 'http://ddragon.leagueoflegends.com/cdn/4.20.1/img/item/' + match.stats.item5 + '.png' }}">
+							ng-src="{{ (match.stats.item5 === 0 || match.stats == null) ? 'img/item_0.png' : 'http://ddragon.leagueoflegends.com/cdn/' + version + '/img/item/' + match.stats.item5 + '.png' }}">
 						<img class="item item6"
-							ng-src="{{ (match.stats.item6 === 0 || match.stats == null) ? 'img/item_0.png' : 'http://ddragon.leagueoflegends.com/cdn/4.20.1/img/item/' + match.stats.item6 + '.png' }}">
+							ng-src="{{ (match.stats.item6 === 0 || match.stats == null) ? 'img/item_0.png' : 'http://ddragon.leagueoflegends.com/cdn/' + version + '/img/item/' + match.stats.item6 + '.png' }}">
 					</div>
 					
 					<div class="expandMatchButton">
-						<button class="expandButton" ng-click="expandMatch(match)">Details</button>
+						<button class="expandButton" ng-click="expandMatch(match, summoner)">Details</button>
 					</div>
 				</div>
 				
 				<div class="expandMatch" ng-show="match.showExpand">
 					<div class="expandTitle">Match Details</div>
 						<ul class="expandPlayers">
-							<li ng-repeat="player in matchPlayerData">
-								<div class="playerInfo">
-									<img class="playerChampionImage"
-										ng-src="{{ (player == null || player.champ == null) ? '' : 'https://ddragon.leagueoflegends.com/cdn/5.2.2/img/champion/' + player.champ.key + '.png' }}">
-										{{ player.summoner.name }}
-								</div> 								
-							</li>
+							<div class="team blue">
+								<li ng-repeat="player in matchPlayerBlue">
+									<div class="playerInfo">
+										<img class="playerChampionImage"
+											ng-src="{{ (player == null || player.champ == null) ? '' : 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/champion/' + player.champ.key + '.png' }}">
+											{{ player.summoner.name }}
+									</div> 								
+								</li>
+							</div>
+							<div class="team red">
+								<li class="redTeam" ng-repeat="player in matchPlayerRed">
+									<div class="playerInfo">
+										<img class="playerChampionImage"
+											ng-src="{{ (player == null || player.champ == null) ? '' : 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/champion/' + player.champ.key + '.png' }}">
+											{{ player.summoner.name }}
+									</div> 								
+								</li>
+							</div>
 							
 							
 						<!-- This only works with ranked games... 
