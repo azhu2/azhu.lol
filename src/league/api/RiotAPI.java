@@ -34,9 +34,8 @@ import org.glassfish.jersey.client.JerseyWebTarget;
 public class RiotAPI{
     private static Logger log = Logger.getLogger(RiotAPI.class.getName());
     
+    private static final String API_KEY = APIConstants.API_KEY;
     public static final int INVALID = -1;
-
-    private static final String API_KEY = "1ffd0e2b-3846-4476-bdb5-8a68473c377e";
 
     private static final String BASE_URL = "https://na.api.pvp.net";
     private static final String SUMMONER_BYNAME_QUERY = "/api/lol/na/v1.4/summoner/by-name/%s";
@@ -55,8 +54,8 @@ public class RiotAPI{
     // DB Stuff
     private static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
     private static final String DB_URL = "jdbc:mysql://localhost/lol";
-    private static final String USER = "lol";
-    private static final String PASS = "lol_pass";
+    private static final String USER = APIConstants.DB_USER;
+    private static final String PASS = APIConstants.DB_PASS;
     private Connection db;
     
     private static RiotAPI _instance = new RiotAPI();
@@ -309,11 +308,11 @@ public class RiotAPI{
             case 404:
                 return "404 Not found";
             case 429:
-                return "429 Ratelimit hit - shit...";
+                return "429 Ratelimit hit";
             case 500:
                 return "500 Rito pls. They broke something";
             case 503:
-                return "503 Riot service unavailable";
+                return "503 Riot API unavailable";
             default:
                 return status + " Something broke";
         }
