@@ -57,9 +57,9 @@
 							<div class="team blue">
 								<li ng-repeat="player in matchPlayerBlue">
 									<div class="playerInfo">
+										{{ player.summoner.name }}
 										<img class="playerChampionImage"
 											ng-src="{{ (player == null || player.champ == null) ? '' : 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/champion/' + player.champ.key + '.png' }}">
-											{{ player.summoner.name }}
 									</div> 								
 								</li>
 							</div>
@@ -68,7 +68,7 @@
 									<div class="playerInfo">
 										<img class="playerChampionImage"
 											ng-src="{{ (player == null || player.champ == null) ? '' : 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/champion/' + player.champ.key + '.png' }}">
-											{{ player.summoner.name }}
+										{{ player.summoner.name }}
 									</div> 								
 								</li>
 							</div>

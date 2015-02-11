@@ -112,20 +112,27 @@
 	text-transform: uppercase;
 }
 
-#matches .match .expandMatch .playerChampionImage {
-	height: 20px;
-	width: 20px;
+#matches .match .expandMatch .expandPlayers {
+	text-align: center;
 }
 
 #matches .match .expandMatch .team {
 	display: inline-block;
-	width: 49%;
+	padding: 1%;
+	width: 45%;
 }
 
 #matches .match .expandMatch .red {
 	background: rgba(128, 0, 192, 0.4);
+	text-align: left;
 }
 
 #matches .match .expandMatch .blue {
 	background: rgba(0, 64, 192, 0.4);
+	text-align: right;
+}
+
+#matches .match .expandMatch .playerChampionImage {
+	height: 20px;
+	width: 20px;
 }
