@@ -323,4 +323,9 @@ public class BothAPI implements LeagueAPI{
         BothAPI r = new BothAPI();
         System.out.println(r.searchSummoner("Zedenstein"));
     }
+
+    @Override
+    public List<SummonerDto> getSummoners(List<Long> summonerIds){
+        return null;
+    }
 }

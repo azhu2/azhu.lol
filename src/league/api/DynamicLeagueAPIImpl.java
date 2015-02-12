@@ -1,5 +1,6 @@
 package league.api;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -53,6 +54,19 @@ public class DynamicLeagueAPIImpl implements LeagueAPI{
     public SummonerDto getSummonerFromId(long summonerId){
         SummonerDto result = dbApi.getSummonerFromId(summonerId);
         return result == null ? riotApi.getSummonerFromId(summonerId) : result;
+    }
+    
+    @Override
+    public List<SummonerDto> getSummoners(List<Long> summonerIds){
+        List<SummonerDto> dbResults = dbApi.getSummoners(summonerIds);
+
+        if(dbResults == null)
+            dbResults = new LinkedList<>();
+        List<SummonerDto> apiResults = riotApi.getSummoners(summonerIds);
+        if(apiResults != null)
+            dbResults.addAll(apiResults);
+        
+        return dbResults;
     }
 
     @Override

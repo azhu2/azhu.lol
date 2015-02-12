@@ -93,6 +93,11 @@ leagueApp.controller('lookupController', function($scope, LeagueResource) {
 		closeAllMatches($scope);
 		match.showExpand = true;
 
+		var ids = [summoner.id];
+		for(var i = 0; i < match.fellowPlayers.length; i++)
+			ids.push(match.fellowPlayers[i].summonerId);
+		
+		
 		$scope.matchPlayerBlue = [];
 		$scope.matchPlayerRed = [];
 		for (var i = 0; i < match.fellowPlayers.length; i++) {
@@ -152,6 +157,10 @@ leagueApp.controller('lookupController', function($scope, LeagueResource) {
 leagueApp.service('LeagueResource', function($resource) {
 	this.lookupSummoner = function() {
 		return $resource('/azhu.lol/rest/summoner/:name');
+	};
+	
+	this.lookupSummoners = function() {
+		return $resource('/azhu.lol/rest/summoners/:ids');
 	};
 
 	this.summonerFromId = function() {

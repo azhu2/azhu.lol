@@ -1,6 +1,7 @@
 package league.rest;
 
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -52,6 +53,20 @@ public class LeagueResource{
         SummonerDto summoner = api.getSummonerFromId(id);
         return Response.status(HttpServletResponse.SC_OK)
                        .entity(mapper.writeValueAsString(summoner)).build();
+    }
+
+    @GET
+    @Path("/summoners/{ids}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getSummoners(@PathParam("ids") String ids) throws ServletException,
+            IOException{
+        List<Long> idList = new LinkedList<>();
+        for(String id: ids.split(","))
+            idList.add(Long.parseLong(id.trim()));
+        
+        List<SummonerDto> summoners = api.getSummoners(idList);
+        return Response.status(HttpServletResponse.SC_OK)
+                       .entity(mapper.writeValueAsString(summoners)).build();
     }
 
     @GET

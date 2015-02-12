@@ -5,7 +5,9 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -73,6 +75,23 @@ public class DatabaseAPIImpl implements LeagueAPI{
     }
 
     @Override
+    public List<SummonerDto> getSummoners(List<Long> summonerIds){
+        List<SummonerDto> summoners = new LinkedList<>();
+
+        ListIterator<Long> itr = summonerIds.listIterator();
+        while(itr.hasNext()){
+            Long id = itr.next();
+            SummonerDto summ = getSummonerFromId(id);
+            if(summ != null){
+                summoners.add(summ);
+                itr.remove();
+            }
+        }
+
+        return summoners;
+    }
+
+    @Override
     public SummonerDto getSummonerFromId(long summonerId){
         try{
             Statement stmt = db.createStatement();
@@ -112,10 +131,10 @@ public class DatabaseAPIImpl implements LeagueAPI{
                 summoner.getSummonerLevel(), summoner.getRevisionDate());
             int updated = stmt.executeUpdate(sql);
             if(updated < 1){
-                log.log(Level.WARNING, "Update summoner " + summoner + " failed.");
+                log.log(Level.WARNING, "Cache summoner " + summoner + " failed.");
                 return false;
             }
-            log.info("Update summoner " + summoner + " success.");
+            log.info("Cached summoner " + summoner);
             return true;
         } catch(SQLException e){
             log.log(Level.SEVERE, e.getMessage(), e);

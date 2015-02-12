@@ -16,6 +16,7 @@ public interface LeagueAPI{
     public Set<GameDto> getMatchHistory(long summonerId);
     public List<MatchSummary> getRankedMatches(long summonerId);
     public SummonerDto getSummonerFromId(long summonerId);
+    public List<SummonerDto> getSummoners(List<Long> summonerIds);
     public SummonerDto searchSummoner(String summonerName);
     public SummonerSpellDto getSummonerSpellFromId(long spellId);
 }

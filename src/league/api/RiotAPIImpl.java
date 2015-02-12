@@ -1,7 +1,9 @@
 package league.api;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -33,7 +35,7 @@ public class RiotAPIImpl implements LeagueAPI{
 
     private static final String BASE_URL = "https://na.api.pvp.net";
     private static final String SUMMONER_BYNAME_QUERY = "/api/lol/na/v1.4/summoner/by-name/%s";
-    private static final String SUMMONER_QUERY = "/api/lol/na/v1.4/summoner/%d";
+    private static final String SUMMONER_QUERY = "/api/lol/na/v1.4/summoner/%s";
     private static final String MATCHHISTORY_QUERY = "/api/lol/na/v1.3/game/by-summoner/%d/recent";
     private static final String RANKED_QUERY = "/api/lol/na/v2.2/matchhistory/%d";
     private static final String CHAMP_QUERY = "/api/lol/static-data/na/v1.2/champion/%d";
@@ -46,6 +48,7 @@ public class RiotAPIImpl implements LeagueAPI{
     private JerseyClient client;
     private ObjectMapper mapper = new ObjectMapper();
 
+    private DatabaseAPIImpl db = DatabaseAPIImpl.getInstance();
     private static RiotAPIImpl _instance = new RiotAPIImpl();
 
     public static RiotAPIImpl getInstance(){
@@ -72,9 +75,41 @@ public class RiotAPIImpl implements LeagueAPI{
                 new TypeReference<Map<String, SummonerDto>>(){
                 });
             SummonerDto summoner = map.get(summonerName);
+            db.cacheSummoner(summoner);
             return summoner;
         } catch(IOException e){
-            e.printStackTrace();
+            log.log(Level.SEVERE, e.getMessage(), e);
+            return null;
+        }
+    }
+
+    @Override
+    public List<SummonerDto> getSummoners(List<Long> summonerIds){
+        if(summonerIds == null || summonerIds.isEmpty())
+            return null;
+        
+        String ids = "";
+        for(long id: summonerIds)
+            ids += id + ",";
+        
+        String uri = buildUri(String.format(SUMMONER_QUERY, ids));
+        String entity = getEntity(uri);
+
+        if(entity == null)
+            return null;
+        
+        try{
+            Map<Long, SummonerDto> map = mapper.readValue(entity,
+                new TypeReference<Map<Long, SummonerDto>>(){
+                });
+            
+            Collection<SummonerDto> summoners = map.values();
+            for(SummonerDto summoner : summoners)
+                db.cacheSummoner(summoner);
+            
+            return new LinkedList<SummonerDto>(summoners);
+        } catch(IOException e){
+            log.log(Level.SEVERE, e.getMessage(), e);
             return null;
         }
     }
@@ -92,13 +127,14 @@ public class RiotAPIImpl implements LeagueAPI{
                 new TypeReference<Map<String, SummonerDto>>(){
                 });
             SummonerDto summoner = map.get(summonerId + "");
+            db.cacheSummoner(summoner);
             return summoner;
         } catch(IOException e){
             log.log(Level.SEVERE, e.getMessage(), e);
             return null;
         }
     }
-
+    
     @Override
     public List<MatchSummary> getRankedMatches(long summonerId){
         String uri = buildUri(String.format(RANKED_QUERY, summonerId));
