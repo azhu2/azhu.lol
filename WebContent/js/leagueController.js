@@ -93,50 +93,36 @@ leagueApp.controller('lookupController', function($scope, LeagueResource) {
 		closeAllMatches($scope);
 		match.showExpand = true;
 
-		var ids = [summoner.id];
-		for(var i = 0; i < match.fellowPlayers.length; i++)
-			ids.push(match.fellowPlayers[i].summonerId);
-		
-		
-		$scope.matchPlayerBlue = [];
-		$scope.matchPlayerRed = [];
+		var ids = [ summoner.id ];
+		var champs = [ match.championId ];
+		var teamIds = [ match.teamId ];
 		for (var i = 0; i < match.fellowPlayers.length; i++) {
-			parsePlayer($scope, match.fellowPlayers[i], match.fellowPlayers.length - i
-				- 1);
+			ids.push(match.fellowPlayers[i].summonerId);
+			champs.push(match.fellowPlayers[i].championId);
+			teamIds.push(match.fellowPlayers[i].teamId);
 		}
-
-		// Add current player
-		var player = {
-			champ : match.champion,
-			summoner : summoner
-		};
-		if (match.teamId === 100)
-			$scope.matchPlayerBlue.push(player);
-		else
-			$scope.matchPlayerRed.push(player);
+		lookupSummonerIds($scope, ids, champs, teamIds);
 
 		// lookupMatch($scope, match); Only useful for ranked
 	};
 
-	var parsePlayer = function($scope, player, index) {
-		var playerData = {};
-
-		LeagueResource.summonerFromId().get({
-			id : player.summonerId
-		}, function(summonerData) {
-			playerData.summoner = summonerData;
-		});
+	var parsePlayer = function($scope, matchPlayers, champId, summoner, teamIds, index) {
+		if (matchPlayers[index] == null)
+			matchPlayers[index] = {};
+		matchPlayers[index].summoner = summoner;
 
 		LeagueResource.champFromId().get({
-			id : player.championId
+			id : champId
 		}, function(champData) {
-			playerData.champ = champData;
-		});
+			if (matchPlayers[index] == null)
+				matchPlayers[index] = {};
+			matchPlayers[index].champ = champData;
+			if (teamIds[index] === 100)
+				$scope.matchPlayerBlue.push(matchPlayers[index]);
+			else
+				$scope.matchPlayerRed.push(matchPlayers[index]);
 
-		if (player.teamId === 100)
-			$scope.matchPlayerBlue.push(playerData);
-		else
-			$scope.matchPlayerRed.push(playerData);
+		});
 	};
 
 	var lookupMatch = function($scope, match) {
@@ -144,6 +130,27 @@ leagueApp.controller('lookupController', function($scope, LeagueResource) {
 			id : match.gameId
 		}, function(matchData) {
 			$scope.matchDetails = matchData;
+		});
+	};
+
+	var lookupSummonerIds = function($scope, players, champs, teamIds) {
+		$scope.matchPlayerBlue = [];
+		$scope.matchPlayerRed = [];
+		var ids = "";
+		for (var i = 0; i < players.length; i++)
+			ids += players[i] + ",";
+
+		LeagueResource.lookupSummoners().query({
+			ids : ids
+		}, function(summoners) {
+			var matchPlayers = [];
+
+			for (var i = 0; i < summoners.length; i++) {
+				var champId = champs[i];
+				var summoner = summoners[i];
+
+				parsePlayer($scope, matchPlayers, champId, summoner, teamIds, i);
+			}l
 		});
 	};
 
@@ -158,7 +165,7 @@ leagueApp.service('LeagueResource', function($resource) {
 	this.lookupSummoner = function() {
 		return $resource('/azhu.lol/rest/summoner/:name');
 	};
-	
+
 	this.lookupSummoners = function() {
 		return $resource('/azhu.lol/rest/summoners/:ids');
 	};
