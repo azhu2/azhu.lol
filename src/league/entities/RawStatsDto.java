@@ -23,7 +23,7 @@ public class RawStatsDto{
     private int killingSprees;
     private int largestCriticalStrike;
     private int largestKillingSpree;
-    private int largestMultikill;
+    private int largestMultiKill;
     private int legendaryItemsCreated;
     private int level;
     private int magicDamageDealtPlayer;
@@ -254,12 +254,12 @@ public class RawStatsDto{
         this.largestKillingSpree = largestKillingSpree;
     }
 
-    public int getLargestMultikill(){
-        return largestMultikill;
+    public int getLargestMultiKill(){
+        return largestMultiKill;
     }
 
-    public void setLargestMultikill(int largestMultikill){
-        this.largestMultikill = largestMultikill;
+    public void setLargestMultiKill(int largestMultikill){
+        this.largestMultiKill = largestMultikill;
     }
 
     public int getLegendaryItemsCreated(){

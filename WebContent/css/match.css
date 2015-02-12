@@ -96,6 +96,7 @@
 	position: relative;
 	left: -15px;
 	vertical-align: top;
+	text-align: center;
 }
 
 #matches .match .score {

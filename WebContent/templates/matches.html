@@ -35,6 +35,8 @@
 						<div class="cs box">CS: {{ match.stats.minionsKilled + match.stats.neutralMinionsKilled }}</div>
 						<div class="matchLength box">Game Length: 
 							{{ match.stats.timePlayed / 60 | number:0}}:{{ (match.stats.timePlayed % 60) | numberFixedLen:2}}</div>
+						<div class="multikill box">{{ match.stats.largestMultiKill | multikill }}</div>
+						<div class="firstBlood box">{{ match.stats.firstBlood === 1 ? 'First Blood' : '' }}</div>
 					</div>
 				</div>
 
@@ -142,7 +144,9 @@
 						</div>						
 
 						<div class="stats killingSpreee">Largest killing spree: {{ match.stats.largestKillingSpree }}</div>
-						
+						<div class="stats jungle">Neutral minions (own|counter): {{ match.stats.neutralMinionsKilledYourJungle }}|{{ match.stats.neutralMinionsKilledEnemyJungle }} </div>
+						<div class="stats wardsPlaced">Wards placed: {{ match.stats.wardPlaced }}</div>
+						<div class="stats wardsPlaced">Wards killed: {{ match.stats.wardKilled }}</div>
 					</div>
 				</div>
 			</div>

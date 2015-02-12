@@ -87,7 +87,7 @@ leagueApp.controller('lookupController', function($scope, LeagueResource) {
 
 	// Used to check before pushing data if it's for the right match
 	var expandedMatch = 0;
-	
+
 	$scope.expandMatch = function(match, summoner) {
 		if (match.showExpand) {
 			match.showExpand = false;
@@ -113,19 +113,20 @@ leagueApp.controller('lookupController', function($scope, LeagueResource) {
 	};
 
 	// Process a single player in a match
-	var parsePlayer = function($scope, matchPlayers, champId, summoner, teamIds, matchId, index) {
+	var parsePlayer = function($scope, matchPlayers, champId, summoner, teamIds, matchId,
+		index) {
 		if (matchPlayers[index] == null)
 			matchPlayers[index] = {};
 		matchPlayers[index].summoner = summoner;
-		
+
 		LeagueResource.champFromId().get({
 			id : champId
 		}, function(champData) {
 			if (matchPlayers[index] == null)
 				matchPlayers[index] = {};
 			matchPlayers[index].champ = champData;
-			
-			if(expandedMatch != matchId)
+
+			if (expandedMatch != matchId)
 				return;
 			if (teamIds[index] === 100)
 				$scope.matchPlayerBlue.push(matchPlayers[index]);
@@ -151,18 +152,21 @@ leagueApp.controller('lookupController', function($scope, LeagueResource) {
 		for (var i = 0; i < players.length; i++)
 			ids += players[i] + ",";
 
-		LeagueResource.lookupSummoners().query({
-			ids : ids
-		}, function(summoners) {
-			var matchPlayers = [];
+		LeagueResource.lookupSummoners().query(
+			{
+				ids : ids
+			},
+			function(summoners) {
+				var matchPlayers = [];
 
-			for (var i = 0; i < summoners.length; i++) {
-				var champId = champs[i];
-				var summoner = summoners[i];
+				for (var i = 0; i < summoners.length; i++) {
+					var champId = champs[i];
+					var summoner = summoners[i];
 
-				parsePlayer($scope, matchPlayers, champId, summoner, teamIds, matchId, i);
-			}
-		});
+					parsePlayer($scope, matchPlayers, champId, summoner, teamIds,
+						matchId, i);
+				}
+			});
 	};
 
 	var closeAllMatches = function($scope) {
@@ -206,6 +210,7 @@ leagueApp.service('LeagueResource', function($resource) {
 	};
 });
 
+// Some of these filters are really ugly
 leagueApp.filter("queueFilter", function() {
 	return function(type) {
 		var filtered = type ? type.replace("RANKED_SOLO_5x5", "Ranked Solo 5v5") : "";
@@ -240,8 +245,22 @@ leagueApp.filter("queueFilter", function() {
 		}
 		return num;
 	};
+}).filter('multikill', function() {
+	return function(kill) {
+		switch(kill){
+		case 2:
+			return 'Double Kill';
+		case 3:
+			return 'Triple Kill';
+		case 4:
+			return 'Quadrakill';
+		case 5:
+			return 'Pentakill';
+		default:
+			return '';
+		}
+	};
 });
-;
 
 leagueApp.directive('errSrc', function() {
 	return {
