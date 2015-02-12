@@ -84,7 +84,7 @@ leagueApp.controller('lookupController', function($scope, LeagueResource) {
 		$scope.matchData[index] = match;
 	};
 
-	var expandedMatch;
+	var expandedMatch = 0;
 	
 	$scope.expandMatch = function(match, summoner) {
 		if (match.showExpand) {
@@ -92,7 +92,7 @@ leagueApp.controller('lookupController', function($scope, LeagueResource) {
 			return;
 		}
 
-		expandedMatch = match.gameId;
+		expandedMatch++;
 		closeAllMatches($scope);
 		match.showExpand = true;
 
@@ -104,7 +104,7 @@ leagueApp.controller('lookupController', function($scope, LeagueResource) {
 			champs.push(match.fellowPlayers[i].championId);
 			teamIds.push(match.fellowPlayers[i].teamId);
 		}
-		lookupSummonerIds($scope, ids, champs, teamIds, match.gameId);
+		lookupSummonerIds($scope, ids, champs, teamIds, expandedMatch);
 
 		// lookupMatch($scope, match); Only useful for ranked
 	};
