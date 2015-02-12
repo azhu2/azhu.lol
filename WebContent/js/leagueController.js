@@ -62,6 +62,7 @@ leagueApp.controller('lookupController', function($scope, LeagueResource) {
 		$scope.showMatchHistory = true;
 	};
 
+	// Process champion and summoner spells
 	var parseGame = function($scope, match, index) {
 		LeagueResource.champFromId().get({
 			id : match.championId
@@ -84,6 +85,7 @@ leagueApp.controller('lookupController', function($scope, LeagueResource) {
 		$scope.matchData[index] = match;
 	};
 
+	// Used to check before pushing data if it's for the right match
 	var expandedMatch = 0;
 	
 	$scope.expandMatch = function(match, summoner) {
@@ -96,6 +98,7 @@ leagueApp.controller('lookupController', function($scope, LeagueResource) {
 		closeAllMatches($scope);
 		match.showExpand = true;
 
+		// This part is terrible
 		var ids = [ summoner.id ];
 		var champs = [ match.championId ];
 		var teamIds = [ match.teamId ];
@@ -109,6 +112,7 @@ leagueApp.controller('lookupController', function($scope, LeagueResource) {
 		// lookupMatch($scope, match); Only useful for ranked
 	};
 
+	// Process a single player in a match
 	var parsePlayer = function($scope, matchPlayers, champId, summoner, teamIds, matchId, index) {
 		if (matchPlayers[index] == null)
 			matchPlayers[index] = {};
@@ -139,6 +143,7 @@ leagueApp.controller('lookupController', function($scope, LeagueResource) {
 		});
 	};
 
+	// Lookup for expanding a match
 	var lookupSummonerIds = function($scope, players, champs, teamIds, matchId) {
 		$scope.matchPlayerBlue = [];
 		$scope.matchPlayerRed = [];
@@ -198,7 +203,7 @@ leagueApp.service('LeagueResource', function($resource) {
 
 	this.summSpellFromId = function() {
 		return $resource('/azhu.lol/rest/summoner-spell/:id');
-	}
+	};
 });
 
 leagueApp.filter("queueFilter", function() {
