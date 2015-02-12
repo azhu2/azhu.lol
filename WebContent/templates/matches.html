@@ -68,7 +68,7 @@
 								<div class="teamTitle">
 									Blue Team ({{ (match.teamId === 100 && match.stats.win || match.teamId === 200 && !match.stats.win) ? "WIN" : "LOSS" }})
 								</div>
-								<li ng-repeat="player in matchPlayerBlue">
+								<li ng-repeat="player in matchPlayerBlue track by player.summoner.id">
 									<div class="playerInfo">
 										{{ player.summoner.name }}
 										<img class="playerChampionImage" alt="{{ (player == null || player.champ == null) ? 'champion' : player.champ.name }}"
@@ -80,7 +80,7 @@
 								<div class="teamTitle">
 									Purple Team ({{ (match.teamId === 200 && match.stats.win || match.teamId === 100 && !match.stats.win) ? "WIN" : "LOSS" }})
 								</div>
-								<li class="redTeam" ng-repeat="player in matchPlayerRed">
+								<li ng-repeat="player in matchPlayerRed track by player.summoner.id"">
 									<div class="playerInfo">
 										<img class="playerChampionImage" alt="{{ (player == null || player.champ == null) ? 'champion' : player.champ.name }}"
 											ng-src="{{ (player == null || player.champ == null) ? '' : 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/champion/' + player.champ.key + '.png' }}">

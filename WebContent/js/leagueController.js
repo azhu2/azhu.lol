@@ -84,12 +84,15 @@ leagueApp.controller('lookupController', function($scope, LeagueResource) {
 		$scope.matchData[index] = match;
 	};
 
+	var expandedMatch;
+	
 	$scope.expandMatch = function(match, summoner) {
 		if (match.showExpand) {
 			match.showExpand = false;
 			return;
 		}
 
+		expandedMatch = match.gameId;
 		closeAllMatches($scope);
 		match.showExpand = true;
 
@@ -101,22 +104,25 @@ leagueApp.controller('lookupController', function($scope, LeagueResource) {
 			champs.push(match.fellowPlayers[i].championId);
 			teamIds.push(match.fellowPlayers[i].teamId);
 		}
-		lookupSummonerIds($scope, ids, champs, teamIds);
+		lookupSummonerIds($scope, ids, champs, teamIds, match.gameId);
 
 		// lookupMatch($scope, match); Only useful for ranked
 	};
 
-	var parsePlayer = function($scope, matchPlayers, champId, summoner, teamIds, index) {
+	var parsePlayer = function($scope, matchPlayers, champId, summoner, teamIds, matchId, index) {
 		if (matchPlayers[index] == null)
 			matchPlayers[index] = {};
 		matchPlayers[index].summoner = summoner;
-
+		
 		LeagueResource.champFromId().get({
 			id : champId
 		}, function(champData) {
 			if (matchPlayers[index] == null)
 				matchPlayers[index] = {};
 			matchPlayers[index].champ = champData;
+			
+			if(expandedMatch != matchId)
+				return;
 			if (teamIds[index] === 100)
 				$scope.matchPlayerBlue.push(matchPlayers[index]);
 			else
@@ -133,7 +139,7 @@ leagueApp.controller('lookupController', function($scope, LeagueResource) {
 		});
 	};
 
-	var lookupSummonerIds = function($scope, players, champs, teamIds) {
+	var lookupSummonerIds = function($scope, players, champs, teamIds, matchId) {
 		$scope.matchPlayerBlue = [];
 		$scope.matchPlayerRed = [];
 		var ids = "";
@@ -149,8 +155,8 @@ leagueApp.controller('lookupController', function($scope, LeagueResource) {
 				var champId = champs[i];
 				var summoner = summoners[i];
 
-				parsePlayer($scope, matchPlayers, champId, summoner, teamIds, i);
-			}l
+				parsePlayer($scope, matchPlayers, champId, summoner, teamIds, matchId, i);
+			}
 		});
 	};
 
