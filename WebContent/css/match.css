@@ -110,10 +110,16 @@
 }
 
 #matches .match .score {
+	display: inline-block;
 	font-size: 2.4em;
 	font-weight: bold;
-	width: 100%;
 	text-align: center;
+}
+
+#matches .match .kda {
+	display: inline-block;
+	font-size: 1em;
+	color: #888888;
 }
 
 #matches .match .bottomRow {
@@ -155,6 +161,12 @@
 	margin-top: 10px;
 }
 
+#matches .match .expandMatch.ranked {
+	width: 500px;
+	position: relative;
+	left: -50px;
+}
+
 #matches .match .expandMatch .expandTitle {
 	text-align: center;
 	font-size: 1.1em;
@@ -177,21 +189,75 @@
 	background: rgba(0, 0, 0, 0.2);
 }
 
+#matches .match .expandMatch .team.red {
+	text-align: left;
+}
+
+#matches .match .expandMatch .team.blue {
+	text-align: right;
+}
+
 #matches .match .expandMatch .red {
 	background: rgba(128, 0, 192, 0.6);
-	text-align: left;
 }
 
 #matches .match .expandMatch .blue {
 	background: rgba(0, 64, 192, 0.6);
-	text-align: right;
 }
 
 #matches .match .expandMatch .playerChampionImage {
 	height: 20px;
 	width: 20px;
+}
+
+#matches .match .expandMatch .team .playerChampionImage {
 	position: relative;
 	top: 3px;
+}
+
+#matches .match .expandMatch ul {
+	overflow: hidden;
+}
+
+#matches .match .expandMatch .rankedTeam {
+	padding: 1%;
+	text-align: left;
+}
+
+#matches .match .expandMatch .rankedTeam .playerInfo {
+	height: 20px;
+	margin: 1px;
+}
+
+#matches .match .expandMatch .rankedTeam .playerStat {
+	display: inline-block;
+	font-size: 0.85em;
+}
+
+#matches .match .expandMatch .rankedTeam .playerName {
+	width: 120px;
+}
+
+#matches .match .expandMatch .rankedTeam .playerScore {
+	width: 45px;
+	text-align: center;
+}
+
+#matches .match .expandMatch .rankedTeam .playerItem {
+	margin: -1px; display : inline-block;
+	height: 20px;
+	width: 20px;
+	display: inline-block;
+}
+
+#matches .match .expandMatch .rankedTeam .playerGold {
+	width: 35px;
+	text-align: right;
+}
+
+#matches .match .expandMatch .rankedTeam .playerCS {
+	width: 25px;
+	text-align: right;
 }
 
 #matches .match .expandMatch .moreMatchStats {
@@ -242,4 +308,3 @@
 	margin: 2px;
 	font-size: 0.8em;
 }
-

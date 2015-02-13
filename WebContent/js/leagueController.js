@@ -123,49 +123,46 @@ leagueApp.controller('lookupController', function($scope, LeagueResource) {
 			lookupSummonerIds($scope, ids, champs, teamIds, expandedMatch);
 		}
 
-		if (isRanked(match)){
-			$scope.matchPlayerBlue = [];
-			$scope.matchPlayerRed = [];
-			lookupMatch($scope, match);
+		if (isRanked(match)) {
+			lookupMatch($scope, match, expandedMatch);
 		}
 	};
 
-	// Process a single player in a match
-	var parsePlayer = function($scope, matchPlayers, champId, summoner, teamIds, matchId,
-		index) {
-		if (matchPlayers[index] == null)
-			matchPlayers[index] = {};
-		matchPlayers[index].summoner = summoner;
+	var lookupMatch = function($scope, match, expandedMatch) {
+		LeagueResource.matchDetail().get(
+			{
+				id : match.matchId
+			},
+			function(matchData) {
+				$scope.matchDetails = matchData;
 
-		LeagueResource.champFromId().get({
-			id : champId
-		}, function(champData) {
-			if (matchPlayers[index] == null)
-				matchPlayers[index] = {};
-			matchPlayers[index].champ = champData;
-
-			if (expandedMatch != matchId)
-				return;
-			if (teamIds[index] === 100)
-				$scope.matchPlayerBlue.push(matchPlayers[index]);
-			else
-				$scope.matchPlayerRed.push(matchPlayers[index]);
-
-		});
+				lookupRankedSummonerIds($scope, matchData.participantIdentities,
+					matchData, expandedMatch);
+			});
 	};
 
-	var lookupMatch = function($scope, match) {
-		LeagueResource.matchDetail().get({
-			id : match.matchId
-		}, function(matchData) {
-			$scope.matchDetails = matchData;
-		});
+	var lookupRankedSummonerIds = function($scope, identities, details, expandedMatch) {
+		var ids = "";
+		for (var i = 0; i < identities.length; i++)
+			ids += identities[i].player.summonerId + ",";
+
+		LeagueResource.lookupSummoners().query(
+			{
+				ids : ids
+			},
+			function(summoners) {
+				var matchPlayers = [];
+
+				for (var i = 0; i < details.participants.length; i++) {
+					parseRankedPlayer($scope, matchPlayers,
+						details.participantIdentities[i], details.participants[i],
+						summoners[i], expandedMatch, i);
+				}
+			});
 	};
 
 	// Lookup for expanding a match
 	var lookupSummonerIds = function($scope, players, champs, teamIds, matchId) {
-		$scope.matchPlayerBlue = [];
-		$scope.matchPlayerRed = [];
 		var ids = "";
 		for (var i = 0; i < players.length; i++)
 			ids += players[i] + ",";
@@ -187,6 +184,49 @@ leagueApp.controller('lookupController', function($scope, LeagueResource) {
 			});
 	};
 
+	var parseRankedPlayer = function($scope, matchPlayers, ids, details, summoner,
+		matchId, index) {
+		if (matchPlayers[index] == null)
+			matchPlayers[index] = {};
+		matchPlayers[index].summoner = summoner;
+		matchPlayers[index].details = details;
+
+		LeagueResource.champFromId().get({
+			id : details.championId
+		}, function(champData) {
+			matchPlayers[index].champ = champData;
+
+			if (expandedMatch != matchId)
+				return;
+			if (details.teamId === 100)
+				$scope.matchPlayerBlue.push(matchPlayers[index]);
+			else
+				$scope.matchPlayerRed.push(matchPlayers[index]);
+		});
+	};
+
+	// Process a single player in a match
+	var parsePlayer = function($scope, matchPlayers, champId, summoner, teamIds, matchId,
+		index) {
+		if (matchPlayers[index] == null)
+			matchPlayers[index] = {};
+		matchPlayers[index].summoner = summoner;
+
+		LeagueResource.champFromId().get({
+			id : champId
+		}, function(champData) {
+			matchPlayers[index].champ = champData;
+
+			if (expandedMatch != matchId)
+				return;
+			if (teamIds[index] === 100)
+				$scope.matchPlayerBlue.push(matchPlayers[index]);
+			else
+				$scope.matchPlayerRed.push(matchPlayers[index]);
+
+		});
+	};
+
 	var closeAllMatches = function($scope) {
 		if ($scope.matchData != null)
 			for (var i = 0; i < $scope.matchData.length; i++) {
@@ -197,6 +237,9 @@ leagueApp.controller('lookupController', function($scope, LeagueResource) {
 			for (var i = 0; i < $scope.rankedData.length; i++) {
 				$scope.rankedData[i].showExpand = false;
 			}
+
+		$scope.matchPlayerBlue = [];
+		$scope.matchPlayerRed = [];
 	};
 
 	// Very dirty, but it works fine
