@@ -47,6 +47,18 @@ leagueApp.controller('lookupController', function($scope, LeagueResource) {
 			match.champion = champData;
 			$scope.rankedData[index] = match;
 		});
+
+		LeagueResource.summSpellFromId().get({
+			id : match.participants[0].spell1Id
+		}, function(champData) {
+			match.sumSpell1 = champData;
+		});
+
+		LeagueResource.summSpellFromId().get({
+			id : match.participants[0].spell2Id
+		}, function(champData) {
+			match.sumSpell2 = champData;
+		});
 	};
 
 	$scope.lookupMatches = function(summonerId) {

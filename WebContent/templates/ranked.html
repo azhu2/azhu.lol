@@ -16,11 +16,11 @@
 							ng-src="{{ match.champion == null ? '' : 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/champion/' + match.champion.key + '.png' }}">
 						<div class="championLevel">{{ match.participants[0].stats.champLevel }}</div>
 						<div class="summonerSpells">
-							<img class="summonerSpell spell1" alt="{{ match.participants[0].spell1Id == null ? 'summoner spell 1' : match.summSpell1.name }}"
-								ng-src="{{ match.participants[0].spell1Id == null ? '' : 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/spell/' + match.participants[0].spell1Id.image.full }}">
+							<img class="summonerSpell spell1" alt="{{ match.sumSpell1 == null ? 'summoner spell 1' : match.summSpell1.name }}"
+								ng-src="{{ match.sumSpell1 == null ? '' : 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/spell/' + match.sumSpell1.image.full }}">
 							<br>
-							<img class="summonerSpell spell2" alt="{{ match.participants[0].spell2Id == null ? 'summoner spell 2' : match.summSpell2.name }}"
-								ng-src="{{ match.participants[0].spell2Id == null ? '' : 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/spell/' + match.participants[0].spell2Id.image.full }}">
+							<img class="summonerSpell spell2" alt="{{ match.sumSpell2 == null ? 'summoner spell 2' : match.summSpell2.name }}"
+								ng-src="{{ match.sumSpell2 == null ? '' : 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/spell/' + match.sumSpell2.image.full }}">
 						</div>
 					</div>
 	
