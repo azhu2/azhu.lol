@@ -26,7 +26,7 @@ public class ParticipantStats{
     private long kills;
     private long largestCriticalStrike;
     private long largestKillingSpree;
-    private long largestMultikill;
+    private long largestMultiKill;
     private long magicDamageDealt;
     private long magicDamageDealtToChampions;
     private long magicDamageTaken;
@@ -42,7 +42,7 @@ public class ParticipantStats{
     private long pentakills;
     private long physicalDamageDealt;
     private long physicalDamageDealtToChampions;
-    private long phyiscalDamageTaken;
+    private long physicalDamageTaken;
     private long quadrakills;
     private long sightWardsBoughtInGame;
     private long teamObjective;
@@ -266,12 +266,12 @@ public class ParticipantStats{
         this.largestKillingSpree = largestKillingSpree;
     }
 
-    public long getLargestMultikill(){
-        return largestMultikill;
+    public long getLargestMultiKill(){
+        return largestMultiKill;
     }
 
-    public void setLargestMultikill(long largestMultikill){
-        this.largestMultikill = largestMultikill;
+    public void setLargestMultiKill(long largestMultikill){
+        this.largestMultiKill = largestMultikill;
     }
 
     public long getMagicDamageDealt(){
@@ -394,12 +394,12 @@ public class ParticipantStats{
         this.physicalDamageDealtToChampions = physicalDamageDealtToChampions;
     }
 
-    public long getPhyiscalDamageTaken(){
-        return phyiscalDamageTaken;
+    public long getPhysicalDamageTaken(){
+        return physicalDamageTaken;
     }
 
-    public void setPhyiscalDamageTaken(long phyiscalDamageTaken){
-        this.phyiscalDamageTaken = phyiscalDamageTaken;
+    public void setPhysicalDamageTaken(long phyiscalDamageTaken){
+        this.physicalDamageTaken = phyiscalDamageTaken;
     }
 
     public long getQuadrakills(){

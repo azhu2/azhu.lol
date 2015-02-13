@@ -2,7 +2,7 @@
 	<h2>Match History</h2>
 	<ul id="matches-list">
 		<li	ng-repeat="match in matchData  | orderBy:'createDate':true track by $index ">
-			<div class="match id_{{ match.gameId }}" ng-class="(match.stats.win==1) ? 'win' : 'loss'">
+			<div class="match id_{{ match.gameId }}" ng-class="(match.stats.win === 1) ? 'win' : 'loss'">
 
 				<div class="topRow">
 					<div class="queue box">{{ match.subType | subTypeFilter }}</div>
@@ -31,10 +31,10 @@
 							</div>
 						</div>
 						<div class="gold box">Gold: 
-							{{ (match.stats.goldEarned / 1000) | number:0}}.{{ (match.stats.timePlayed % 1000) / 100 | number:0}}k</div>
+							{{ (match.stats.goldEarned / 1000) | number:0}}.{{ (match.stats.timePlayed % 1000) / 100 | number:0 }}k</div>
 						<div class="cs box">CS: {{ match.stats.minionsKilled + match.stats.neutralMinionsKilled }}</div>
 						<div class="matchLength box">Game Length: 
-							{{ match.stats.timePlayed / 60 | number:0}}:{{ (match.stats.timePlayed % 60) | numberFixedLen:2}}</div>
+							{{ match.stats.timePlayed / 60 | number:0}}:{{ (match.stats.timePlayed % 60) | numberFixedLen:2 }}</div>
 						<div class="multikill box">{{ match.stats.largestMultiKill | multikill }}</div>
 						<div class="firstBlood box">{{ match.stats.firstBlood === 1 ? 'First Blood' : '' }}</div>
 					</div>
@@ -90,14 +90,7 @@
 									</div> 								
 								</li>
 							</div>
-						<!-- This only works with ranked games... 
-						<li ng-repeat="playerId in matchDetails.participantIdentities"
-							ng-init="player = matchDetails.participant[playerId.participantId - 1]">
-							{{ playerId.participantId }}, {{ playerId.player.summonerId }}
-							{{ player.championId }}
-						</li>
-						 -->
-					</ul>
+						</ul>
 					
 					<div class="moreMatchStats">
 						<div class="damageGraph total" ng-mouseover="showHoverText1 = false" ng-mouseout="showHoverText1 = true" ng-init="showHoverText1 = true">
@@ -145,11 +138,13 @@
 						
 						<div class="expandColumn Left">
 							<div class="stats killingSpreee">Largest killing spree: {{ match.stats.largestKillingSpree }}</div>
-							<div class="stats jungle">Neutral minions (own|counter): {{ match.stats.neutralMinionsKilledYourJungle }}|{{ match.stats.neutralMinionsKilledEnemyJungle }}</div>
+							<div class="stats jungle">Neutral minions (own|enemy): {{ match.stats.neutralMinionsKilledYourJungle }}|{{ match.stats.neutralMinionsKilledEnemyJungle }}</div>
+							<div class="stats cspm">CS/min: {{ (match.stats.minionsKilled + match.stats.neutralMinionsKilled) / match.stats.timePlayed * 60 | number:1 }} </div>
 						</div>
 						<div class="expandColumn Right">
 							<div class="stats wardsPlaced">Wards placed: {{ match.stats.wardPlaced }}</div>
 							<div class="stats wardsPlaced">Wards killed: {{ match.stats.wardKilled }}</div>
+							<div class="stats gpm">Gold/min: {{ match.stats.goldEarned / match.stats.timePlayed * 60 | number:1 }}</div>
 						</div>
 						
 					</div>

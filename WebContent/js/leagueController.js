@@ -99,17 +99,23 @@ leagueApp.controller('lookupController', function($scope, LeagueResource) {
 		match.showExpand = true;
 
 		// This part is terrible
-		var ids = [ summoner.id ];
-		var champs = [ match.championId ];
-		var teamIds = [ match.teamId ];
-		for (var i = 0; i < match.fellowPlayers.length; i++) {
-			ids.push(match.fellowPlayers[i].summonerId);
-			champs.push(match.fellowPlayers[i].championId);
-			teamIds.push(match.fellowPlayers[i].teamId);
+		if (!isRanked(match)) {
+			var ids = [ summoner.id ];
+			var champs = [ match.championId ];
+			var teamIds = [ match.teamId ];
+			for (var i = 0; i < match.fellowPlayers.length; i++) {
+				ids.push(match.fellowPlayers[i].summonerId);
+				champs.push(match.fellowPlayers[i].championId);
+				teamIds.push(match.fellowPlayers[i].teamId);
+			}
+			lookupSummonerIds($scope, ids, champs, teamIds, expandedMatch);
 		}
-		lookupSummonerIds($scope, ids, champs, teamIds, expandedMatch);
 
-		// lookupMatch($scope, match); Only useful for ranked
+		if (isRanked(match)){
+			$scope.matchPlayerBlue = [];
+			$scope.matchPlayerRed = [];
+			lookupMatch($scope, match);
+		}
 	};
 
 	// Process a single player in a match
@@ -138,7 +144,7 @@ leagueApp.controller('lookupController', function($scope, LeagueResource) {
 
 	var lookupMatch = function($scope, match) {
 		LeagueResource.matchDetail().get({
-			id : match.gameId
+			id : match.matchId
 		}, function(matchData) {
 			$scope.matchDetails = matchData;
 		});
@@ -170,9 +176,20 @@ leagueApp.controller('lookupController', function($scope, LeagueResource) {
 	};
 
 	var closeAllMatches = function($scope) {
-		for (var i = 0; i < $scope.matchData.length; i++) {
-			$scope.matchData[i].showExpand = false;
-		}
+		if ($scope.matchData != null)
+			for (var i = 0; i < $scope.matchData.length; i++) {
+				$scope.matchData[i].showExpand = false;
+			}
+
+		if ($scope.rankedData != null)
+			for (var i = 0; i < $scope.rankedData.length; i++) {
+				$scope.rankedData[i].showExpand = false;
+			}
+	};
+
+	// Very dirty, but it works fine
+	var isRanked = function(match) {
+		return match.season != null;
 	};
 });
 
@@ -228,7 +245,9 @@ leagueApp.filter("queueFilter", function() {
 		filtered = filtered.replace("NORMAL_3x3", "Normal 3v3");
 		filtered = filtered.replace("BOT_3x3", "Bot 3v3");
 		filtered = filtered.replace("ARAM_UNRANKED_5x5", "ARAM");
-		filtered = filtered.replace("CAP_5x5", "Dominion");
+		filtered = filtered.replace("CAP_5x5", "Team Builder");
+		filtered = filtered.replace("ODIN_UNRANKED", "Dominion");
+		filtered = filtered.replace("COUNTER_PICK", "Nemesis Draft");
 		filtered = filtered.replace("NONE", "Custom");
 		return filtered;
 	};
@@ -247,7 +266,7 @@ leagueApp.filter("queueFilter", function() {
 	};
 }).filter('multikill', function() {
 	return function(kill) {
-		switch(kill){
+		switch (kill) {
 		case 2:
 			return 'Double Kill';
 		case 3:
