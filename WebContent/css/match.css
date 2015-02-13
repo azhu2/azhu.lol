@@ -99,6 +99,11 @@
 	text-align: center;
 }
 
+#matches .match .multikill {
+	color: #880000;
+	font-weight: bold;
+}
+
 #matches .match .score {
 	font-size: 2.4em;
 	font-weight: bold;
@@ -186,10 +191,7 @@
 
 #matches .match .expandMatch .moreMatchStats {
 	margin-top: 10px;
-}
-
-#matches .match .expandMatch .stats {
-	margin: 1px;
+	display: inline-block;
 }
 
 #matches .match .expandMatch .damageGraph .damage {
@@ -213,6 +215,7 @@
 	border-style: ridge;
 	border-color: #888888;
 	text-align: center;
+	margin: 1px;
 }
 
 #matches .match .expandMatch .damageGraph .textOverlay {
@@ -222,3 +225,16 @@
 	font-size: 0.7em;
 	margin-top: 4px;
 }
+
+#matches .match .expandMatch .expandColumn {
+	float: left;
+	margin: 1px;
+	width: 48%;
+	margin-top: 5px;
+}
+
+#matches .match .expandMatch .stats {
+	margin: 2px;
+	font-size: 0.8em;
+}
+
