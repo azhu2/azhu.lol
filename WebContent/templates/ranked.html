@@ -71,6 +71,7 @@
 							<ul class="expandPlayersBlue">
 								<li ng-repeat="player in matchPlayerBlue track by player.summoner.id">
 									<div class="playerInfo">
+										<div class="playerStat playerLevel">{{ player.details.stats.champLevel }}</div>
 										<img class="playerStat playerChampionImage" alt="{{ (player == null || player.champ == null) ? 'champion' : player.champ.name }}"
 											ng-src="{{ (player == null || player.champ == null) ? '' : 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/champion/' + player.champ.key + '.png' }}">
 										<div class="playerStat playerName">{{ player.summoner.name }}</div>
@@ -97,6 +98,7 @@
 							<ul class="expandPlayersRed">
 								<li ng-repeat="player in matchPlayerRed track by player.summoner.id">
 									<div class="playerInfo">
+										<div class="playerStat playerLevel">{{ player.details.stats.champLevel }}</div>
 										<img class="playerStat playerChampionImage" alt="{{ (player == null || player.champ == null) ? 'champion' : player.champ.name }}"
 											ng-src="{{ (player == null || player.champ == null) ? '' : 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/champion/' + player.champ.key + '.png' }}">
 										<div class="playerStat playerName">{{ player.summoner.name }}</div>

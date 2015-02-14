@@ -31,8 +31,8 @@
 						<img id="summonerIcon" alt="{{ summoner == null ? 'summoner icon' : 'summoner icon ' + summoner.profileIconId }}"
 							ng-src="{{ summoner == null ? '' : 'http://ddragon.leagueoflegends.com/cdn/' + version + '/img/profileicon/' + summoner.profileIconId + '.png' }}">
 						<div id="summonerData">
-							<div id="summonerName">{{ summoner.name }}</div>
-							<div id="summonerLevel">Level {{ summoner.summonerLevel }}</div>
+							<div id="summonerName">{{ summoner.id == null ? 'Not Found' : summoner.name }}</div>
+							<div id="summonerLevel">Level {{ summoner.id == null ? '--' : summoner.summonerLevel }}</div>
 						</div>
 					</div>
 

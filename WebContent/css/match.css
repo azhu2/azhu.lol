@@ -225,6 +225,11 @@
 	margin-bottom: 5px;
 }
 
+#matches .match .expandMatch .rankedTeam img {
+	position: relative;
+	top: 3px;
+}
+
 #matches .match .expandMatch .rankedTeam .playerInfo {
 	height: 20px;
 	margin: 3px;
@@ -233,6 +238,10 @@
 #matches .match .expandMatch .rankedTeam .playerStat {
 	display: inline-block;
 	font-size: 0.85em;
+}
+
+#matches .match .expandMatch .rankedTeam .playerLevel {
+	width: 15px;
 }
 
 #matches .match .expandMatch .rankedTeam .playerName {
