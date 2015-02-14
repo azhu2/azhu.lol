@@ -118,11 +118,11 @@ public class GameDto{
     public RawStatsDto getStats(){
         return stats;
     }
-    
+
     public void setStats(RawStatsDto stats){
         this.stats = stats;
     }
-    
+
     public String getSubType(){
         return subType;
     }
@@ -139,4 +139,22 @@ public class GameDto{
         this.teamId = teamId;
     }
 
+    @Override
+    public boolean equals(Object obj){
+        if(!(obj instanceof GameDto))
+            return false;
+
+        GameDto other = (GameDto) obj;
+        return other.gameId == this.gameId;
+    }
+    
+    @Override
+    public String toString(){
+        return "Match (history) " + gameId;
+    }
+    
+    @Override
+    public int hashCode(){
+        return (int) gameId;
+    }
 }

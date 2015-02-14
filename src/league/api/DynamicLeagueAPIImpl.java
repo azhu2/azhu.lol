@@ -1,5 +1,6 @@
 package league.api;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -15,7 +16,7 @@ public class DynamicLeagueAPIImpl implements LeagueAPI{
     private static DynamicLeagueAPIImpl _instance = new DynamicLeagueAPIImpl();
 
     private LeagueAPI riotApi;
-    private LeagueAPI dbApi;
+    private DatabaseAPIImpl dbApi;
 
     private DynamicLeagueAPIImpl(){
         riotApi = RiotAPIImpl.getInstance();
@@ -40,8 +41,18 @@ public class DynamicLeagueAPIImpl implements LeagueAPI{
 
     @Override
     public Set<GameDto> getMatchHistory(long summonerId){
-        Set<GameDto> result = dbApi.getMatchHistory(summonerId);
-        return result == null ? riotApi.getMatchHistory(summonerId) : result;
+        Set<GameDto> dbResults = dbApi.getMatchHistory(summonerId);
+
+        if(dbResults == null)
+            dbResults = new HashSet<>();
+        Set<GameDto> apiResults = riotApi.getMatchHistory(summonerId);
+        for(GameDto newGame : apiResults)
+            if(!dbResults.contains(newGame))
+                dbApi.cacheMatchHistoryMatch(summonerId, newGame);
+        if(apiResults != null)
+            dbResults.addAll(apiResults);
+        
+        return dbResults;
     }
 
     @Override
@@ -55,7 +66,7 @@ public class DynamicLeagueAPIImpl implements LeagueAPI{
         SummonerDto result = dbApi.getSummonerFromId(summonerId);
         return result == null ? riotApi.getSummonerFromId(summonerId) : result;
     }
-    
+
     @Override
     public List<SummonerDto> getSummoners(List<Long> summonerIds){
         List<SummonerDto> dbResults = dbApi.getSummoners(summonerIds);
@@ -65,7 +76,7 @@ public class DynamicLeagueAPIImpl implements LeagueAPI{
         List<SummonerDto> apiResults = riotApi.getSummoners(summonerIds);
         if(apiResults != null)
             dbResults.addAll(apiResults);
-        
+
         return dbResults;
     }
 

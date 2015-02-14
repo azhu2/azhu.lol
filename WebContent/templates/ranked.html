@@ -161,14 +161,14 @@
 								ng-style="{ 'width': (match.participants[0].stats.trueDamageTaken / match.participants[0].stats.totalDamageTaken * 100) + '%' }">
 						</div>
 						
-						<div class="expandColumn Left">
-							<div class="stats killingSpreee">Largest killing spree: {{ match.participants[0].stats.largestKillingSpree }}</div>
-							<div class="stats jungle">Neutral minions (own|enemy): {{ match.participants[0].stats.neutralMinionsKilledTeamJungle }}|{{ match.participants[0].stats.neutralMinionsKilledEnemyJungle }}</div>
-							<div class="stats cspm">CS/min: {{ (match.participants[0].stats.minionsKilled + match.participants[0].stats.neutralMinionsKilled) / match.matchDuration * 60 | number:1 }} </div>
-						</div>
-						<div class="expandColumn Right">
+						<div class="expandColumn left">
 							<div class="stats wardsPlaced">Wards placed: {{ match.participants[0].stats.wardsPlaced }}</div>
 							<div class="stats wardsPlaced">Wards killed: {{ match.participants[0].stats.wardsKilled }}</div>
+							<div class="stats cspm">CS/min: {{ (match.participants[0].stats.minionsKilled + match.participants[0].stats.neutralMinionsKilled) / match.matchDuration * 60 | number:1 }} </div>
+						</div>
+						<div class="expandColumn right">
+							<div class="stats killingSpreee">Largest killing spree: {{ match.participants[0].stats.largestKillingSpree }}</div>
+							<div class="stats jungle">Neutral minions (own|enemy): {{ match.participants[0].stats.neutralMinionsKilledTeamJungle }}|{{ match.participants[0].stats.neutralMinionsKilledEnemyJungle }}</div>
 							<div class="stats gpm">Gold/min: {{ match.participants[0].stats.goldEarned / match.matchDuration * 60 | number:1 }}</div>
 						</div>
 						

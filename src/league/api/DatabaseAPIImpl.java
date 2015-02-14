@@ -1,10 +1,12 @@
 package league.api;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
@@ -12,10 +14,13 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.codehaus.jackson.map.ObjectMapper;
+
 import league.entities.ChampionDto;
 import league.entities.GameDto;
 import league.entities.MatchDetail;
 import league.entities.MatchSummary;
+import league.entities.RecentGamesDto;
 import league.entities.SummonerDto;
 import league.entities.SummonerSpellDto;
 
@@ -27,6 +32,7 @@ public class DatabaseAPIImpl implements LeagueAPI{
     private static final String USER = SecurityConstants.DB_USER;
     private static final String PASS = SecurityConstants.DB_PASS;
     private Connection db;
+    private ObjectMapper mapper = new ObjectMapper();
 
     private static DatabaseAPIImpl _instance = new DatabaseAPIImpl();
 
@@ -149,7 +155,55 @@ public class DatabaseAPIImpl implements LeagueAPI{
 
     @Override
     public Set<GameDto> getMatchHistory(long summonerId){
-        return null;
+        try{
+            Statement stmt = db.createStatement();
+            String sql;
+            sql = String.format(
+                "SELECT id, summonerId, createDate, gameData FROM match_history WHERE summonerId = %d",
+                summonerId);
+            ResultSet rs = stmt.executeQuery(sql);
+
+            Set<GameDto> games = new HashSet<>();
+            while(rs.next()){
+                long gameId = rs.getLong("id");
+                long createDate = rs.getLong("createDate");
+                String gameData = rs.getString("gameData");
+
+                GameDto game = mapper.readValue(gameData, GameDto.class);
+                games.add(game);
+                
+                log.info("Fetched match " + gameId + " from match history for summoner "
+                        + summonerId + " from db.");
+            }
+            return games;
+        } catch(SQLException | IOException e){
+            log.log(Level.SEVERE, e.getMessage(), e);
+            return null;
+        }
+    }
+
+    public boolean cacheMatchHistoryMatch(long summonerId, GameDto game){
+        try{
+            long gameId = game.getGameId();
+            long createDate = game.getCreateDate();
+            String gameData = mapper.writeValueAsString(game);
+
+            Statement stmt = db.createStatement();
+            String sql;
+            sql = String.format("INSERT INTO match_history VALUES (%d, %d, %d, '%s')", gameId,
+                summonerId, createDate, gameData);
+            int updated = stmt.executeUpdate(sql);
+            if(updated < 1){
+                log.log(Level.WARNING, "Cache match history match " + gameId
+                        + " for summoner " + summonerId + " failed.");
+                return false;
+            }
+            log.info("Cached match history match " + gameId + " for summoner " + summonerId);
+            return true;
+        } catch(IOException | SQLException e){
+            log.log(Level.SEVERE, e.getMessage(), e);
+            return false;
+        }
     }
 
     @Override
@@ -171,4 +225,5 @@ public class DatabaseAPIImpl implements LeagueAPI{
         DatabaseAPIImpl r = new DatabaseAPIImpl();
         System.out.println(r.searchSummoner("Zedenstein"));
     }
+
 }
