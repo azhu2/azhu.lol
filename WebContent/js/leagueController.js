@@ -205,6 +205,18 @@ leagueApp.controller('lookupController', function($scope, LeagueResource) {
 			else
 				$scope.matchPlayerRed.push(matchPlayers[index]);
 		});
+		
+		LeagueResource.summSpellFromId().get({
+			id : details.spell1Id
+		}, function(spellData) {
+			matchPlayers[index].spell1 = spellData;
+		});
+		
+		LeagueResource.summSpellFromId().get({
+			id : details.spell2Id
+		}, function(spellData) {
+			matchPlayers[index].spell2 = spellData;
+		});
 	};
 
 	// Process a single player in a match

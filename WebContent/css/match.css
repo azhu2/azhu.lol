@@ -205,14 +205,15 @@
 	background: rgba(0, 64, 192, 0.6);
 }
 
-#matches .match .expandMatch .playerChampionImage {
+#matches .match .expandMatch img {
 	height: 20px;
 	width: 20px;
 }
 
-#matches .match .expandMatch .team .playerChampionImage {
+#matches .match .expandMatch .playerChampionImage {
 	position: relative;
 	top: 3px;
+	width: 20px;
 }
 
 #matches .match .expandMatch ul {
@@ -223,6 +224,12 @@
 	padding: 1%;
 	text-align: left;
 	margin-bottom: 5px;
+}
+
+#matches .match .expandMatch .rankedTeam .tableHeadings {
+	font-size: 0.9em;
+	text-transform: uppercase;
+	color: #333333;
 }
 
 #matches .match .expandMatch .rankedTeam img {
@@ -240,6 +247,16 @@
 	font-size: 0.85em;
 }
 
+#matches .match .expandMatch .rankedTeam .playerSummoners {
+	display: inline-block;
+	width: 38px;
+}
+
+#matches .match .expandMatch .rankedTeam .playerSummoners img {
+	width: 15px;
+	height: 15px;
+}
+
 #matches .match .expandMatch .rankedTeam .playerLevel {
 	width: 15px;
 }
@@ -253,10 +270,14 @@
 	text-align: center;
 }
 
+#matches .match .expandMatch .rankedTeam .playerItems {
+	width: 144px;
+	text-align: center;
+}
+
 #matches .match .expandMatch .rankedTeam .playerItem {
-	margin: -1px; display : inline-block;
-	height: 20px;
-	width: 20px;
+	margin: -1px;
+	display: inline-block;
 	display: inline-block;
 }
 
