@@ -21,6 +21,8 @@ leagueApp.controller('lookupController', function($scope, LeagueResource) {
 			name : $scope.summonerName
 		}, function(data) {
 			$scope.summoner = data;
+		}, function(error) {
+			$scope.summoner = {};
 		});
 		$scope.showLookupResults = true;
 		$scope.showRankedResults = false;

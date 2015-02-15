@@ -1,7 +1,6 @@
 package league.api;
 
 public class APIConstants{
-
     public static final int HTTP_OK = 200;
     public static final int HTTP_UNAUTHORIZED = 401;
     public static final int HTTP_NOT_FOUND = 404;

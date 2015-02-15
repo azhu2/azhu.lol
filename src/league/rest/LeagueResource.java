@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Set;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -14,6 +13,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import league.api.APIConstants;
 import league.api.DynamicLeagueAPIImpl;
 import league.api.LeagueAPI;
 import league.api.RiotAPIImpl.RiotPlsException;
@@ -43,7 +43,7 @@ public class LeagueResource{
             IOException{
         try{
             SummonerDto summoner = api.searchSummoner(name);
-            return Response.status(HttpServletResponse.SC_OK)
+            return Response.status(APIConstants.HTTP_OK)
                            .entity(mapper.writeValueAsString(summoner)).build();
         } catch(RiotPlsException e){
             return Response.status(e.getStatus()).entity(e.getMessage()).build();
@@ -57,7 +57,7 @@ public class LeagueResource{
             IOException{
         try{
             SummonerDto summoner = api.getSummonerFromId(id);
-            return Response.status(HttpServletResponse.SC_OK)
+            return Response.status(APIConstants.HTTP_OK)
                            .entity(mapper.writeValueAsString(summoner)).build();
         } catch(RiotPlsException e){
             return Response.status(e.getStatus()).entity(e.getMessage()).build();
@@ -75,7 +75,7 @@ public class LeagueResource{
                 idList.add(Long.parseLong(id.trim()));
 
             List<SummonerDto> summoners = api.getSummoners(idList);
-            return Response.status(HttpServletResponse.SC_OK)
+            return Response.status(APIConstants.HTTP_OK)
                            .entity(mapper.writeValueAsString(summoners)).build();
         } catch(RiotPlsException e){
             return Response.status(e.getStatus()).entity(e.getMessage()).build();
@@ -89,7 +89,7 @@ public class LeagueResource{
             IOException{
         try{
             List<MatchSummary> history = api.getRankedMatches(id);
-            return Response.status(HttpServletResponse.SC_OK)
+            return Response.status(APIConstants.HTTP_OK)
                            .entity(mapper.writeValueAsString(history)).build();
         } catch(RiotPlsException e){
             return Response.status(e.getStatus()).entity(e.getMessage()).build();
@@ -103,7 +103,7 @@ public class LeagueResource{
             IOException{
         try{
             Set<GameDto> history = api.getMatchHistory(id);
-            return Response.status(HttpServletResponse.SC_OK)
+            return Response.status(APIConstants.HTTP_OK)
                            .entity(mapper.writeValueAsString(history)).build();
         } catch(RiotPlsException e){
             return Response.status(e.getStatus()).entity(e.getMessage()).build();
@@ -117,7 +117,7 @@ public class LeagueResource{
             IOException{
         try{
             ChampionDto history = api.getChampFromId(id);
-            return Response.status(HttpServletResponse.SC_OK)
+            return Response.status(APIConstants.HTTP_OK)
                            .entity(mapper.writeValueAsString(history)).build();
         } catch(RiotPlsException e){
             return Response.status(e.getStatus()).entity(e.getMessage()).build();
@@ -131,7 +131,7 @@ public class LeagueResource{
             IOException{
         try{
             MatchDetail history = api.getMatchDetail(id);
-            return Response.status(HttpServletResponse.SC_OK)
+            return Response.status(APIConstants.HTTP_OK)
                            .entity(mapper.writeValueAsString(history)).build();
         } catch(RiotPlsException e){
             return Response.status(e.getStatus()).entity(e.getMessage()).build();
@@ -145,7 +145,7 @@ public class LeagueResource{
             IOException{
         try{
             SummonerSpellDto history = api.getSummonerSpellFromId(id);
-            return Response.status(HttpServletResponse.SC_OK)
+            return Response.status(APIConstants.HTTP_OK)
                            .entity(mapper.writeValueAsString(history)).build();
         } catch(RiotPlsException e){
             return Response.status(e.getStatus()).entity(e.getMessage()).build();

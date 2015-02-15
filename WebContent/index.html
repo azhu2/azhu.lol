@@ -28,8 +28,8 @@
 			<div id="panels">
 				<div id="panelSelector">
 					<div id="summaryData">
-						<img id="summonerIcon" alt="{{ summoner == null ? 'summoner icon' : 'summoner icon ' + summoner.profileIconId }}"
-							ng-src="{{ summoner == null ? '' : 'http://ddragon.leagueoflegends.com/cdn/' + version + '/img/profileicon/' + summoner.profileIconId + '.png' }}">
+						<img id="summonerIcon" alt="{{ summoner.id == null ? 'summoner icon' : 'summoner icon ' + summoner.profileIconId }}"
+							ng-src="{{ summoner.id == null ? '' : 'http://ddragon.leagueoflegends.com/cdn/' + version + '/img/profileicon/' + summoner.profileIconId + '.png' }}">
 						<div id="summonerData">
 							<div id="summonerName">{{ summoner.id == null ? 'Not Found' : summoner.name }}</div>
 							<div id="summonerLevel">Level {{ summoner.id == null ? '--' : summoner.summonerLevel }}</div>
