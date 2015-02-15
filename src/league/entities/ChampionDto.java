@@ -7,6 +7,17 @@ public class ChampionDto{
     private String title;
     private String key;
 
+    public ChampionDto(){
+        
+    }
+    
+    public ChampionDto(int id, String name, String title, String key){
+        this.id = id;
+        this.name = name;
+        this.title = title;
+        this.key = key;
+    }
+
     public int getId(){
         return id;
     }
@@ -39,4 +50,16 @@ public class ChampionDto{
         this.key = key;
     }
 
+    @Override
+    public boolean equals(Object obj){
+        if(!(obj instanceof ChampionDto))
+            return false;
+        ChampionDto champ = (ChampionDto) obj;
+        return champ.id == this.id;
+    }
+    
+    @Override
+    public String toString(){
+        return "Champion " + id + ": " + name;
+    }
 }

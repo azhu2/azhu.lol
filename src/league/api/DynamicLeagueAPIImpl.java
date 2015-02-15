@@ -4,7 +4,9 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 
+import league.api.RiotAPIImpl.RiotPlsException;
 import league.entities.ChampionDto;
 import league.entities.GameDto;
 import league.entities.MatchDetail;
@@ -13,6 +15,7 @@ import league.entities.SummonerDto;
 import league.entities.SummonerSpellDto;
 
 public class DynamicLeagueAPIImpl implements LeagueAPI{
+    private static Logger log = Logger.getLogger(DynamicLeagueAPIImpl.class.getName());
     private static DynamicLeagueAPIImpl _instance = new DynamicLeagueAPIImpl();
 
     private LeagueAPI riotApi;
@@ -28,13 +31,13 @@ public class DynamicLeagueAPIImpl implements LeagueAPI{
     }
 
     @Override
-    public ChampionDto getChampFromId(long champId){
+    public ChampionDto getChampFromId(long champId) throws RiotPlsException{
         ChampionDto result = dbApi.getChampFromId(champId);
         return result == null ? riotApi.getChampFromId(champId) : result;
     }
 
     @Override
-    public MatchDetail getMatchDetail(long matchId){
+    public MatchDetail getMatchDetail(long matchId) throws RiotPlsException{
         MatchDetail result = dbApi.getMatchDetail(matchId);
         return result == null ? riotApi.getMatchDetail(matchId) : result;
     }
@@ -45,24 +48,31 @@ public class DynamicLeagueAPIImpl implements LeagueAPI{
 
         if(dbResults == null)
             dbResults = new HashSet<>();
-        Set<GameDto> apiResults = riotApi.getMatchHistory(summonerId);
-        for(GameDto newGame : apiResults)
-            if(!dbResults.contains(newGame))
-                dbApi.cacheMatchHistoryMatch(summonerId, newGame);
+        Set<GameDto> apiResults;
+        try{
+            apiResults = riotApi.getMatchHistory(summonerId);
+        } catch(RiotPlsException e){
+            log.warning(e.getMessage());
+            return dbResults;
+        }
+        if(apiResults != null)
+            for(GameDto newGame : apiResults)
+                if(!dbResults.contains(newGame))
+                    dbApi.cacheMatchHistoryMatch(summonerId, newGame);
         if(apiResults != null)
             dbResults.addAll(apiResults);
-        
+
         return dbResults;
     }
 
     @Override
-    public List<MatchSummary> getRankedMatches(long summonerId){
+    public List<MatchSummary> getRankedMatches(long summonerId) throws RiotPlsException{
         List<MatchSummary> result = dbApi.getRankedMatches(summonerId);
         return result == null ? riotApi.getRankedMatches(summonerId) : result;
     }
 
     @Override
-    public SummonerDto getSummonerFromId(long summonerId){
+    public SummonerDto getSummonerFromId(long summonerId) throws RiotPlsException{
         SummonerDto result = dbApi.getSummonerFromId(summonerId);
         return result == null ? riotApi.getSummonerFromId(summonerId) : result;
     }
@@ -73,21 +83,25 @@ public class DynamicLeagueAPIImpl implements LeagueAPI{
 
         if(dbResults == null)
             dbResults = new LinkedList<>();
-        List<SummonerDto> apiResults = riotApi.getSummoners(summonerIds);
-        if(apiResults != null)
-            dbResults.addAll(apiResults);
+        try{
+            List<SummonerDto> apiResults = riotApi.getSummoners(summonerIds);
+            if(apiResults != null)
+                dbResults.addAll(apiResults);
+        } catch(RiotPlsException e){
+            log.warning(e.getMessage());
+        }
 
         return dbResults;
     }
 
     @Override
-    public SummonerDto searchSummoner(String summonerName){
+    public SummonerDto searchSummoner(String summonerName) throws RiotPlsException{
         SummonerDto result = dbApi.searchSummoner(summonerName);
         return result == null ? riotApi.searchSummoner(summonerName) : result;
     }
 
     @Override
-    public SummonerSpellDto getSummonerSpellFromId(long spellId){
+    public SummonerSpellDto getSummonerSpellFromId(long spellId) throws RiotPlsException{
         SummonerSpellDto result = dbApi.getSummonerSpellFromId(spellId);
         return result == null ? riotApi.getSummonerSpellFromId(spellId) : result;
     }

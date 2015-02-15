@@ -3,6 +3,7 @@ package league.api;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -14,15 +15,14 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.codehaus.jackson.map.ObjectMapper;
-
 import league.entities.ChampionDto;
 import league.entities.GameDto;
 import league.entities.MatchDetail;
 import league.entities.MatchSummary;
-import league.entities.RecentGamesDto;
 import league.entities.SummonerDto;
 import league.entities.SummonerSpellDto;
+
+import org.codehaus.jackson.map.ObjectMapper;
 
 public class DatabaseAPIImpl implements LeagueAPI{
     private static Logger log = Logger.getLogger(DatabaseAPIImpl.class.getName());
@@ -130,12 +130,15 @@ public class DatabaseAPIImpl implements LeagueAPI{
             return false;
 
         try{
-            Statement stmt = db.createStatement();
-            String sql;
-            sql = String.format("INSERT INTO summoners VALUES (%d, '%s', %d, %d, %d)",
-                summoner.getId(), summoner.getName(), summoner.getProfileIconId(),
-                summoner.getSummonerLevel(), summoner.getRevisionDate());
-            int updated = stmt.executeUpdate(sql);
+            String sql = "INSERT INTO summoners VALUES (?, ?, ?, ?, ?)";
+            PreparedStatement stmt = db.prepareStatement(sql);
+            stmt.setLong(1, summoner.getId());
+            stmt.setString(2, summoner.getName());
+            stmt.setInt(3, summoner.getProfileIconId());
+            stmt.setLong(4, summoner.getSummonerLevel());
+            stmt.setLong(5, summoner.getRevisionDate());
+
+            int updated = stmt.executeUpdate();
             if(updated < 1){
                 log.log(Level.WARNING, "Cache summoner " + summoner + " failed.");
                 return false;
@@ -165,15 +168,13 @@ public class DatabaseAPIImpl implements LeagueAPI{
 
             Set<GameDto> games = new HashSet<>();
             while(rs.next()){
-                long gameId = rs.getLong("id");
-                long createDate = rs.getLong("createDate");
                 String gameData = rs.getString("gameData");
 
                 GameDto game = mapper.readValue(gameData, GameDto.class);
                 games.add(game);
-                
-                log.info("Fetched match " + gameId + " from match history for summoner "
-                        + summonerId + " from db.");
+
+                log.info("Fetched match " + game.getGameId()
+                        + " from match history for summoner " + summonerId + " from db.");
             }
             return games;
         } catch(SQLException | IOException e){
@@ -188,11 +189,14 @@ public class DatabaseAPIImpl implements LeagueAPI{
             long createDate = game.getCreateDate();
             String gameData = mapper.writeValueAsString(game);
 
-            Statement stmt = db.createStatement();
-            String sql;
-            sql = String.format("INSERT INTO match_history VALUES (%d, %d, %d, '%s')", gameId,
-                summonerId, createDate, gameData);
-            int updated = stmt.executeUpdate(sql);
+            String sql = "INSERT INTO match_history VALUES (?, ?, ?, ?)";
+            PreparedStatement stmt = db.prepareStatement(sql);
+            stmt.setLong(1, gameId);
+            stmt.setLong(2, summonerId);
+            stmt.setLong(3, createDate);
+            stmt.setString(4, gameData);
+            
+            int updated = stmt.executeUpdate();
             if(updated < 1){
                 log.log(Level.WARNING, "Cache match history match " + gameId
                         + " for summoner " + summonerId + " failed.");
@@ -207,8 +211,55 @@ public class DatabaseAPIImpl implements LeagueAPI{
     }
 
     @Override
-    public ChampionDto getChampFromId(long id){
+    public ChampionDto getChampFromId(long champId){
+        try{
+            Statement stmt = db.createStatement();
+            String sql;
+            sql = String.format(
+                "SELECT id, name, title, champKey FROM champions WHERE id = %d", champId);
+            ResultSet rs = stmt.executeQuery(sql);
+            if(rs.next()){
+                int id = rs.getInt("id");
+                String name = rs.getString("name");
+                String title = rs.getString("title");
+                String key = rs.getString("champKey");
+
+                ChampionDto champ = new ChampionDto(id, name, title, key);
+                log.info("Fetched champion " + champ + " from db.");
+                return champ;
+            }
+        } catch(SQLException e){
+            log.log(Level.SEVERE, e.getMessage(), e);
+        }
+
         return null;
+    }
+
+    public boolean cacheChampion(ChampionDto champ){
+        try{
+            long id = champ.getId();
+            String name = champ.getName();
+            String title = champ.getTitle();
+            String key = champ.getKey();
+
+            String sql = "INSERT INTO champions VALUES (?, ?, ?, ?)";
+            PreparedStatement stmt = db.prepareStatement(sql);
+            stmt.setLong(1, id);
+            stmt.setString(2, name);
+            stmt.setString(3, title);
+            stmt.setString(4, key);
+
+            int updated = stmt.executeUpdate();
+            if(updated < 1){
+                log.log(Level.WARNING, "Cache champion " + champ + " failed.");
+                return false;
+            }
+            log.info("Cached champion " + champ);
+            return true;
+        } catch(SQLException e){
+            log.log(Level.SEVERE, e.getMessage(), e);
+            return false;
+        }
     }
 
     @Override
@@ -225,5 +276,4 @@ public class DatabaseAPIImpl implements LeagueAPI{
         DatabaseAPIImpl r = new DatabaseAPIImpl();
         System.out.println(r.searchSummoner("Zedenstein"));
     }
-
 }
