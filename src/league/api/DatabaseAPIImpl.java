@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 
 import league.entities.ChampionDto;
 import league.entities.GameDto;
+import league.entities.ImageDto;
 import league.entities.MatchDetail;
 import league.entities.MatchSummary;
 import league.entities.SummonerDto;
@@ -68,8 +69,7 @@ public class DatabaseAPIImpl implements LeagueAPI{
                 long summonerLevel = rs.getLong("summonerLevel");
                 long revisionDate = rs.getLong("revisionDate");
 
-                SummonerDto summoner = new SummonerDto(id, name, profileIconId, summonerLevel,
-                        revisionDate);
+                SummonerDto summoner = new SummonerDto(id, name, profileIconId, summonerLevel, revisionDate);
                 log.info("Fetched summoner " + summoner + " from db.");
                 return summoner;
             }
@@ -103,8 +103,7 @@ public class DatabaseAPIImpl implements LeagueAPI{
             Statement stmt = db.createStatement();
             String sql;
             sql = String.format(
-                "SELECT id, name, profileIconId, summonerLevel, revisionDate FROM summoners WHERE id = %d",
-                summonerId);
+                "SELECT id, name, profileIconId, summonerLevel, revisionDate FROM summoners WHERE id = %d", summonerId);
             ResultSet rs = stmt.executeQuery(sql);
             if(rs.next()){
                 long id = rs.getLong("id");
@@ -113,8 +112,7 @@ public class DatabaseAPIImpl implements LeagueAPI{
                 long summonerLevel = rs.getLong("summonerLevel");
                 long revisionDate = rs.getLong("revisionDate");
 
-                SummonerDto summoner = new SummonerDto(id, name, profileIconId, summonerLevel,
-                        revisionDate);
+                SummonerDto summoner = new SummonerDto(id, name, profileIconId, summonerLevel, revisionDate);
                 log.info("Fetched summoner " + summoner + " from db.");
                 return summoner;
             }
@@ -161,8 +159,7 @@ public class DatabaseAPIImpl implements LeagueAPI{
         try{
             Statement stmt = db.createStatement();
             String sql;
-            sql = String.format(
-                "SELECT id, summonerId, createDate, gameData FROM match_history WHERE summonerId = %d",
+            sql = String.format("SELECT id, summonerId, createDate, gameData FROM match_history WHERE summonerId = %d",
                 summonerId);
             ResultSet rs = stmt.executeQuery(sql);
 
@@ -173,8 +170,8 @@ public class DatabaseAPIImpl implements LeagueAPI{
                 GameDto game = mapper.readValue(gameData, GameDto.class);
                 games.add(game);
 
-                log.info("Fetched match " + game.getGameId()
-                        + " from match history for summoner " + summonerId + " from db.");
+                log.info("Fetched match " + game.getGameId() + " from match history for summoner " + summonerId
+                        + " from db.");
             }
             return games;
         } catch(SQLException | IOException e){
@@ -195,11 +192,11 @@ public class DatabaseAPIImpl implements LeagueAPI{
             stmt.setLong(2, summonerId);
             stmt.setLong(3, createDate);
             stmt.setString(4, gameData);
-            
+
             int updated = stmt.executeUpdate();
             if(updated < 1){
-                log.log(Level.WARNING, "Cache match history match " + gameId
-                        + " for summoner " + summonerId + " failed.");
+                log.log(Level.WARNING, "Cache match history match " + gameId + " for summoner " + summonerId
+                        + " failed.");
                 return false;
             }
             log.info("Cached match history match " + gameId + " for summoner " + summonerId);
@@ -215,8 +212,7 @@ public class DatabaseAPIImpl implements LeagueAPI{
         try{
             Statement stmt = db.createStatement();
             String sql;
-            sql = String.format(
-                "SELECT id, name, title, champKey FROM champions WHERE id = %d", champId);
+            sql = String.format("SELECT id, name, title, champKey FROM champions WHERE id = %d", champId);
             ResultSet rs = stmt.executeQuery(sql);
             if(rs.next()){
                 int id = rs.getInt("id");
@@ -263,8 +259,73 @@ public class DatabaseAPIImpl implements LeagueAPI{
     }
 
     @Override
-    public SummonerSpellDto getSummonerSpellFromId(long id){
+    public SummonerSpellDto getSummonerSpellFromId(long spellId){
+        try{
+            Statement stmt = db.createStatement();
+            String sql;
+            sql = String.format(
+                "SELECT id, name, description, spellKey, summonerLevel, image FROM summoner_spells WHERE id = %d",
+                spellId);
+            ResultSet rs = stmt.executeQuery(sql);
+            if(rs.next()){
+                int id = rs.getInt("id");
+                String name = rs.getString("name");
+                String description = rs.getString("description");
+                String key = rs.getString("spellKey");
+                int summonerLevel = rs.getInt("summonerLevel");
+                ImageDto image = null;
+                try{
+                    image = mapper.readValue(rs.getString("image"), ImageDto.class);
+                } catch(IOException e){
+                    log.warning(e.getMessage());
+                }
+
+                SummonerSpellDto spell = new SummonerSpellDto(id, name, description, key, summonerLevel, image);
+                log.info("Fetched summoner spell " + spell + " from db.");
+                return spell;
+            }
+        } catch(SQLException e){
+            log.log(Level.SEVERE, e.getMessage(), e);
+        }
+
         return null;
+    }
+    
+    public boolean cacheSummonerSpell(SummonerSpellDto spell){
+        try{
+            long id = spell.getId();
+            String name = spell.getName();
+            String description = spell.getDescription();
+            String key = spell.getKey();
+            int summonerLevel = spell.getSummonerLevel();
+            String image;
+            try{
+                image = mapper.writeValueAsString(spell.getImage());
+            } catch(IOException e){
+                e.printStackTrace();
+                return false;
+            }
+
+            String sql = "INSERT INTO summoner_spells VALUES (?, ?, ?, ?, ?, ?)";
+            PreparedStatement stmt = db.prepareStatement(sql);
+            stmt.setLong(1, id);
+            stmt.setString(2, name);
+            stmt.setString(3, description);
+            stmt.setString(4, key);
+            stmt.setInt(5, summonerLevel);
+            stmt.setString(6, image);
+
+            int updated = stmt.executeUpdate();
+            if(updated < 1){
+                log.log(Level.WARNING, "Cache summoner spell " + spell + " failed.");
+                return false;
+            }
+            log.info("Cached summoner spell " + spell);
+            return true;
+        } catch(SQLException e){
+            log.log(Level.SEVERE, e.getMessage(), e);
+            return false;
+        }
     }
 
     @Override

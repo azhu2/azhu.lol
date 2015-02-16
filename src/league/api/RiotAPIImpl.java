@@ -71,9 +71,8 @@ public class RiotAPIImpl implements LeagueAPI{
             return null;
 
         try{
-            Map<String, SummonerDto> map = mapper.readValue(entity,
-                new TypeReference<Map<String, SummonerDto>>(){
-                });
+            Map<String, SummonerDto> map = mapper.readValue(entity, new TypeReference<Map<String, SummonerDto>>(){
+            });
             SummonerDto summoner = map.get(summonerName);
             db.cacheSummoner(summoner);
             return summoner;
@@ -99,9 +98,8 @@ public class RiotAPIImpl implements LeagueAPI{
             return null;
 
         try{
-            Map<Long, SummonerDto> map = mapper.readValue(entity,
-                new TypeReference<Map<Long, SummonerDto>>(){
-                });
+            Map<Long, SummonerDto> map = mapper.readValue(entity, new TypeReference<Map<Long, SummonerDto>>(){
+            });
 
             Collection<SummonerDto> summoners = map.values();
             for(SummonerDto summoner : summoners)
@@ -123,9 +121,8 @@ public class RiotAPIImpl implements LeagueAPI{
             return null;
 
         try{
-            Map<String, SummonerDto> map = mapper.readValue(entity,
-                new TypeReference<Map<String, SummonerDto>>(){
-                });
+            Map<String, SummonerDto> map = mapper.readValue(entity, new TypeReference<Map<String, SummonerDto>>(){
+            });
             SummonerDto summoner = map.get(summonerId + "");
             db.cacheSummoner(summoner);
             return summoner;
@@ -200,8 +197,9 @@ public class RiotAPIImpl implements LeagueAPI{
             return null;
 
         try{
-            SummonerSpellDto champ = mapper.readValue(entity, SummonerSpellDto.class);
-            return champ;
+            SummonerSpellDto spell = mapper.readValue(entity, SummonerSpellDto.class);
+            db.cacheSummonerSpell(spell);
+            return spell;
         } catch(IOException e){
             log.log(Level.SEVERE, e.getMessage(), e);
             return null;
@@ -289,8 +287,7 @@ public class RiotAPIImpl implements LeagueAPI{
         private void setMessage(){
             switch(status){
                 case APIConstants.HTTP_UNAUTHORIZED:
-                    message = "401 Unauthorized - did you forget the API key? | URI: "
-                            + uriStr;
+                    message = "401 Unauthorized - did you forget the API key? | URI: " + uriStr;
                     break;
                 case APIConstants.HTTP_NOT_FOUND:
                     message = "404 Not found | URI: " + uriStr;

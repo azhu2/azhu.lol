@@ -11,6 +11,20 @@ public class SummonerSpellDto{
     private int summonerLevel;
     private ImageDto image;
 
+    public SummonerSpellDto(){
+        
+    }
+    
+    public SummonerSpellDto(int id, String name, String description, String key, int summonerLevel, ImageDto image){
+        super();
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.key = key;
+        this.summonerLevel = summonerLevel;
+        this.image = image;
+    }
+
     public int getId(){
         return id;
     }
@@ -59,4 +73,20 @@ public class SummonerSpellDto{
         this.image = image;
     }
 
+    @Override
+    public boolean equals(Object obj){
+        if(!(obj instanceof SummonerSpellDto))
+            return false;
+        else return obj.hashCode() == this.hashCode();
+    }
+    
+    @Override
+    public int hashCode(){
+        return id;
+    }
+    
+    @Override
+    public String toString(){
+        return "Summoner spell " + name;
+    }
 }
