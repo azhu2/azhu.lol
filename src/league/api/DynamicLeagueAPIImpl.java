@@ -79,19 +79,34 @@ public class DynamicLeagueAPIImpl implements LeagueAPI{
 
     @Override
     public List<SummonerDto> getSummoners(List<Long> summonerIds){
+        List<Long> idsCopy = new LinkedList<>(summonerIds);
         List<SummonerDto> dbResults = dbApi.getSummoners(summonerIds);
 
         if(dbResults == null)
             dbResults = new LinkedList<>();
         try{
             List<SummonerDto> apiResults = riotApi.getSummoners(summonerIds);
-            if(apiResults != null)
+            if(apiResults != null){
                 dbResults.addAll(apiResults);
+
+                List<SummonerDto> results = new LinkedList<>();
+                for(Long id : idsCopy){
+                    results.add(getSummonerFromList(dbResults, id));
+                }
+                return results;
+            }
+            return dbResults;
         } catch(RiotPlsException e){
             log.warning(e.getMessage());
+            return dbResults;
         }
+    }
 
-        return dbResults;
+    private SummonerDto getSummonerFromList(List<SummonerDto> list, long id){
+        for(SummonerDto summoner : list)
+            if(summoner.getId() == id)
+                return summoner;
+        return null;
     }
 
     @Override
