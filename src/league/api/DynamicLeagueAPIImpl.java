@@ -82,8 +82,11 @@ public class DynamicLeagueAPIImpl implements LeagueAPI{
             for(MatchSummary newGame : apiResults)
                 if(!dbResults.contains(newGame))
                     dbApi.cacheRankedMatch(summonerId, newGame);
+
         if(apiResults != null)
-            dbResults.addAll(apiResults);
+            for(MatchSummary match : apiResults)
+                if(!dbResults.contains(match))
+                    dbResults.addAll(apiResults);
 
         return dbResults;
     }

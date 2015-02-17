@@ -34,7 +34,9 @@
 							<a id="summonerName" ng-href="#{{ summoner.id }}">
 								{{ summoner.id == null ? 'Not Found' : summoner.name }}
 							</a>
-							<div id="summonerLevel">Level {{ summoner.id == null ? '--' : summoner.summonerLevel }}</div>
+							<div id="summonerLevel">
+								Level {{ summoner.id == null ? '--' : summoner.summonerLevel }}
+							</div>
 						</div>
 					</div>
 
