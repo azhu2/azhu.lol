@@ -9,3 +9,7 @@
 a {
 	color: #000000;
 }
+
+#summaryData #summonerName {
+	text-decoration: none;
+}

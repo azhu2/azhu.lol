@@ -20,10 +20,14 @@ import league.entities.GameDto;
 import league.entities.ImageDto;
 import league.entities.MatchDetail;
 import league.entities.MatchSummary;
+import league.entities.Participant;
+import league.entities.ParticipantIdentity;
 import league.entities.SummonerDto;
 import league.entities.SummonerSpellDto;
 
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.SerializationConfig;
+import org.codehaus.jackson.type.TypeReference;
 
 public class DatabaseAPIImpl implements LeagueAPI{
     private static Logger log = Logger.getLogger(DatabaseAPIImpl.class.getName());
@@ -49,11 +53,13 @@ public class DatabaseAPIImpl implements LeagueAPI{
         } catch(ClassNotFoundException | SQLException e){
             log.log(Level.SEVERE, e.getMessage(), e);
         }
+        
+        mapper.configure(SerializationConfig.Feature.FAIL_ON_EMPTY_BEANS, false);
     }
 
     @Override
     public SummonerDto searchSummoner(String summonerName){
-//        summonerName = summonerName.toLowerCase().replace(" ", "");
+        // summonerName = summonerName.toLowerCase().replace(" ", "");
 
         try{
             Statement stmt = db.createStatement();
@@ -151,7 +157,79 @@ public class DatabaseAPIImpl implements LeagueAPI{
 
     @Override
     public List<MatchSummary> getRankedMatches(long summonerId){
-        return null;
+        try{
+            Statement stmt = db.createStatement();
+            String sql;
+            sql = String.format(
+                "SELECT mapId, matchCreation, matchDuration, matchId, matchMode, matchType, matchVersion, participantIdentities, participants, platformId, queueType, region, season FROM ranked_matches WHERE summonerId = %d",
+                summonerId);
+            ResultSet rs = stmt.executeQuery(sql);
+
+            List<MatchSummary> matches = new LinkedList<>();
+            while(rs.next()){
+                int mapId = rs.getInt("mapId");
+                long matchCreation = rs.getLong("matchCreation");
+                long matchDuration = rs.getLong("matchDuration");
+                long matchId = rs.getLong("matchId");
+                String matchMode = rs.getString("matchMode");
+                String matchType = rs.getString("matchType");
+                String matchVersion = rs.getString("matchVersion");
+                List<ParticipantIdentity> participantIdentities = mapper.readValue(
+                    rs.getString("participantIdentities"), new TypeReference<List<ParticipantIdentity>>(){
+                    });
+                List<Participant> participants = mapper.readValue(rs.getString("participants"),
+                    new TypeReference<List<Participant>>(){
+                    });
+                String platformId = rs.getString("platformId");
+                String queueType = rs.getString("queueType");
+                String region = rs.getString("region");
+                String season = rs.getString("season");
+
+                MatchSummary match = new MatchSummary(mapId, matchCreation, matchDuration, matchId, matchMode,
+                        matchType, matchVersion, participantIdentities, participants, platformId, queueType, region,
+                        season);
+                matches.add(match);
+
+                log.info("Fetched ranked match " + match.getMatchId() + " for summoner " + summonerId + " from db.");
+            }
+            return matches;
+        } catch(SQLException | IOException e){
+            log.log(Level.SEVERE, e.getMessage(), e);
+            return null;
+        }
+    }
+
+    public boolean cacheRankedMatch(long summonerId, MatchSummary match){
+        try{
+            String sql = "INSERT INTO ranked_matches VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            PreparedStatement stmt = db.prepareStatement(sql);
+            stmt.setLong(1, match.getMatchId());
+            stmt.setLong(2, summonerId);
+            stmt.setInt(3, match.getMapId());
+            stmt.setLong(4, match.getMatchCreation());
+            stmt.setLong(5, match.getMatchDuration());
+            stmt.setString(6, match.getMatchMode());
+            stmt.setString(7, match.getMatchType());
+            stmt.setString(8, match.getMatchVersion());
+            stmt.setString(9, mapper.writeValueAsString(match.getParticipantIdentities()));
+            stmt.setString(10, mapper.writeValueAsString(match.getParticipants()));
+            stmt.setString(11, match.getPlatformId());
+            stmt.setString(12, match.getQueueType());
+            stmt.setString(13, match.getRegion());
+            stmt.setString(14, match.getSeason());
+
+            int updated = stmt.executeUpdate();
+            if(updated < 1){
+                log.log(Level.WARNING, "Cache ranked match " + match.getMatchId() + " for summoner " + summonerId
+                        + " failed.");
+                return false;
+            }
+            log.info("Cached ranked match " + match.getMatchId() + " for summoner " + summonerId);
+            return true;
+        } catch(IOException | SQLException e){
+            log.log(Level.SEVERE, e.getMessage(), e);
+            return false;
+        }
     }
 
     @Override
@@ -290,7 +368,7 @@ public class DatabaseAPIImpl implements LeagueAPI{
 
         return null;
     }
-    
+
     public boolean cacheSummonerSpell(SummonerSpellDto spell){
         try{
             long id = spell.getId();

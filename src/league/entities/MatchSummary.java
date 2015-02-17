@@ -17,6 +17,29 @@ public class MatchSummary{
     private String region;
     private String season;
 
+    public MatchSummary(){
+
+    }
+
+    public MatchSummary(int mapId, long matchCreation, long matchDuration, long matchId, String matchMode,
+            String matchType, String matchVersion, List<ParticipantIdentity> participantIdentities,
+            List<Participant> participants, String platformId, String queueType, String region, String season){
+        super();
+        this.mapId = mapId;
+        this.matchCreation = matchCreation;
+        this.matchDuration = matchDuration;
+        this.matchId = matchId;
+        this.matchMode = matchMode;
+        this.matchType = matchType;
+        this.matchVersion = matchVersion;
+        this.participantIdentities = participantIdentities;
+        this.participants = participants;
+        this.platformId = platformId;
+        this.queueType = queueType;
+        this.region = region;
+        this.season = season;
+    }
+
     public int getMapId(){
         return mapId;
     }
@@ -124,4 +147,20 @@ public class MatchSummary{
     public String toString(){
         return "Match " + matchId;
     }
+
+    @Override
+    public boolean equals(Object obj){
+        if(!(obj instanceof MatchSummary))
+            return false;
+        
+        MatchSummary other = (MatchSummary) obj;
+        return this.matchId == other.matchId;
+    }
+
+    @Override
+    public int hashCode(){
+        return (int) matchId;
+    }
+    
+    
 }

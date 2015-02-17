@@ -12,7 +12,7 @@ public class Participant{
     private int spell2Id;
     private ParticipantStats stats;
     private int teamId;
-    private ParticipantTimeline timeline;
+//    private ParticipantTimeline timeline;
 
     public int getChampionId(){
         return championId;
@@ -85,12 +85,12 @@ public class Participant{
     public void setStats(ParticipantStats stats){
         this.stats = stats;
     }
-
-    public ParticipantTimeline getTimeline(){
-        return timeline;
-    }
-
-    public void setTimeline(ParticipantTimeline timeline){
-        this.timeline = timeline;
-    }
+//
+//    public ParticipantTimeline getTimeline(){
+//        return timeline;
+//    }
+//
+//    public void setTimeline(ParticipantTimeline timeline){
+//        this.timeline = timeline;
+//    }
 }
