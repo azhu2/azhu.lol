@@ -8,6 +8,10 @@
 	padding: 10px;
 }
 
+#matches a {
+	text-decoration: none;
+}
+
 #matches ul {
 	list-style-type: none;
 	border: 0;

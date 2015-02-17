@@ -90,7 +90,7 @@
 												<img class="playerSummoner spell2" alt="{{ player.spell2 == null ? 'summoner spell 2' : player.spell2.name }}"
 												ng-src="{{ player.spell2 == null ? '' : 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/spell/' + player.spell2.image.full }}">
 										</div>
-										<div class="playerStat playerName">{{ player.summoner.name }}</div>
+										<a class="playerStat playerName" ng-href="#{{ player.summoner.id }}">{{ player.summoner.name }}</a>
 										<div class="playerStat playerScore">{{ player.details.stats.kills }}/{{ player.details.stats.deaths }}/{{ player.details.stats.assists }}</div>
 										<div class="playerStat playerItems">
 											<img class="playerItem item0" ng-src="{{ player.details.stats.item0 == 0 ? 'img/item_0.png' : 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/item/' + player.details.stats.item0 + '.png' }}">
@@ -134,7 +134,7 @@
 												<img class="playerSummoner spell2" alt="{{ player.spell2 == null ? 'summoner spell 2' : player.spell2.name }}"
 												ng-src="{{ player.spell2 == null ? '' : 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/spell/' + player.spell2.image.full }}">
 										</div>
-										<div class="playerStat playerName">{{ player.summoner.name }}</div>
+										<a class="playerStat playerName" ng-href="#{{ player.summoner.id }}">{{ player.summoner.name }}</a>
 										<div class="playerStat playerScore">{{ player.details.stats.kills }}/{{ player.details.stats.deaths }}/{{ player.details.stats.assists }}</div>
 										<div class="playerStat playerItems">
 											<img class="playerItem item0" ng-src="{{ player.details.stats.item0 == 0 ? 'img/item_0.png' : 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/item/' + player.details.stats.item0 + '.png' }}">
