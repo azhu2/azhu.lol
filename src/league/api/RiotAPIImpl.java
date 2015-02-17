@@ -74,6 +74,7 @@ public class RiotAPIImpl implements LeagueAPI{
             Map<String, SummonerDto> map = mapper.readValue(entity, new TypeReference<Map<String, SummonerDto>>(){
             });
             SummonerDto summoner = map.get(summonerName);
+            summoner.setName(summoner.getName().replace(" ", ""));
             db.cacheSummoner(summoner);
             return summoner;
         } catch(IOException e){

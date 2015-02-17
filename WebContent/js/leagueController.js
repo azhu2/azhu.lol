@@ -1,6 +1,6 @@
 var leagueApp = angular.module('leagueApp', [ 'ngResource', 'ngRoute' ]);
 
-leagueApp.config(function($routeProvider) {
+leagueApp.config([ '$routeProvider', function($routeProvider, routeController) {
 	$routeProvider.when('/ranked', {
 		templateUrl : 'templates/ranked.html'
 	});
@@ -8,259 +8,303 @@ leagueApp.config(function($routeProvider) {
 	$routeProvider.when('/matches', {
 		templateUrl : 'templates/matches.html'
 	});
-});
 
-leagueApp.controller('lookupController', function($scope, LeagueResource) {
-	$scope.version = "5.2.2";
-	$scope.showLookupResults = false;
-	$scope.showRankedResults = false;
-	$scope.showMatchHIstory = false;
+	$routeProvider.when('/:summonerId', {
+		controller : 'routeController',
+		templateUrl : 'templates/matches.html'		// idk why, but this is needed
+	});
 
-	$scope.lookup = function() {
-		LeagueResource.lookupSummoner().get({
-			name : $scope.summonerName
+	$routeProvider.when('/:summonerId/matches', {
+		controller : 'lookupController',
+		templateUrl : 'templates/matches.html'
+	});
+	
+	$routeProvider.when('/:summonerId/ranked', {
+		controller : 'lookupController',
+		templateUrl : 'templates/ranked.html'
+	});
+} ]);
+
+leagueApp.controller('routeController',
+	function($rootScope, $routeParams, LeagueResource) {
+		$rootScope.version = "5.2.2";
+
+		LeagueResource.summonerFromId().get({
+			id : $routeParams.summonerId
 		}, function(data) {
-			$scope.summoner = data;
+			$rootScope.summoner = data;
 		}, function(error) {
-			$scope.summoner = {};
+			$rootScope.summoner = {};
 		});
-		$scope.showLookupResults = true;
-		$scope.showRankedResults = false;
-		$scope.showMatchHistory = false;
-	};
 
-	$scope.lookupRanked = function(summonerId) {
-		$scope.rankedData = [];
-		LeagueResource.lookupRanked(summonerId).query({
-			id : summonerId
-		}, function(data) {
-			for (var i = 0; i < data.length; i++) {
-				parseRankedGame($scope, data[i], data.length - i - 1);
+		$rootScope.showLookupResults = true;
+		$rootScope.showRankedResults = false;
+		$rootScope.showMatchHistory = false;
+	});
+
+leagueApp.controller('lookupController',
+	function($scope, $rootScope, $routeParams, LeagueResource) {
+		$rootScope.version = "5.2.2";
+		
+		if($routeParams.summonerId){
+			if(!$rootScope.summoner){
+				LeagueResource.summonerFromId().get({
+					id : $routeParams.summonerId
+				}, function(data) {
+					$rootScope.summoner = data;
+				}, function(error) {
+					$rootScope.summoner = {};
+				});
 			}
-		});
-		$scope.showRankedResults = true;
-		$scope.showMatchHistory = false;
-	};
-
-	var parseRankedGame = function($scope, match, index) {
-		LeagueResource.champFromId().get({
-			id : match.participants[0].championId
-		}, function(champData) {
-			match.champion = champData;
-			$scope.rankedData[index] = match;
-		});
-
-		LeagueResource.summSpellFromId().get({
-			id : match.participants[0].spell1Id
-		}, function(champData) {
-			match.sumSpell1 = champData;
-		});
-
-		LeagueResource.summSpellFromId().get({
-			id : match.participants[0].spell2Id
-		}, function(champData) {
-			match.sumSpell2 = champData;
-		});
-	};
-
-	$scope.lookupMatches = function(summonerId) {
-		$scope.matchData = [];
-		LeagueResource.lookupMatches(summonerId).query({
-			id : summonerId
-		}, function(data) {
-			for (var i = 0; i < data.length; i++) {
-				parseGame($scope, data[i], data.length - i - 1);
-			}
-		});
-		$scope.showRankedResults = false;
-		$scope.showMatchHistory = true;
-	};
-
-	// Process champion and summoner spells
-	var parseGame = function($scope, match, index) {
-		LeagueResource.champFromId().get({
-			id : match.championId
-		}, function(champData) {
-			match.champion = champData;
-		});
-
-		LeagueResource.summSpellFromId().get({
-			id : match.spell1
-		}, function(champData) {
-			match.sumSpell1 = champData;
-		});
-
-		LeagueResource.summSpellFromId().get({
-			id : match.spell2
-		}, function(champData) {
-			match.sumSpell2 = champData;
-		});
-
-		$scope.matchData[index] = match;
-	};
-
-	// Used to check before pushing data if it's for the right match
-	var expandedMatch = 0;
-
-	$scope.expandMatch = function(match, summoner) {
-		if (match.showExpand) {
-			match.showExpand = false;
-			return;
+			$rootScope.showLookupResults = true;
 		}
 
-		expandedMatch++;
-		closeAllMatches($scope);
-		match.showExpand = true;
-
-		// This part is terrible
-		if (!isRanked(match)) {
-			var ids = [ summoner.id ];
-			var champs = [ match.championId ];
-			var teamIds = [ match.teamId ];
-			for (var i = 0; i < match.fellowPlayers.length; i++) {
-				ids.push(match.fellowPlayers[i].summonerId);
-				champs.push(match.fellowPlayers[i].championId);
-				teamIds.push(match.fellowPlayers[i].teamId);
-			}
-			lookupSummonerIds($scope, ids, champs, teamIds, expandedMatch);
-		}
-
-		if (isRanked(match)) {
-			lookupMatch($scope, match, expandedMatch);
-		}
-	};
-
-	var lookupMatch = function($scope, match, expandedMatch) {
-		LeagueResource.matchDetail().get(
-			{
-				id : match.matchId
-			},
-			function(matchData) {
-				$scope.matchDetails = matchData;
-
-				lookupRankedSummonerIds($scope, matchData.participantIdentities,
-					matchData, expandedMatch);
+		$rootScope.lookup = function() {
+			LeagueResource.lookupSummoner().get({
+				name : $scope.summonerName
+			}, function(data) {
+				$rootScope.summoner = data;
+			}, function(error) {
+				$rootScope.summoner = {};
 			});
-	};
+			$rootScope.showLookupResults = true;
+			$rootScope.showRankedResults = false;
+			$rootScope.showMatchHistory = false;
+		};
 
-	var lookupRankedSummonerIds = function($scope, identities, details, expandedMatch) {
-		var ids = "";
-		for (var i = 0; i < identities.length; i++)
-			ids += identities[i].player.summonerId + ",";
-
-		LeagueResource.lookupSummoners().query(
-			{
-				ids : ids
-			},
-			function(summoners) {
-				var matchPlayers = [];
-
-				for (var i = 0; i < details.participants.length; i++) {
-					parseRankedPlayer($scope, matchPlayers,
-						details.participantIdentities[i], details.participants[i],
-						summoners[i], expandedMatch, i);
+		$rootScope.lookupRanked = function(summonerId) {
+			$rootScope.rankedData = [];
+			LeagueResource.lookupRanked(summonerId).query({
+				id : summonerId
+			}, function(data) {
+				for (var i = 0; i < data.length; i++) {
+					parseRankedGame($rootScope, data[i], data.length - i - 1);
 				}
 			});
-	};
+			$rootScope.showRankedResults = true;
+			$rootScope.showMatchHistory = false;
+		};
 
-	// Lookup for expanding a match
-	var lookupSummonerIds = function($scope, players, champs, teamIds, matchId) {
-		var ids = "";
-		for (var i = 0; i < players.length; i++)
-			ids += players[i] + ",";
+		var parseRankedGame = function($rootScope, match, index) {
+			LeagueResource.champFromId().get({
+				id : match.participants[0].championId
+			}, function(champData) {
+				match.champion = champData;
+				$rootScope.rankedData[index] = match;
+			});
 
-		LeagueResource.lookupSummoners().query(
-			{
-				ids : ids
-			},
-			function(summoners) {
-				var matchPlayers = [];
+			LeagueResource.summSpellFromId().get({
+				id : match.participants[0].spell1Id
+			}, function(champData) {
+				match.sumSpell1 = champData;
+			});
 
-				for (var i = 0; i < summoners.length; i++) {
-					var champId = champs[i];
-					var summoner = summoners[i];
+			LeagueResource.summSpellFromId().get({
+				id : match.participants[0].spell2Id
+			}, function(champData) {
+				match.sumSpell2 = champData;
+			});
+		};
 
-					parsePlayer($scope, matchPlayers, champId, summoner, teamIds,
-						matchId, i);
+		$rootScope.lookupMatches = function(summonerId) {
+			$rootScope.matchData = [];
+			LeagueResource.lookupMatches(summonerId).query({
+				id : summonerId
+			}, function(data) {
+				for (var i = 0; i < data.length; i++) {
+					parseGame($rootScope, data[i], data.length - i - 1);
 				}
 			});
-	};
+			$rootScope.showRankedResults = false;
+			$rootScope.showMatchHistory = true;
+		};
 
-	var parseRankedPlayer = function($scope, matchPlayers, ids, details, summoner,
-		matchId, index) {
-		if (matchPlayers[index] == null)
-			matchPlayers[index] = {};
-		matchPlayers[index].summoner = summoner;
-		matchPlayers[index].details = details;
+		// Process champion and summoner spells
+		var parseGame = function($rootScope, match, index) {
+			LeagueResource.champFromId().get({
+				id : match.championId
+			}, function(champData) {
+				match.champion = champData;
+			});
 
-		LeagueResource.champFromId().get({
-			id : details.championId
-		}, function(champData) {
-			matchPlayers[index].champ = champData;
+			LeagueResource.summSpellFromId().get({
+				id : match.spell1
+			}, function(champData) {
+				match.sumSpell1 = champData;
+			});
 
-			if (expandedMatch != matchId)
+			LeagueResource.summSpellFromId().get({
+				id : match.spell2
+			}, function(champData) {
+				match.sumSpell2 = champData;
+			});
+
+			$rootScope.matchData[index] = match;
+		};
+
+		// Used to check before pushing data if it's for the right match
+		var expandedMatch = 0;
+
+		$rootScope.expandMatch = function(match, summoner) {
+			if (match.showExpand) {
+				match.showExpand = false;
 				return;
-			if (details.teamId === 100)
-				$scope.matchPlayerBlue.push(matchPlayers[index]);
-			else
-				$scope.matchPlayerRed.push(matchPlayers[index]);
-		});
-		
-		LeagueResource.summSpellFromId().get({
-			id : details.spell1Id
-		}, function(spellData) {
-			matchPlayers[index].spell1 = spellData;
-		});
-		
-		LeagueResource.summSpellFromId().get({
-			id : details.spell2Id
-		}, function(spellData) {
-			matchPlayers[index].spell2 = spellData;
-		});
-	};
-
-	// Process a single player in a match
-	var parsePlayer = function($scope, matchPlayers, champId, summoner, teamIds, matchId,
-		index) {
-		if (matchPlayers[index] == null)
-			matchPlayers[index] = {};
-		matchPlayers[index].summoner = summoner;
-
-		LeagueResource.champFromId().get({
-			id : champId
-		}, function(champData) {
-			matchPlayers[index].champ = champData;
-
-			if (expandedMatch != matchId)
-				return;
-			if (teamIds[index] === 100)
-				$scope.matchPlayerBlue.push(matchPlayers[index]);
-			else
-				$scope.matchPlayerRed.push(matchPlayers[index]);
-
-		});
-	};
-
-	var closeAllMatches = function($scope) {
-		if ($scope.matchData != null)
-			for (var i = 0; i < $scope.matchData.length; i++) {
-				$scope.matchData[i].showExpand = false;
 			}
 
-		if ($scope.rankedData != null)
-			for (var i = 0; i < $scope.rankedData.length; i++) {
-				$scope.rankedData[i].showExpand = false;
+			expandedMatch++;
+			closeAllMatches($rootScope);
+			match.showExpand = true;
+
+			// This part is terrible
+			if (!isRanked(match)) {
+				var ids = [ summoner.id ];
+				var champs = [ match.championId ];
+				var teamIds = [ match.teamId ];
+				for (var i = 0; i < match.fellowPlayers.length; i++) {
+					ids.push(match.fellowPlayers[i].summonerId);
+					champs.push(match.fellowPlayers[i].championId);
+					teamIds.push(match.fellowPlayers[i].teamId);
+				}
+				lookupSummonerIds($rootScope, ids, champs, teamIds, expandedMatch);
 			}
 
-		$scope.matchPlayerBlue = [];
-		$scope.matchPlayerRed = [];
-	};
+			if (isRanked(match)) {
+				lookupMatch($rootScope, match, expandedMatch);
+			}
+		};
 
-	// Very dirty, but it works fine
-	var isRanked = function(match) {
-		return match.season != null;
-	};
-});
+		var lookupMatch = function($rootScope, match, expandedMatch) {
+			LeagueResource.matchDetail().get(
+				{
+					id : match.matchId
+				},
+				function(matchData) {
+					$rootScope.matchDetails = matchData;
+
+					lookupRankedSummonerIds($rootScope, matchData.participantIdentities,
+						matchData, expandedMatch);
+				});
+		};
+
+		var lookupRankedSummonerIds = function($rootScope, identities, details,
+			expandedMatch) {
+			var ids = "";
+			for (var i = 0; i < identities.length; i++)
+				ids += identities[i].player.summonerId + ",";
+
+			LeagueResource.lookupSummoners().query(
+				{
+					ids : ids
+				},
+				function(summoners) {
+					var matchPlayers = [];
+
+					for (var i = 0; i < details.participants.length; i++) {
+						parseRankedPlayer($rootScope, matchPlayers,
+							details.participantIdentities[i], details.participants[i],
+							summoners[i], expandedMatch, i);
+					}
+				});
+		};
+
+		// Lookup for expanding a match
+		var lookupSummonerIds = function($rootScope, players, champs, teamIds, matchId) {
+			var ids = "";
+			for (var i = 0; i < players.length; i++)
+				ids += players[i] + ",";
+
+			LeagueResource.lookupSummoners().query(
+				{
+					ids : ids
+				},
+				function(summoners) {
+					var matchPlayers = [];
+
+					for (var i = 0; i < summoners.length; i++) {
+						var champId = champs[i];
+						var summoner = summoners[i];
+
+						parsePlayer($rootScope, matchPlayers, champId, summoner, teamIds,
+							matchId, i);
+					}
+				});
+		};
+
+		var parseRankedPlayer = function($rootScope, matchPlayers, ids, details,
+			summoner, matchId, index) {
+			if (matchPlayers[index] == null)
+				matchPlayers[index] = {};
+			matchPlayers[index].summoner = summoner;
+			matchPlayers[index].details = details;
+
+			LeagueResource.champFromId().get({
+				id : details.championId
+			}, function(champData) {
+				matchPlayers[index].champ = champData;
+
+				if (expandedMatch != matchId)
+					return;
+				if (details.teamId === 100)
+					$rootScope.matchPlayerBlue.push(matchPlayers[index]);
+				else
+					$rootScope.matchPlayerRed.push(matchPlayers[index]);
+			});
+
+			LeagueResource.summSpellFromId().get({
+				id : details.spell1Id
+			}, function(spellData) {
+				matchPlayers[index].spell1 = spellData;
+			});
+
+			LeagueResource.summSpellFromId().get({
+				id : details.spell2Id
+			}, function(spellData) {
+				matchPlayers[index].spell2 = spellData;
+			});
+		};
+
+		// Process a single player in a match
+		var parsePlayer = function($rootScope, matchPlayers, champId, summoner, teamIds,
+			matchId, index) {
+			if (matchPlayers[index] == null)
+				matchPlayers[index] = {};
+			matchPlayers[index].summoner = summoner;
+
+			LeagueResource.champFromId().get({
+				id : champId
+			}, function(champData) {
+				matchPlayers[index].champ = champData;
+
+				if (expandedMatch != matchId)
+					return;
+				if (teamIds[index] === 100)
+					$rootScope.matchPlayerBlue.push(matchPlayers[index]);
+				else
+					$rootScope.matchPlayerRed.push(matchPlayers[index]);
+
+			});
+		};
+
+		var closeAllMatches = function($rootScope) {
+			if ($rootScope.matchData != null)
+				for (var i = 0; i < $rootScope.matchData.length; i++) {
+					$rootScope.matchData[i].showExpand = false;
+				}
+
+			if ($rootScope.rankedData != null)
+				for (var i = 0; i < $rootScope.rankedData.length; i++) {
+					$rootScope.rankedData[i].showExpand = false;
+				}
+
+			$rootScope.matchPlayerBlue = [];
+			$rootScope.matchPlayerRed = [];
+		};
+
+		// Very dirty, but it works fine
+		var isRanked = function(match) {
+			return match.season != null;
+		};
+	});
 
 leagueApp.service('LeagueResource', function($resource) {
 	this.lookupSummoner = function() {

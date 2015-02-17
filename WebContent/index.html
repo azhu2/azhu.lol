@@ -37,8 +37,8 @@
 					</div>
 
 					<div id="panelOptions">
-						<a href="#matches" ng-click="lookupMatches(summoner.id)">Match History</a>
-						<a href="#ranked" ng-click="lookupRanked(summoner.id)">Ranked Stats (work in progress)</a>
+						<a ng-href="#{{ summoner.id }}/matches" ng-click="lookupMatches(summoner.id)">Match History</a>
+						<a ng-href="#{{ summoner.id }}/ranked" ng-click="lookupRanked(summoner.id)">Ranked Matches</a>
 					</div>
 				</div>
 			</div>

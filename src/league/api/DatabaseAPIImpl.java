@@ -53,7 +53,7 @@ public class DatabaseAPIImpl implements LeagueAPI{
 
     @Override
     public SummonerDto searchSummoner(String summonerName){
-        summonerName = summonerName.toLowerCase().replace(" ", "");
+//        summonerName = summonerName.toLowerCase().replace(" ", "");
 
         try{
             Statement stmt = db.createStatement();
