@@ -36,6 +36,9 @@ public class DatabaseAPIImpl implements LeagueAPI{
     private static final String DB_URL = "jdbc:mysql://localhost/lol";
     private static final String USER = SecurityConstants.DB_USER;
     private static final String PASS = SecurityConstants.DB_PASS;
+
+    private static final int FETCH_ALL = -1;
+
     private Connection db;
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -53,7 +56,7 @@ public class DatabaseAPIImpl implements LeagueAPI{
         } catch(ClassNotFoundException | SQLException e){
             log.log(Level.SEVERE, e.getMessage(), e);
         }
-        
+
         mapper.configure(SerializationConfig.Feature.FAIL_ON_EMPTY_BEANS, false);
     }
 
@@ -155,14 +158,17 @@ public class DatabaseAPIImpl implements LeagueAPI{
         }
     }
 
-    @Override
-    public List<MatchSummary> getRankedMatches(long summonerId){
+    public List<MatchSummary> getRankedMatches(long summonerId, int numRecords){
         try{
             Statement stmt = db.createStatement();
             String sql;
-            sql = String.format(
-                "SELECT mapId, matchCreation, matchDuration, matchId, matchMode, matchType, matchVersion, participantIdentities, participants, platformId, queueType, region, season FROM ranked_matches WHERE summonerId = %d",
-                summonerId);
+            sql = String.format("SELECT mapId, matchCreation, matchDuration, matchId, "
+                    + "matchMode, matchType, matchVersion, participantIdentities, "
+                    + "participants, platformId, queueType, region, season "
+                    + "FROM ranked_matches WHERE summonerId = %d ORDER BY matchCreation DESC", summonerId);
+            if(numRecords != FETCH_ALL)
+                sql += " LIMIT " + numRecords;
+            
             ResultSet rs = stmt.executeQuery(sql);
 
             List<MatchSummary> matches = new LinkedList<>();
@@ -199,9 +205,29 @@ public class DatabaseAPIImpl implements LeagueAPI{
         }
     }
 
+    @Override
+    public List<MatchSummary> getRankedMatches(long summonerId){
+        return getRankedMatches(summonerId, APIConstants.MAX_PAGE_SIZE);
+    }
+
+    @Override
+    public List<MatchSummary> getAllRankedMatches(long summonerId){
+        return getRankedMatches(summonerId, FETCH_ALL);
+    }
+
+    /**
+     * Nothing to do here
+     */
+    @Override
+    @Deprecated
+    public boolean cacheAllRankedMatches(long summonerId){
+        return false;
+    }
+    
     public boolean cacheRankedMatch(long summonerId, MatchSummary match){
         try{
-            String sql = "INSERT INTO ranked_matches VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO ranked_matches VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                    + "ON DUPLICATE KEY UPDATE summonerId = " + summonerId;
             PreparedStatement stmt = db.prepareStatement(sql);
             stmt.setLong(1, match.getMatchId());
             stmt.setLong(2, summonerId);

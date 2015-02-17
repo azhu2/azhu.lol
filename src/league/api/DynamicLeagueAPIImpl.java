@@ -18,7 +18,7 @@ public class DynamicLeagueAPIImpl implements LeagueAPI{
     private static Logger log = Logger.getLogger(DynamicLeagueAPIImpl.class.getName());
     private static DynamicLeagueAPIImpl _instance = new DynamicLeagueAPIImpl();
 
-    private LeagueAPI riotApi;
+    private RiotAPIImpl riotApi;
     private DatabaseAPIImpl dbApi;
 
     private DynamicLeagueAPIImpl(){
@@ -67,28 +67,47 @@ public class DynamicLeagueAPIImpl implements LeagueAPI{
 
     @Override
     public List<MatchSummary> getRankedMatches(long summonerId) throws RiotPlsException{
-        List<MatchSummary> dbResults = dbApi.getRankedMatches(summonerId);
-
-        if(dbResults == null)
-            dbResults = new LinkedList<>();
-        List<MatchSummary> apiResults;
         try{
-            apiResults = riotApi.getRankedMatches(summonerId);
+            List<MatchSummary> apiResults = riotApi.getRankedMatches(summonerId);
+            return apiResults;
         } catch(RiotPlsException e){
             log.warning(e.getMessage());
-            return dbResults;
+            return dbApi.getRankedMatches(summonerId);
         }
-        if(apiResults != null)
-            for(MatchSummary newGame : apiResults)
-                if(!dbResults.contains(newGame))
-                    dbApi.cacheRankedMatch(summonerId, newGame);
+    }
 
-        if(apiResults != null)
-            for(MatchSummary match : apiResults)
-                if(!dbResults.contains(match))
-                    dbResults.addAll(apiResults);
-
-        return dbResults;
+    public boolean cacheAllRankedMatches(long summonerId) throws RiotPlsException{
+        return riotApi.cacheAllRankedMatches(summonerId);
+    }
+    
+    // TODO: Implement
+    // Read all from db; then read page at a time from api until you hit one already seen
+    @Override
+    public List<MatchSummary> getAllRankedMatches(long summonerId) throws RiotPlsException{
+        List<MatchSummary> matches = dbApi.getAllRankedMatches(summonerId);
+        if(matches == null)
+            matches = new LinkedList<>();
+        
+        int start = 0;
+        boolean apiDone = false;
+        List<MatchSummary> matchPage = null;
+        do{
+            matchPage = riotApi.getRankedMatches(summonerId, start);
+            if(matchPage != null)
+                for(MatchSummary match : matchPage){
+                    if(matches.contains(match)){
+                        apiDone = true;
+                        break;
+                    }
+                    else{
+                        matches.add(match);
+                        dbApi.cacheRankedMatch(summonerId, match);
+                    }
+                }
+            start += APIConstants.PAGE_SIZE;
+        }while(!apiDone && matchPage != null);
+        
+        return matches;
     }
 
     @Override

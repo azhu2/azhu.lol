@@ -20,4 +20,6 @@ public interface LeagueAPI{
     public List<SummonerDto> getSummoners(List<Long> summonerIds) throws RiotPlsException;
     public SummonerDto searchSummoner(String summonerName) throws RiotPlsException;
     public SummonerSpellDto getSummonerSpellFromId(long spellId) throws RiotPlsException;
+    public List<MatchSummary> getAllRankedMatches(long summonerId) throws RiotPlsException;
+    public boolean cacheAllRankedMatches(long summonerId) throws RiotPlsException;
 }

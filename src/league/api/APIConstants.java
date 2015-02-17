@@ -7,5 +7,6 @@ public class APIConstants{
     public static final int HTTP_RATELIMIT = 429;
     public static final int HTTP_INTERNAL_SERVER_ERROR = 500;
     public static final int HTTP_UNAVAILABLE = 503;
-
+    public static final int MAX_PAGE_SIZE = 15;
+    public static final int PAGE_SIZE = 10;
 }

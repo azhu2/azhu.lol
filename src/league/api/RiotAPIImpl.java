@@ -143,11 +143,57 @@ public class RiotAPIImpl implements LeagueAPI{
 
         try{
             PlayerHistory history = mapper.readValue(entity, PlayerHistory.class);
+            for(MatchSummary match : history.getMatches())
+                db.cacheRankedMatch(summonerId, match);
             return history.getMatches();
         } catch(IOException e){
             log.log(Level.SEVERE, e.getMessage(), e);
             return null;
         }
+    }
+
+    public List<MatchSummary> getRankedMatches(long summonerId, int startIndex) throws RiotPlsException{
+        String uri = buildUri(String.format(RANKED_QUERY, summonerId));
+        Map<String, String> params = new HashMap<>();
+        params.put("beginIndex", startIndex + "");
+        params.put("endIndex", (startIndex + APIConstants.MAX_PAGE_SIZE) + "");
+        String entity = getEntity(uri, params);
+
+        if(entity == null)
+            return null;
+
+        try{
+            PlayerHistory history = mapper.readValue(entity, PlayerHistory.class);
+            return history.getMatches();
+        } catch(IOException e){
+            log.log(Level.SEVERE, e.getMessage(), e);
+            return null;
+        }
+    }
+
+    /**
+     * Should not be used. Read ranked matches one page at a time from the Riot API until you hit a match already cached
+     */
+    @Deprecated
+    @Override
+    public List<MatchSummary> getAllRankedMatches(long summonerId) throws RiotPlsException{
+        return null;
+    }
+
+    @Override
+    public boolean cacheAllRankedMatches(long summonerId) throws RiotPlsException{
+        int start = 0;
+
+        List<MatchSummary> matchPage = null;
+        do{
+            matchPage = getRankedMatches(summonerId, start);
+            if(matchPage != null)
+                for(MatchSummary match : matchPage)
+                    db.cacheRankedMatch(summonerId, match);
+            start += APIConstants.MAX_PAGE_SIZE;
+        } while(matchPage != null);
+
+        return true;
     }
 
     @Override

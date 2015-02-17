@@ -39,12 +39,10 @@ public class LeagueResource{
     @GET
     @Path("/summoner/{name}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getSummoner(@PathParam("name") String name) throws ServletException,
-            IOException{
+    public Response getSummoner(@PathParam("name") String name) throws ServletException, IOException{
         try{
             SummonerDto summoner = api.searchSummoner(name);
-            return Response.status(APIConstants.HTTP_OK)
-                           .entity(mapper.writeValueAsString(summoner)).build();
+            return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(summoner)).build();
         } catch(RiotPlsException e){
             return Response.status(e.getStatus()).entity(e.getMessage()).build();
         }
@@ -53,12 +51,10 @@ public class LeagueResource{
     @GET
     @Path("/summoner/id/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getSummonerById(@PathParam("id") long id) throws ServletException,
-            IOException{
+    public Response getSummonerById(@PathParam("id") long id) throws ServletException, IOException{
         try{
             SummonerDto summoner = api.getSummonerFromId(id);
-            return Response.status(APIConstants.HTTP_OK)
-                           .entity(mapper.writeValueAsString(summoner)).build();
+            return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(summoner)).build();
         } catch(RiotPlsException e){
             return Response.status(e.getStatus()).entity(e.getMessage()).build();
         }
@@ -67,16 +63,14 @@ public class LeagueResource{
     @GET
     @Path("/summoners/{ids}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getSummoners(@PathParam("ids") String ids) throws ServletException,
-            IOException{
+    public Response getSummoners(@PathParam("ids") String ids) throws ServletException, IOException{
         try{
             List<Long> idList = new LinkedList<>();
             for(String id : ids.split(","))
                 idList.add(Long.parseLong(id.trim()));
 
             List<SummonerDto> summoners = api.getSummoners(idList);
-            return Response.status(APIConstants.HTTP_OK)
-                           .entity(mapper.writeValueAsString(summoners)).build();
+            return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(summoners)).build();
         } catch(RiotPlsException e){
             return Response.status(e.getStatus()).entity(e.getMessage()).build();
         }
@@ -85,12 +79,37 @@ public class LeagueResource{
     @GET
     @Path("/ranked-matches/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getRankedMatches(@PathParam("id") long id) throws ServletException,
-            IOException{
+    public Response getRankedMatches(@PathParam("id") long id) throws ServletException, IOException{
         try{
             List<MatchSummary> history = api.getRankedMatches(id);
-            return Response.status(APIConstants.HTTP_OK)
-                           .entity(mapper.writeValueAsString(history)).build();
+            return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(history)).build();
+        } catch(RiotPlsException e){
+            return Response.status(e.getStatus()).entity(e.getMessage()).build();
+        }
+    }
+
+    @GET
+    @Path("/ranked-matches/{id}/all")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAllRankedMatches(@PathParam("id") long id) throws ServletException, IOException{
+        try{
+            List<MatchSummary> history = api.getAllRankedMatches(id);
+            return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(history)).build();
+        } catch(RiotPlsException e){
+            return Response.status(e.getStatus()).entity(e.getMessage()).build();
+        }
+    }
+
+    @GET
+    @Path("/ranked-matches/{id}/all/cache")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response cacheAllRankedMatches(@PathParam("id") long id) throws ServletException, IOException{
+        try{
+            boolean success = api.cacheAllRankedMatches(id);
+            if(success)
+                return Response.status(APIConstants.HTTP_OK).entity("All ranked matches cached").build();
+            else
+                return Response.status(APIConstants.HTTP_INTERNAL_SERVER_ERROR).entity("Error caching all ranked matches").build();
         } catch(RiotPlsException e){
             return Response.status(e.getStatus()).entity(e.getMessage()).build();
         }
@@ -99,12 +118,10 @@ public class LeagueResource{
     @GET
     @Path("/match-history/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getMatchHistory(@PathParam("id") long id) throws ServletException,
-            IOException{
+    public Response getMatchHistory(@PathParam("id") long id) throws ServletException, IOException{
         try{
             Set<GameDto> history = api.getMatchHistory(id);
-            return Response.status(APIConstants.HTTP_OK)
-                           .entity(mapper.writeValueAsString(history)).build();
+            return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(history)).build();
         } catch(RiotPlsException e){
             return Response.status(e.getStatus()).entity(e.getMessage()).build();
         }
@@ -113,12 +130,10 @@ public class LeagueResource{
     @GET
     @Path("/champion/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getChampFromId(@PathParam("id") long id) throws ServletException,
-            IOException{
+    public Response getChampFromId(@PathParam("id") long id) throws ServletException, IOException{
         try{
             ChampionDto history = api.getChampFromId(id);
-            return Response.status(APIConstants.HTTP_OK)
-                           .entity(mapper.writeValueAsString(history)).build();
+            return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(history)).build();
         } catch(RiotPlsException e){
             return Response.status(e.getStatus()).entity(e.getMessage()).build();
         }
@@ -127,12 +142,10 @@ public class LeagueResource{
     @GET
     @Path("/match/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getMatchDetail(@PathParam("id") long id) throws ServletException,
-            IOException{
+    public Response getMatchDetail(@PathParam("id") long id) throws ServletException, IOException{
         try{
             MatchDetail history = api.getMatchDetail(id);
-            return Response.status(APIConstants.HTTP_OK)
-                           .entity(mapper.writeValueAsString(history)).build();
+            return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(history)).build();
         } catch(RiotPlsException e){
             return Response.status(e.getStatus()).entity(e.getMessage()).build();
         }
@@ -141,12 +154,10 @@ public class LeagueResource{
     @GET
     @Path("/summoner-spell/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getSummonerSpellFromId(@PathParam("id") long id) throws ServletException,
-            IOException{
+    public Response getSummonerSpellFromId(@PathParam("id") long id) throws ServletException, IOException{
         try{
             SummonerSpellDto history = api.getSummonerSpellFromId(id);
-            return Response.status(APIConstants.HTTP_OK)
-                           .entity(mapper.writeValueAsString(history)).build();
+            return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(history)).build();
         } catch(RiotPlsException e){
             return Response.status(e.getStatus()).entity(e.getMessage()).build();
         }
