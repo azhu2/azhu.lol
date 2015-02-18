@@ -168,7 +168,7 @@ public class DatabaseAPIImpl implements LeagueAPI{
                     + "FROM ranked_matches WHERE summonerId = %d ORDER BY matchCreation DESC", summonerId);
             if(numRecords != FETCH_ALL)
                 sql += " LIMIT " + numRecords;
-            
+
             ResultSet rs = stmt.executeQuery(sql);
 
             List<MatchSummary> matches = new LinkedList<>();
@@ -226,9 +226,32 @@ public class DatabaseAPIImpl implements LeagueAPI{
     public int cacheAllRankedMatches(long summonerId){
         return APIConstants.INVALID;
     }
-    
+
+    private boolean hasRankedMatch(long summonerId, MatchSummary match){
+        try{
+            Statement stmt = db.createStatement();
+            String sql;
+            sql = String.format("SELECT COUNT(*) AS rowCount FROM ranked_matches "
+                    + "WHERE summonerId = %d AND matchId = %d ORDER BY matchCreation DESC", summonerId,
+                match.getMatchId());
+
+            ResultSet rs = stmt.executeQuery(sql);
+
+            rs.next();
+            int rows = rs.getInt("rowCount");
+            return rows > 0;
+        } catch(SQLException e){
+            log.log(Level.SEVERE, e.getMessage(), e);
+            return false;
+        }
+    }
+
     public boolean cacheRankedMatch(long summonerId, MatchSummary match){
         try{
+            if(hasRankedMatch(summonerId, match)){
+                return false;
+            }
+
             String sql = "INSERT INTO ranked_matches VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
                     + "ON DUPLICATE KEY UPDATE summonerId = " + summonerId;
             PreparedStatement stmt = db.prepareStatement(sql);
@@ -267,8 +290,7 @@ public class DatabaseAPIImpl implements LeagueAPI{
             Statement stmt = db.createStatement();
             String sql;
             sql = String.format("SELECT id, summonerId, createDate, gameData FROM match_history "
-                    + "WHERE summonerId = %d ORDER BY createDate DESC LIMIT " + APIConstants.PAGE_SIZE,
-                summonerId);
+                    + "WHERE summonerId = %d ORDER BY createDate DESC LIMIT " + APIConstants.PAGE_SIZE, summonerId);
             ResultSet rs = stmt.executeQuery(sql);
 
             Set<GameDto> games = new HashSet<>();
