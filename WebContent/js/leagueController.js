@@ -338,6 +338,7 @@ leagueApp.controller('lookupController',
 				id : summonerId
 			}, function(data) {
 				$scope.working = ' (' + data.count + ' matches imported)';
+				$rootScope.showAll = false;
 			});
 		};
 	});
