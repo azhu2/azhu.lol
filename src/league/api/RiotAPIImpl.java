@@ -180,6 +180,9 @@ public class RiotAPIImpl implements LeagueAPI{
         return null;
     }
 
+    /**
+     * Query the API for all ranked matches and cache them in DB
+     */
     @Override
     public int cacheAllRankedMatches(long summonerId) throws RiotPlsException{
         int start = 0;
@@ -199,6 +202,14 @@ public class RiotAPIImpl implements LeagueAPI{
         return count;
     }
 
+    /**
+     * Can only get one page from the API
+     */
+    @Override
+    public Set<GameDto> getMatchHistoryAll(long summonerId) throws RiotPlsException{
+        return getMatchHistory(summonerId);
+    }
+    
     @Override
     public Set<GameDto> getMatchHistory(long summonerId) throws RiotPlsException{
         String uri = buildUri(String.format(MATCHHISTORY_QUERY, summonerId));

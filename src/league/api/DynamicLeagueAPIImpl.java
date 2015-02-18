@@ -66,6 +66,29 @@ public class DynamicLeagueAPIImpl implements LeagueAPI{
     }
 
     @Override
+    public Set<GameDto> getMatchHistoryAll(long summonerId){
+        Set<GameDto> dbResults = dbApi.getMatchHistoryAll(summonerId);
+
+        if(dbResults == null)
+            dbResults = new HashSet<>();
+        Set<GameDto> apiResults;
+        try{
+            apiResults = riotApi.getMatchHistoryAll(summonerId);
+        } catch(RiotPlsException e){
+            log.warning(e.getMessage());
+            return dbResults;
+        }
+        if(apiResults != null)
+            for(GameDto newGame : apiResults)
+                if(!dbResults.contains(newGame))
+                    dbApi.cacheMatchHistoryMatch(summonerId, newGame);
+        if(apiResults != null)
+            dbResults.addAll(apiResults);
+
+        return dbResults;
+    }
+    
+    @Override
     public List<MatchSummary> getRankedMatches(long summonerId) throws RiotPlsException{
         try{
             List<MatchSummary> apiResults = riotApi.getRankedMatches(summonerId);

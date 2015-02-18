@@ -139,6 +139,18 @@ public class LeagueResource{
     }
 
     @GET
+    @Path("/match-history/{id}/all")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getMatchHistoryAll(@PathParam("id") long id) throws ServletException, IOException{
+        try{
+            Set<GameDto> history = api.getMatchHistoryAll(id);
+            return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(history)).build();
+        } catch(RiotPlsException e){
+            return Response.status(e.getStatus()).entity(e.getMessage()).build();
+        }
+    }
+    
+    @GET
     @Path("/champion/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getChampFromId(@PathParam("id") long id) throws ServletException, IOException{

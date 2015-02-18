@@ -15,6 +15,7 @@ public interface LeagueAPI{
     public ChampionDto getChampFromId(long champId) throws RiotPlsException;
     public MatchDetail getMatchDetail(long matchId) throws RiotPlsException;
     public Set<GameDto> getMatchHistory(long summonerId) throws RiotPlsException;
+    public Set<GameDto> getMatchHistoryAll(long summonerId) throws RiotPlsException;
     public List<MatchSummary> getRankedMatches(long summonerId) throws RiotPlsException;
     public SummonerDto getSummonerFromId(long summonerId) throws RiotPlsException;
     public List<SummonerDto> getSummoners(List<Long> summonerIds) throws RiotPlsException;

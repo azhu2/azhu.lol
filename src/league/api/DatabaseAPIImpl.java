@@ -205,6 +205,9 @@ public class DatabaseAPIImpl implements LeagueAPI{
         }
     }
 
+    /**
+     * Get one page of ranked results
+     */
     @Override
     public List<MatchSummary> getRankedMatches(long summonerId){
         return getRankedMatches(summonerId, APIConstants.MAX_PAGE_SIZE);
@@ -216,7 +219,7 @@ public class DatabaseAPIImpl implements LeagueAPI{
     }
 
     /**
-     * Nothing to do here
+     * Nothing to do here. See {@link RiotAPIImpl}
      */
     @Override
     @Deprecated
@@ -260,6 +263,33 @@ public class DatabaseAPIImpl implements LeagueAPI{
 
     @Override
     public Set<GameDto> getMatchHistory(long summonerId){
+        try{
+            Statement stmt = db.createStatement();
+            String sql;
+            sql = String.format("SELECT id, summonerId, createDate, gameData FROM match_history "
+                    + "WHERE summonerId = %d ORDER BY createDate DESC LIMIT " + APIConstants.PAGE_SIZE,
+                summonerId);
+            ResultSet rs = stmt.executeQuery(sql);
+
+            Set<GameDto> games = new HashSet<>();
+            while(rs.next()){
+                String gameData = rs.getString("gameData");
+
+                GameDto game = mapper.readValue(gameData, GameDto.class);
+                games.add(game);
+
+                log.info("Fetched match " + game.getGameId() + " from match history for summoner " + summonerId
+                        + " from db.");
+            }
+            return games;
+        } catch(SQLException | IOException e){
+            log.log(Level.SEVERE, e.getMessage(), e);
+            return null;
+        }
+    }
+
+    @Override
+    public Set<GameDto> getMatchHistoryAll(long summonerId){
         try{
             Statement stmt = db.createStatement();
             String sql;
