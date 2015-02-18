@@ -1,7 +1,7 @@
 <div id="matches" ng-show="showMatchHistory">
 	<h2>Match History</h2>
 	<ul id="matches-list">
-		<li	ng-repeat="match in matchData  | orderBy:'createDate':true track by $index ">
+		<li	ng-repeat="match in matchData | orderBy:'createDate':true track by $index ">
 			<div class="match id_{{ match.gameId }}" ng-class="(match.stats.win == 1) ? 'win' : 'loss'">
 
 				<div class="topRow">
@@ -152,4 +152,6 @@
 			</div>
 		</li>
 	</ul>
+	
+	<button class="showAllButton" ng-hide="showAll" ng-click="lookupAllMatches(summoner.id)">Show all</button>
 </div>

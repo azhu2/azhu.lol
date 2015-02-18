@@ -4,8 +4,15 @@
 	margin-left: auto;
 	margin-bottom: 20px;
 	padding: 10px;
-	width: 400px;
 	padding: 10px;
+	width: 400px;
+}
+
+#matches button {
+	height: 30px;
+	background-color: #ffffbb;
+	border-radius: 5px;
+	border: 2px solid #cccc88;
 }
 
 #matches a {
@@ -150,12 +157,8 @@
 	margin-left: 15px;
 }
 
-#matches .match .expandMatchButton .expandButton {
-	height: 30px;
+#matches .match .expandMatchButton .expandButton{
 	width: 70px;
-	background-color: #ffffbb;
-	border-radius: 5px;
-	border: 2px solid #cccc88;
 }
 
 #matches .match .expandMatch {

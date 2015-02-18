@@ -83,6 +83,19 @@ leagueApp.controller('lookupController',
 			});
 			$rootScope.showRankedResults = true;
 			$rootScope.showMatchHistory = false;
+			$rootScope.showAll = false;
+		};
+		
+		$rootScope.lookupAllRanked = function(summonerId) {
+			$rootScope.rankedData = [];
+			LeagueResource.allRanked(summonerId).query({
+				id : summonerId
+			}, function(data) {
+				for (var i = 0; i < data.length; i++) {
+					parseRankedGame($rootScope, data[i], data.length - i - 1);
+				}
+			});
+			$rootScope.showAll = true;
 		};
 
 		var parseRankedGame = function($rootScope, match, index) {
@@ -117,6 +130,19 @@ leagueApp.controller('lookupController',
 			});
 			$rootScope.showRankedResults = false;
 			$rootScope.showMatchHistory = true;
+			$rootScope.showAll = false;
+		};
+		
+		$rootScope.lookupAllMatches = function(summonerId) {
+			$rootScope.matchData = [];
+			LeagueResource.lookupAllMatches(summonerId).query({
+				id : summonerId
+			}, function(data) {
+				for (var i = 0; i < data.length; i++) {
+					parseGame($rootScope, data[i], data.length - i - 1);
+				}
+			});
+			$rootScope.showAll = true;
 		};
 
 		// Process champion and summoner spells
@@ -341,6 +367,10 @@ leagueApp.service('LeagueResource', function($resource) {
 		return $resource('/azhu.lol/rest/match-history/:id');
 	};
 
+	this.lookupAllMatches = function() {
+		return $resource('/azhu.lol/rest/match-history/:id/all');
+	};
+	
 	this.matchDetail = function() {
 		return $resource('/azhu.lol/rest/match/:id');
 	};

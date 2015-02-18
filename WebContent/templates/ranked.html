@@ -1,7 +1,7 @@
 <div id="matches" ng-show="showRankedResults">
 	<h2>Ranked Matches</h2>
 	<ul id="ranked-history">
-		<li ng-repeat="match in rankedData track by $index">
+		<li ng-repeat="match in rankedData | orderBy:'matchCreation':true track by $index ">
 			<div class="match id_{{match.matchId}}" ng-class="match.participants[0].stats.winner ? 'win' : 'loss'">
 				<div class="topRow">
 					<div class="queue box">{{ match.queueType | queueFilter }}</div>
@@ -212,5 +212,6 @@
 			</div>			
 		</li>
 	</ul>
+	<button class="showAllButton" ng-hide="showAll" ng-click="lookupAllRanked(summoner.id)">Show all</button>
 	<button class="loadAllRanked" ng-disabled="disableImportButton" ng-click="importAllRanked(summoner.id)">Import all ranked matches{{ working }}</button>
 </div>
