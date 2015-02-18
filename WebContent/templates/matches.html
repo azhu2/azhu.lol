@@ -95,7 +95,7 @@
 					<div class="moreMatchStats">
 						<div class="damageGraph total" ng-mouseover="showHoverText1 = false" ng-mouseout="showHoverText1 = true" ng-init="showHoverText1 = true">
 							<div class="textOverlay">
-								Damage dealt {{ showHoverText1 ? '(hover for details)' : '' }}
+								Damage dealt - {{ match.stats.totalDamageDealt }} {{ showHoverText1 ? '(hover for details)' : '' }}
 							</div>
 							<img class="damage physical" src="img/damage_physical.png" 
 								ng-attr-title="Physical: {{ match.stats.physicalDamageDealtPlayer }} ({{ match.stats.physicalDamageDealtPlayer / match.stats.totalDamageDealt * 100 | number:1 }}%)"
@@ -109,7 +109,7 @@
 						</div>
 						<div class="damageGraph champs" ng-mouseover="showHoverText2 = false" ng-mouseout="showHoverText2 = true" ng-init="showHoverText2 = true">
 							<div class="textOverlay">
-								Damage dealt to champions {{ showHoverText2 ? '(hover for details)' : '' }}
+								Damage dealt to champions - {{ match.stats.totalDamageDealtToChampions }} {{ showHoverText2 ? '(hover for details)' : '' }}
 							</div>
 							<img class="damage physical" src="img/damage_physical.png" 
 								ng-attr-title="Physical: {{ match.stats.physicalDamageDealtToChampions }} ({{ match.stats.physicalDamageDealtToChampions / match.stats.totalDamageDealtToChampions * 100 | number:1 }}%)"
@@ -123,7 +123,7 @@
 						</div>
 						<div class="damageGraph taken"  ng-mouseover="showHoverText3 = false" ng-mouseout="showHoverText3 = true" ng-init="showHoverText3 = true">
 							<div class="textOverlay">
-								Damage taken {{ showHoverText3 ? '(hover for details)' : '' }}
+								Damage taken - {{ match.stats.totalDamageTaken }} {{ showHoverText3 ? '(hover for details)' : '' }}
 							</div>
 							<img class="damage physical" src="img/damage_physical.png" 
 								ng-attr-title="Physical: {{ match.stats.physicalDamageTaken }} ({{ match.stats.physicalDamageTaken / match.stats.totalDamageTaken * 100 | number:1 }}%)"

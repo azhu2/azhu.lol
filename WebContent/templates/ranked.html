@@ -155,7 +155,7 @@
 					<div class="moreMatchStats">
 						<div class="damageGraph total" ng-mouseover="showHoverText1 = false" ng-mouseout="showHoverText1 = true" ng-init="showHoverText1 = true">
 							<div class="textOverlay">
-								Damage dealt {{ showHoverText1 ? '(hover for details)' : '' }}
+								Damage dealt - {{ match.participants[0].stats.totalDamageDealt }} {{ showHoverText1 ? '(hover for details)' : '' }}
 							</div>
 							<img class="damage physical" src="img/damage_physical.png" 
 								ng-attr-title="Physical: {{ match.participants[0].stats.physicalDamageDealt }} ({{ match.participants[0].stats.physicalDamageDealt / match.participants[0].stats.totalDamageDealt * 100 | number:1 }}%)"
@@ -169,7 +169,7 @@
 						</div>
 						<div class="damageGraph champs" ng-mouseover="showHoverText2 = false" ng-mouseout="showHoverText2 = true" ng-init="showHoverText2 = true">
 							<div class="textOverlay">
-								Damage dealt to champions {{ showHoverText2 ? '(hover for details)' : '' }}
+								Damage dealt to champions - {{ match.participants[0].stats.totalDamageDealtToChampions }} {{ showHoverText2 ? '(hover for details)' : '' }}
 							</div>
 							<img class="damage physical" src="img/damage_physical.png" 
 								ng-attr-title="Physical: {{ match.participants[0].stats.physicalDamageDealtToChampions }} ({{ match.participants[0].stats.physicalDamageDealtToChampions / match.participants[0].stats.totalDamageDealtToChampions * 100 | number:1 }}%)"
@@ -183,7 +183,7 @@
 						</div>
 						<div class="damageGraph taken"  ng-mouseover="showHoverText3 = false" ng-mouseout="showHoverText3 = true" ng-init="showHoverText3 = true">
 							<div class="textOverlay">
-								Damage taken {{ showHoverText3 ? '(hover for details)' : '' }}
+								Damage taken - {{ match.participants[0].stats.totalDamageTaken }} {{ showHoverText3 ? '(hover for details)' : '' }}
 							</div>
 							<img class="damage physical" src="img/damage_physical.png" 
 								ng-attr-title="Physical: {{ match.participants[0].stats.physicalDamageTaken }} ({{ match.participants[0].stats.physicalDamageTaken / match.participants[0].stats.totalDamageTaken * 100 | number:1 }}%)"
