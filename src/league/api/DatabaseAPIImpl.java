@@ -252,8 +252,7 @@ public class DatabaseAPIImpl implements LeagueAPI{
                 return false;
             }
 
-            String sql = "INSERT INTO ranked_matches VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-                    + "ON DUPLICATE KEY UPDATE summonerId = " + summonerId;
+            String sql = "INSERT INTO ranked_matches VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement stmt = db.prepareStatement(sql);
             stmt.setLong(1, match.getMatchId());
             stmt.setLong(2, summonerId);
