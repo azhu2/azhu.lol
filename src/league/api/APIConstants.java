@@ -9,4 +9,5 @@ public class APIConstants{
     public static final int HTTP_UNAVAILABLE = 503;
     public static final int MAX_PAGE_SIZE = 15;
     public static final int PAGE_SIZE = 10;
+    public static final int INVALID = -1;
 }

@@ -7,6 +7,7 @@ import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -100,18 +101,28 @@ public class LeagueResource{
         }
     }
 
-    @GET
-    @Path("/ranked-matches/{id}/all/cache")
+    @POST
+    @Path("/ranked-matches/{id}/all")
     @Produces(MediaType.APPLICATION_JSON)
     public Response cacheAllRankedMatches(@PathParam("id") long id) throws ServletException, IOException{
         try{
-            boolean success = api.cacheAllRankedMatches(id);
-            if(success)
-                return Response.status(APIConstants.HTTP_OK).entity("All ranked matches cached").build();
+            int count = api.cacheAllRankedMatches(id);
+            UpdateCount countObj = new UpdateCount();
+            countObj.count = count;
+            if(count != APIConstants.INVALID)
+                return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(countObj)).build();
             else
                 return Response.status(APIConstants.HTTP_INTERNAL_SERVER_ERROR).entity("Error caching all ranked matches").build();
         } catch(RiotPlsException e){
             return Response.status(e.getStatus()).entity(e.getMessage()).build();
+        }
+    }
+    
+    private class UpdateCount{
+        private int count;
+        
+        public int getCount(){
+            return count;
         }
     }
 

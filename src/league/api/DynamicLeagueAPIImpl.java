@@ -76,7 +76,7 @@ public class DynamicLeagueAPIImpl implements LeagueAPI{
         }
     }
 
-    public boolean cacheAllRankedMatches(long summonerId) throws RiotPlsException{
+    public int cacheAllRankedMatches(long summonerId) throws RiotPlsException{
         return riotApi.cacheAllRankedMatches(summonerId);
     }
     

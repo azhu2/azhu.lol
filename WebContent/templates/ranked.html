@@ -1,5 +1,5 @@
 <div id="matches" ng-show="showRankedResults">
-	<h2>Ranked Stats</h2>
+	<h2>Ranked Matches</h2>
 	<ul id="ranked-history">
 		<li ng-repeat="match in rankedData track by $index">
 			<div class="match id_{{match.matchId}}" ng-class="match.participants[0].stats.winner ? 'win' : 'loss'">
@@ -212,5 +212,5 @@
 			</div>			
 		</li>
 	</ul>
-	<button id="loadAllRanked">Import all ranked matches</button>
+	<button class="loadAllRanked" ng-disabled="disableImportButton" ng-click="importAllRanked(summoner.id)">Import all ranked matches{{ working }}</button>
 </div>

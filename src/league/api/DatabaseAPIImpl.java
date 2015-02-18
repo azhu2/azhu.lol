@@ -220,8 +220,8 @@ public class DatabaseAPIImpl implements LeagueAPI{
      */
     @Override
     @Deprecated
-    public boolean cacheAllRankedMatches(long summonerId){
-        return false;
+    public int cacheAllRankedMatches(long summonerId){
+        return APIConstants.INVALID;
     }
     
     public boolean cacheRankedMatch(long summonerId, MatchSummary match){

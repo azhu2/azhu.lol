@@ -181,19 +181,22 @@ public class RiotAPIImpl implements LeagueAPI{
     }
 
     @Override
-    public boolean cacheAllRankedMatches(long summonerId) throws RiotPlsException{
+    public int cacheAllRankedMatches(long summonerId) throws RiotPlsException{
         int start = 0;
-
+        int count = 0;
+        
         List<MatchSummary> matchPage = null;
         do{
             matchPage = getRankedMatches(summonerId, start);
             if(matchPage != null)
-                for(MatchSummary match : matchPage)
+                for(MatchSummary match : matchPage){
                     db.cacheRankedMatch(summonerId, match);
+                    count ++;
+                }
             start += APIConstants.MAX_PAGE_SIZE;
         } while(matchPage != null);
 
-        return true;
+        return count;
     }
 
     @Override

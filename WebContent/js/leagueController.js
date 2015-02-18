@@ -11,14 +11,14 @@ leagueApp.config([ '$routeProvider', function($routeProvider, routeController) {
 
 	$routeProvider.when('/:summonerId', {
 		controller : 'routeController',
-		templateUrl : 'templates/matches.html'		// idk why, but this is needed
+		templateUrl : 'templates/matches.html' // idk why, but this is needed
 	});
 
 	$routeProvider.when('/:summonerId/matches', {
 		controller : 'lookupController',
 		templateUrl : 'templates/matches.html'
 	});
-	
+
 	$routeProvider.when('/:summonerId/ranked', {
 		controller : 'lookupController',
 		templateUrl : 'templates/ranked.html'
@@ -45,9 +45,9 @@ leagueApp.controller('routeController',
 leagueApp.controller('lookupController',
 	function($scope, $rootScope, $routeParams, LeagueResource) {
 		$rootScope.version = "5.2.2";
-		
-		if($routeParams.summonerId){
-			if(!$rootScope.summoner){
+
+		if ($routeParams.summonerId) {
+			if (!$rootScope.summoner) {
 				LeagueResource.summonerFromId().get({
 					id : $routeParams.summonerId
 				}, function(data) {
@@ -281,7 +281,6 @@ leagueApp.controller('lookupController',
 					$rootScope.matchPlayerBlue.push(matchPlayers[index]);
 				else
 					$rootScope.matchPlayerRed.push(matchPlayers[index]);
-
 			});
 		};
 
@@ -303,6 +302,17 @@ leagueApp.controller('lookupController',
 		// Very dirty, but it works fine
 		var isRanked = function(match) {
 			return match.season != null;
+		};
+		
+		$rootScope.importAllRanked = function(summonerId) {
+			$scope.working = ' (working)';
+			$scope.disableImportButton = true;
+
+			LeagueResource.allRanked().save({
+				id : summonerId
+			}, function(data) {
+				$scope.working = ' (' + data.count + ' matches imported)';
+			});
 		};
 	});
 
@@ -337,6 +347,12 @@ leagueApp.service('LeagueResource', function($resource) {
 
 	this.summSpellFromId = function() {
 		return $resource('/azhu.lol/rest/summoner-spell/:id');
+	};
+
+	this.allRanked = function() {
+		return $resource('/azhu.lol/rest/ranked-matches/:id/all', {
+			id : '@id'
+		});
 	};
 });
 
