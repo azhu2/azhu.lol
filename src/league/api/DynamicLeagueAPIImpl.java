@@ -87,7 +87,7 @@ public class DynamicLeagueAPIImpl implements LeagueAPI{
 
         return dbResults;
     }
-    
+
     @Override
     public List<MatchSummary> getRankedMatches(long summonerId) throws RiotPlsException{
         try{
@@ -102,13 +102,13 @@ public class DynamicLeagueAPIImpl implements LeagueAPI{
     public int cacheAllRankedMatches(long summonerId) throws RiotPlsException{
         return riotApi.cacheAllRankedMatches(summonerId);
     }
-    
+
     @Override
     public List<MatchSummary> getAllRankedMatches(long summonerId) throws RiotPlsException{
         List<MatchSummary> matches = dbApi.getAllRankedMatches(summonerId);
         if(matches == null)
             matches = new LinkedList<>();
-        
+
         int start = 0;
         boolean apiDone = false;
         List<MatchSummary> matchPage = null;
@@ -119,16 +119,24 @@ public class DynamicLeagueAPIImpl implements LeagueAPI{
                     if(matches.contains(match)){
                         apiDone = true;
                         break;
-                    }
-                    else{
+                    } else{
                         matches.add(match);
                         dbApi.cacheRankedMatch(summonerId, match);
                     }
                 }
             start += APIConstants.PAGE_SIZE;
-        }while(!apiDone && matchPage != null);
-        
+        } while(!apiDone && matchPage != null);
+
         return matches;
+    }
+
+    /**
+     * If we directly search for a summoner, make an API call and update the summoner. Fail back on DB if API is down.
+     */
+    @Override
+    public SummonerDto searchSummoner(String summonerName) throws RiotPlsException{
+        SummonerDto result = riotApi.searchSummoner(summonerName);
+        return result == null ? dbApi.searchSummoner(summonerName) : result;
     }
 
     @Override
@@ -167,16 +175,6 @@ public class DynamicLeagueAPIImpl implements LeagueAPI{
             if(summoner.getId() == id)
                 return summoner;
         return null;
-    }
-
-    /**
-     * If we directly search for a summoner, make an API call and update the summoner.
-     * Fail back on DB if API is down. Somehow this works if we query by single ID also.
-     */
-    @Override
-    public SummonerDto searchSummoner(String summonerName) throws RiotPlsException{
-        SummonerDto result = riotApi.searchSummoner(summonerName);
-        return result == null ? dbApi.searchSummoner(summonerName) : result;
     }
 
     @Override
