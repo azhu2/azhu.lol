@@ -137,7 +137,7 @@ public class DatabaseAPIImpl implements LeagueAPI{
         try{
             String sql = "INSERT INTO summoners (id, name, profileIconId, summonerLevel, revisionDate)"
                     + "VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE profileIconId=VALUES(profileIconId), "
-                    + "summonerLevel=VALUES(summonerLevel), revisionDate=VALUES(revisionDate)";
+                    + "summonerLevel=VALUES(summonerLevel), revisionDate=VALUES(revisionDate), name=VALUES(name)";
             PreparedStatement stmt = db.prepareStatement(sql);
             stmt.setLong(1, summoner.getId());
             stmt.setString(2, summoner.getName());
