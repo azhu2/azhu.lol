@@ -106,6 +106,24 @@
 									</div>
 								</li>
 							</ul>
+							<div class="teamStats">
+								<div class="teamStat dragons">
+									<img ng-src="img/dragon_{{ matchDetails.teams[0].teamId }}.png" title="Dragons">
+									{{ matchDetails.teams[0].dragonKills }}
+								</div>
+								<div class="teamStat barons">
+									<img ng-src="img/baron_nashor_{{ matchDetails.teams[0].teamId }}.png" title="Barons">
+									{{ matchDetails.teams[0].baronKills }}
+								</div>
+								<div class="teamStat towers">
+									<img ng-src="img/turret_{{ matchDetails.teams[0].teamId }}.png" title="Towers">
+									{{ matchDetails.teams[0].towerKills }}
+								</div>
+								<div class="teamStat inhibs">
+									<img ng-src="img/inhibitor_building_{{ matchDetails.teams[0].teamId }}.png" title="Inhibitors">
+									{{ matchDetails.teams[0].inhibitorKills }}
+								</div>
+							</div>
 						</div>
 						<div class="rankedTeam red">
 							<div class="teamTitle">
@@ -150,6 +168,24 @@
 									</div>
 								</li>
 							</ul>
+							<div class="teamStats">
+								<div class="teamStat dragons">
+									<img ng-src="img/dragon_{{ matchDetails.teams[1].teamId }}.png" title="Dragons">
+									{{ matchDetails.teams[1].dragonKills }}
+								</div>
+								<div class="teamStat barons">
+									<img ng-src="img/baron_nashor_{{ matchDetails.teams[1].teamId }}.png" title="Barons">
+									{{ matchDetails.teams[1].baronKills }}
+								</div>
+								<div class="teamStat towers">
+									<img ng-src="img/turret_{{ matchDetails.teams[1].teamId }}.png" title="Towers">
+									{{ matchDetails.teams[1].towerKills }}
+								</div>
+								<div class="teamStat inhibs">
+									<img ng-src="img/inhibitor_building_{{ matchDetails.teams[1].teamId }}.png" title="Inhibitors">
+									{{ matchDetails.teams[1].inhibitorKills }}
+								</div>
+							</div>
 						</div>
 					
 					<div class="moreMatchStats">

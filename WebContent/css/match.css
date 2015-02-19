@@ -298,6 +298,24 @@
 	text-align: right;
 }
 
+#matches .match .expandMatch .rankedTeam .teamStats {
+	text-align: center;
+	margin-top: 10px;
+	font-size: 0.8em;
+	border-top: 1px #555555 solid;
+}
+
+#matches .match .expandMatch .rankedTeam .teamStat {
+	display: inline-block;
+	margin-left: 8px;
+	margin-right: 8px;
+}
+
+#matches .match .expandMatch .rankedTeam .teamStats img {
+	height: 15px;
+	width: 15px;
+}
+
 #matches .match .expandMatch .moreMatchStats {
 	margin-top: 10px;
 	display: inline-block;
