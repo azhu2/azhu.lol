@@ -103,8 +103,6 @@ public class DynamicLeagueAPIImpl implements LeagueAPI{
         return riotApi.cacheAllRankedMatches(summonerId);
     }
     
-    // TODO: Implement
-    // Read all from db; then read page at a time from api until you hit one already seen
     @Override
     public List<MatchSummary> getAllRankedMatches(long summonerId) throws RiotPlsException{
         List<MatchSummary> matches = dbApi.getAllRankedMatches(summonerId);
@@ -171,10 +169,14 @@ public class DynamicLeagueAPIImpl implements LeagueAPI{
         return null;
     }
 
+    /**
+     * If we directly search for a summoner, make an API call and update the summoner.
+     * Fail back on DB if API is down. Somehow this works if we query by single ID also.
+     */
     @Override
     public SummonerDto searchSummoner(String summonerName) throws RiotPlsException{
-        SummonerDto result = dbApi.searchSummoner(summonerName);
-        return result == null ? riotApi.searchSummoner(summonerName) : result;
+        SummonerDto result = riotApi.searchSummoner(summonerName);
+        return result == null ? dbApi.searchSummoner(summonerName) : result;
     }
 
     @Override
