@@ -17,7 +17,34 @@ public class MatchDetail{
     private String region;
     private String season;
     private List<Team> teams;
-    private Timeline timeline;
+
+    // private Timeline timeline;
+
+    public MatchDetail(){
+
+    }
+
+    public MatchDetail(int mapId, long matchCreation, long matchDuration, long matchId, String matchMode,
+            String matchType, String matchVersion, List<ParticipantIdentity> participantIdentities,
+            List<Participant> participants, String platformId, String queueType, String region, String season,
+            List<Team> teams){
+        super();
+        this.mapId = mapId;
+        this.matchCreation = matchCreation;
+        this.matchDuration = matchDuration;
+        this.matchId = matchId;
+        this.matchMode = matchMode;
+        this.matchType = matchType;
+        this.matchVersion = matchVersion;
+        this.participantIdentities = participantIdentities;
+        this.participants = participants;
+        this.platformId = platformId;
+        this.queueType = queueType;
+        this.region = region;
+        this.season = season;
+        this.teams = teams;
+        // this.timeline = timeline;
+    }
 
     public int getMapId(){
         return mapId;
@@ -131,11 +158,38 @@ public class MatchDetail{
         this.teams = teams;
     }
 
-    public Timeline getTimeline(){
-        return timeline;
+    @Override
+    public String toString(){
+        return "MatchDetail " + matchId + "]";
     }
 
-    public void setTimeline(Timeline timeline){
-        this.timeline = timeline;
+    @Override
+    public int hashCode(){
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (int) (matchId ^ (matchId >>> 32));
+        return result;
     }
+
+    @Override
+    public boolean equals(Object obj){
+        if(this == obj)
+            return true;
+        if(obj == null)
+            return false;
+        if(getClass() != obj.getClass())
+            return false;
+        MatchDetail other = (MatchDetail) obj;
+        if(matchId != other.matchId)
+            return false;
+        return true;
+    }
+
+    // public Timeline getTimeline(){
+    // return timeline;
+    // }
+    //
+    // public void setTimeline(Timeline timeline){
+    // this.timeline = timeline;
+    // }
 }

@@ -277,6 +277,7 @@ public class RiotAPIImpl implements LeagueAPI{
 
         try{
             MatchDetail match = mapper.readValue(entity, MatchDetail.class);
+            db.cacheMatchDetail(match);
             return match;
         } catch(IOException e){
             log.log(Level.SEVERE, e.getMessage(), e);

@@ -24,6 +24,7 @@ import league.entities.Participant;
 import league.entities.ParticipantIdentity;
 import league.entities.SummonerDto;
 import league.entities.SummonerSpellDto;
+import league.entities.Team;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig;
@@ -484,8 +485,98 @@ public class DatabaseAPIImpl implements LeagueAPI{
     }
 
     @Override
-    public MatchDetail getMatchDetail(long id){
+    public MatchDetail getMatchDetail(long matchId){
+        try{
+            Statement stmt = db.createStatement();
+            String sql;
+            sql = String.format("SELECT mapId, matchCreation, matchDuration, "
+                    + "matchMode, matchType, matchVersion, participantIdentities, "
+                    + "participants, platformId, queueType, region, season, teams "
+                    + "FROM matches WHERE matchId = %d ORDER BY matchCreation DESC", matchId);
+
+            ResultSet rs = stmt.executeQuery(sql);
+
+            if(rs.next()){
+                int mapId = rs.getInt("mapId");
+                long matchCreation = rs.getLong("matchCreation");
+                long matchDuration = rs.getLong("matchDuration");
+                String matchMode = rs.getString("matchMode");
+                String matchType = rs.getString("matchType");
+                String matchVersion = rs.getString("matchVersion");
+                List<ParticipantIdentity> participantIdentities = mapper.readValue(
+                    rs.getString("participantIdentities"), new TypeReference<List<ParticipantIdentity>>(){
+                    });
+                List<Participant> participants = mapper.readValue(rs.getString("participants"),
+                    new TypeReference<List<Participant>>(){
+                    });
+                String platformId = rs.getString("platformId");
+                String queueType = rs.getString("queueType");
+                String region = rs.getString("region");
+                String season = rs.getString("season");
+                List<Team> teams = mapper.readValue(rs.getString("teams"), new TypeReference<List<Team>>(){
+                });
+
+                MatchDetail match = new MatchDetail(mapId, matchCreation, matchDuration, matchId, matchMode, matchType,
+                        matchVersion, participantIdentities, participants, platformId, queueType, region, season, teams);
+                log.info("Fetched match " + match + " from db.");
+                return match;
+            }
+        } catch(SQLException | IOException e){
+            log.log(Level.SEVERE, e.getMessage(), e);
+        }
         return null;
+    }
+
+    private boolean hasMatch(MatchDetail match){
+        try{
+            Statement stmt = db.createStatement();
+            String sql;
+            sql = String.format("SELECT COUNT(*) AS rowCount FROM matches WHERE " + "matchId = %d", match.getMatchId());
+
+            ResultSet rs = stmt.executeQuery(sql);
+
+            rs.next();
+            int rows = rs.getInt("rowCount");
+            return rows > 0;
+        } catch(SQLException e){
+            log.log(Level.SEVERE, e.getMessage(), e);
+            return false;
+        }
+    }
+
+    public boolean cacheMatchDetail(MatchDetail match){
+        try{
+            if(hasMatch(match))
+                return false;
+
+            String sql = "INSERT INTO matches VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            PreparedStatement stmt = db.prepareStatement(sql);
+            stmt.setInt(1, match.getMapId());
+            stmt.setLong(2, match.getMatchCreation());
+            stmt.setLong(3, match.getMatchDuration());
+            stmt.setLong(4, match.getMatchId());
+            stmt.setString(5, match.getMatchMode());
+            stmt.setString(6, match.getMatchType());
+            stmt.setString(7, match.getMatchVersion());
+            stmt.setString(8, mapper.writeValueAsString(match.getParticipantIdentities()));
+            stmt.setString(9, mapper.writeValueAsString(match.getParticipants()));
+            stmt.setString(10, match.getPlatformId());
+            stmt.setString(11, match.getQueueType());
+            stmt.setString(12, match.getRegion());
+            stmt.setString(13, match.getSeason());
+            stmt.setString(14, mapper.writeValueAsString(match.getTeams()));
+
+            int updated = stmt.executeUpdate();
+            if(updated < 1){
+                log.log(Level.WARNING, "Cache ranked match " + match.getMatchId() + " failed.");
+                return false;
+            }
+            log.info("Cached ranked match " + match.getMatchId());
+            return true;
+        } catch(IOException | SQLException e){
+            log.log(Level.SEVERE, e.getMessage(), e);
+            return false;
+        }
     }
 
     public static void main(String[] args){
