@@ -3,6 +3,7 @@ package league.entities.azhu;
 import java.util.LinkedList;
 import java.util.List;
 
+import league.api.APIConstants;
 import league.api.DynamicLeagueAPIImpl;
 import league.api.LeagueAPI;
 import league.api.RiotAPIImpl.RiotPlsException;
@@ -27,6 +28,8 @@ public class RankedMatch{
     private String season;
     private List<Team> teams;
     private int lookupPlayer;
+    private List<Integer> bluePlayers;
+    private List<Integer> redPlayers;
 
     private static LeagueAPI api = DynamicLeagueAPIImpl.getInstance();
 
@@ -36,7 +39,7 @@ public class RankedMatch{
 
     public RankedMatch(int mapId, long matchCreation, long matchDuration, long matchId, String matchMode,
             String matchType, String matchVersion, List<RankedPlayer> players, String platformId, String queueType,
-            String region, String season, List<Team> teams, int lookupPlayer){
+            String region, String season, List<Team> teams, int lookupPlayer, List<Integer> bluePlayers, List<Integer> redPlayers){
         super();
         this.mapId = mapId;
         this.matchCreation = matchCreation;
@@ -52,19 +55,29 @@ public class RankedMatch{
         this.season = season;
         this.teams = teams;
         this.lookupPlayer = lookupPlayer;
+        this.bluePlayers = bluePlayers;
+        this.redPlayers = redPlayers;
     }
 
     private void processPlayers(List<ParticipantIdentity> participantIdentities, List<Participant> participants,
             long summonerId) throws RiotPlsException{
         players = new LinkedList<>();
+        bluePlayers = new LinkedList<>();
+        redPlayers = new LinkedList<>();
+        
         List<Long> summonerIds = new LinkedList<>();
         for(ParticipantIdentity id : participantIdentities)
             summonerIds.add(id.getPlayer().getSummonerId());
         List<SummonerDto> summoners = api.getSummoners(summonerIds);
         for(int i = 0; i < participantIdentities.size(); i++){
-            players.add(new RankedPlayer(summoners.get(i), participants.get(i)));
+            RankedPlayer player = new RankedPlayer(summoners.get(i), participants.get(i));
+            players.add(player);
             if(participantIdentities.get(i).getPlayer().getSummonerId() == summonerId)
                 lookupPlayer = i;
+            if(player.getTeamId() == APIConstants.BLUE_TEAM)
+                bluePlayers.add(i);
+            else
+                redPlayers.add(i);
         }
     }
 
@@ -226,6 +239,22 @@ public class RankedMatch{
 
     public void setLookupPlayer(int lookupPlayer){
         this.lookupPlayer = lookupPlayer;
+    }
+
+    public List<Integer> getBluePlayers(){
+        return bluePlayers;
+    }
+
+    public void setBluePlayers(List<Integer> bluePlayers){
+        this.bluePlayers = bluePlayers;
+    }
+
+    public List<Integer> getRedPlayers(){
+        return redPlayers;
+    }
+
+    public void setRedPlayers(List<Integer> redPlayers){
+        this.redPlayers = redPlayers;
     }
 
 }

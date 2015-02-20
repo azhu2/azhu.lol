@@ -36,7 +36,7 @@ public class RankedPlayer{
             participantId = participant.getParticipantId();
             runes = participant.getRunes();
             spell1 = api.getSummonerSpellFromId(participant.getSpell1Id());
-            spell2 = api.getSummonerSpellFromId(participant.getSpell1Id());
+            spell2 = api.getSummonerSpellFromId(participant.getSpell2Id());
             stats = participant.getStats();
             teamId = participant.getTeamId();
         } catch(RiotPlsException e){

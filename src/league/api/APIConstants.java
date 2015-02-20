@@ -10,4 +10,6 @@ public class APIConstants{
     public static final int MAX_PAGE_SIZE = 15;
     public static final int PAGE_SIZE = 10;
     public static final int INVALID = -1;
+    public static final int BLUE_TEAM = 100;
+    public static final int RED_TEAM = 200;
 }

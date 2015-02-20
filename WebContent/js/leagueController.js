@@ -74,15 +74,8 @@ leagueApp.controller('lookupController',
 
 		$rootScope.lookupRanked = function(summonerId) {
 			$rootScope.rankedData = [];
-			LeagueResource.lookupRanked(summonerId).query({
-				id : summonerId
-			}, function(data) {
-				for (var i = 0; i < data.length; i++) {
-					parseRankedGame($rootScope, data[i], data.length - i - 1);
-				}
-			});
 
-			LeagueResource.newRanked(summonerId).query({
+			LeagueResource.lookupRanked(summonerId).query({
 				id : summonerId
 			}, function(data) {
 				$rootScope.newRanked = data;
@@ -102,27 +95,6 @@ leagueApp.controller('lookupController',
 				}
 			});
 			$rootScope.showAll = true;
-		};
-
-		var parseRankedGame = function($rootScope, match, index) {
-			LeagueResource.champFromId().get({
-				id : match.participants[0].championId
-			}, function(champData) {
-				match.champion = champData;
-				$rootScope.rankedData[index] = match;
-			});
-
-			LeagueResource.summSpellFromId().get({
-				id : match.participants[0].spell1Id
-			}, function(champData) {
-				match.sumSpell1 = champData;
-			});
-
-			LeagueResource.summSpellFromId().get({
-				id : match.participants[0].spell2Id
-			}, function(champData) {
-				match.sumSpell2 = champData;
-			});
 		};
 
 		$rootScope.lookupMatches = function(summonerId) {
@@ -199,44 +171,6 @@ leagueApp.controller('lookupController',
 				}
 				lookupSummonerIds($rootScope, ids, champs, teamIds, expandedMatch);
 			}
-
-			if (isRanked(match)) {
-				lookupMatch($rootScope, match, expandedMatch);
-			}
-		};
-
-		var lookupMatch = function($rootScope, match, expandedMatch) {
-			LeagueResource.matchDetail().get(
-				{
-					id : match.matchId
-				},
-				function(matchData) {
-					$rootScope.matchDetails = matchData;
-
-					lookupRankedSummonerIds($rootScope, matchData.participantIdentities,
-						matchData, expandedMatch);
-				});
-		};
-
-		var lookupRankedSummonerIds = function($rootScope, identities, details,
-			expandedMatch) {
-			var ids = "";
-			for (var i = 0; i < identities.length; i++)
-				ids += identities[i].player.summonerId + ",";
-
-			LeagueResource.lookupSummoners().query(
-				{
-					ids : ids
-				},
-				function(summoners) {
-					var matchPlayers = [];
-
-					for (var i = 0; i < details.participants.length; i++) {
-						parseRankedPlayer($rootScope, matchPlayers,
-							details.participantIdentities[i], details.participants[i],
-							summoners[i], expandedMatch, i);
-					}
-				});
 		};
 
 		// Lookup for expanding a match
@@ -260,39 +194,6 @@ leagueApp.controller('lookupController',
 							matchId, i);
 					}
 				});
-		};
-
-		var parseRankedPlayer = function($rootScope, matchPlayers, ids, details,
-			summoner, matchId, index) {
-			if (matchPlayers[index] == null)
-				matchPlayers[index] = {};
-			matchPlayers[index].summoner = summoner;
-			matchPlayers[index].details = details;
-
-			LeagueResource.champFromId().get({
-				id : details.championId
-			}, function(champData) {
-				matchPlayers[index].champ = champData;
-
-				if (expandedMatch != matchId)
-					return;
-				if (details.teamId === 100)
-					$rootScope.matchPlayerBlue.push(matchPlayers[index]);
-				else
-					$rootScope.matchPlayerRed.push(matchPlayers[index]);
-			});
-
-			LeagueResource.summSpellFromId().get({
-				id : details.spell1Id
-			}, function(spellData) {
-				matchPlayers[index].spell1 = spellData;
-			});
-
-			LeagueResource.summSpellFromId().get({
-				id : details.spell2Id
-			}, function(spellData) {
-				matchPlayers[index].spell2 = spellData;
-			});
 		};
 
 		// Process a single player in a match
@@ -362,10 +263,6 @@ leagueApp.service('LeagueResource', function($resource) {
 		return $resource('/azhu.lol/rest/summoner/id/:id');
 	};
 
-	this.lookupRanked = function() {
-		return $resource('/azhu.lol/rest/ranked-matches/:id');
-	};
-
 	this.champFromId = function() {
 		return $resource('/azhu.lol/rest/champion/:id');
 	};
@@ -392,7 +289,7 @@ leagueApp.service('LeagueResource', function($resource) {
 		});
 	};
 
-	this.newRanked = function() {
+	this.lookupRanked = function() {
 		return $resource('/azhu.lol/rest/new/ranked-matches/:id', {
 			id : '@id'
 		});
