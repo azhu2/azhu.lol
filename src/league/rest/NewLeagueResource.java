@@ -3,6 +3,7 @@ package league.rest;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.ws.rs.GET;
@@ -19,10 +20,11 @@ import league.api.NewDatabaseAPIImpl;
 import league.api.NewLeagueAPI;
 import league.api.RiotAPIImpl;
 import league.api.RiotAPIImpl.RiotPlsException;
+import league.entities.GameDto;
 import league.entities.MatchDetail;
 import league.entities.MatchSummary;
+import league.entities.azhu.Game;
 import league.entities.azhu.RankedMatch;
-import league.rest.LeagueResource.UpdateCount;
 
 /**
  * An updated version of LeagueResource that does the processing on the back-end instead of in js
@@ -140,6 +142,30 @@ public class NewLeagueResource extends LeagueResource{
             else
                 return Response.status(APIConstants.HTTP_INTERNAL_SERVER_ERROR)
                                .entity("Error caching all ranked matches").build();
+        } catch(RiotPlsException e){
+            return Response.status(e.getStatus()).entity(e.getMessage()).build();
+        }
+    }
+    
+    @Override
+    @GET
+    @Path("/match-history/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getMatchHistory(@PathParam("id") long summonerId) throws ServletException, IOException{
+        try{
+            Set<GameDto> oldApiResults = api.getMatchHistory(summonerId);
+            List<Game> matches = new LinkedList<>();
+            for(GameDto gameData : oldApiResults){
+                long matchId = gameData.getGameId();
+                Game match = api_new.getGame(matchId, summonerId);
+                if(match == null){
+                    match = new Game(gameData, summonerId);
+                    api_new.cacheGame(match);
+                }
+                matches.add(match);
+            }
+
+            return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(matches)).build();
         } catch(RiotPlsException e){
             return Response.status(e.getStatus()).entity(e.getMessage()).build();
         }

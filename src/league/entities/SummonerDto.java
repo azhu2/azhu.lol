@@ -1,6 +1,5 @@
 package league.entities;
 
-
 public class SummonerDto{
     private long id;
     private String name;
@@ -12,8 +11,7 @@ public class SummonerDto{
 
     }
 
-    public SummonerDto(long id, String name, int profileIconId, long summonerLevel,
-            long revisionDate){
+    public SummonerDto(long id, String name, int profileIconId, long summonerLevel, long revisionDate){
         this.id = id;
         this.name = name;
         this.profileIconId = profileIconId;
@@ -64,5 +62,27 @@ public class SummonerDto{
     @Override
     public String toString(){
         return String.format("Summoner %s(%d) - level %d", name, id, summonerLevel);
+    }
+
+    @Override
+    public int hashCode(){
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (int) (id ^ (id >>> 32));
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj){
+        if(this == obj)
+            return true;
+        if(obj == null)
+            return false;
+        if(getClass() != obj.getClass())
+            return false;
+        SummonerDto other = (SummonerDto) obj;
+        if(id != other.id)
+            return false;
+        return true;
     }
 }

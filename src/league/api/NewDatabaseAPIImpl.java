@@ -9,7 +9,12 @@ import java.util.List;
 import java.util.logging.Level;
 
 import league.entities.ChampionDto;
+import league.entities.RawStatsDto;
+import league.entities.SummonerDto;
+import league.entities.SummonerSpellDto;
 import league.entities.Team;
+import league.entities.azhu.Game;
+import league.entities.azhu.GamePlayer;
 import league.entities.azhu.RankedMatch;
 import league.entities.azhu.RankedPlayer;
 
@@ -142,5 +147,108 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueAPI{
             log.log(Level.SEVERE, e.getMessage(), e);
         }
         return null;
+    }
+
+    @Override
+    public Game getGame(long gameId, long summonerId){
+        try{
+            Statement stmt = db.createStatement();
+            String sql;
+            sql = String.format("SELECT mapId, createDate, gameMode, gameType, subType, "
+                    + "lookupPlayer, blueTeam, redTeam, ipEarned, level, stats, spell1, spell2, stats, "
+                    + "teamId, summoner FROM games_new WHERE gameId = %d AND summonerId = %d", gameId, summonerId);
+
+            ResultSet rs = stmt.executeQuery(sql);
+
+            if(rs.next()){
+                int mapId = rs.getInt("mapId");
+                long createDate = rs.getLong("createDate");
+                String gameMode = rs.getString("gameMode");
+                String gameType = rs.getString("gameType");
+                String subType = rs.getString("subType");
+                int lookupPlayer = rs.getInt("lookupPlayer");
+                List<GamePlayer> blueTeam = mapper.readValue(rs.getString("blueTeam"),
+                    new TypeReference<List<GamePlayer>>(){
+                    });
+                List<GamePlayer> redTeam = mapper.readValue(rs.getString("redTeam"),
+                    new TypeReference<List<GamePlayer>>(){
+                    });
+                int ipEarned = rs.getInt("ipEarned");
+                int level = rs.getInt("level");
+                int teamId = rs.getInt("teamId");
+                RawStatsDto stats = mapper.readValue(rs.getString("stats"), RawStatsDto.class);
+                SummonerSpellDto spell1 = mapper.readValue(rs.getString("spell1"), SummonerSpellDto.class);
+                SummonerSpellDto spell2 = mapper.readValue(rs.getString("spell2"), SummonerSpellDto.class);
+                SummonerDto summoner = mapper.readValue(rs.getString("summoner"), SummonerDto.class);
+
+                Game game = new Game(createDate, blueTeam, redTeam, gameId, gameMode, gameType, ipEarned, level, mapId,
+                        spell1, spell2, stats, subType, teamId, summoner, lookupPlayer, summonerId);
+                log.info("Fetched (new) game " + game + " from db.");
+                return game;
+            }
+        } catch(SQLException | IOException e){
+            log.log(Level.SEVERE, e.getMessage(), e);
+        }
+        return null;
+    }
+
+    @Override
+    public boolean hasGame(Game game){
+        try{
+            Statement stmt = db.createStatement();
+            String sql;
+            sql = String.format("SELECT COUNT(*) AS rowCount FROM games_new WHERE gameId = %d", game.getGameId());
+
+            ResultSet rs = stmt.executeQuery(sql);
+
+            rs.next();
+            int rows = rs.getInt("rowCount");
+            return rows > 0;
+        } catch(SQLException e){
+            log.log(Level.SEVERE, e.getMessage(), e);
+            return false;
+        }
+    }
+
+    @Override
+    public boolean cacheGame(Game game){
+        try{
+            if(hasGame(game))
+                return false;
+
+            String sql = "INSERT INTO games_new (mapId, createDate, gameMode, gameType, subType, "
+                    + "lookupPlayer, blueTeam, redTeam, ipEarned, level, stats, spell1, spell2, "
+                    + "teamId, summoner, gameId, summonerId) "
+                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            PreparedStatement stmt = db.prepareStatement(sql);
+            stmt.setInt(1, game.getMapId());
+            stmt.setLong(2, game.getCreateDate());
+            stmt.setString(3, game.getGameMode());
+            stmt.setString(4, game.getGameType());
+            stmt.setString(5, game.getSubType());
+            stmt.setInt(6, game.getLookupPlayer());
+            stmt.setString(7, mapper.writeValueAsString(game.getBlueTeam()));
+            stmt.setString(8, mapper.writeValueAsString(game.getRedTeam()));
+            stmt.setInt(9, game.getIpEarned());
+            stmt.setInt(10, game.getLevel());
+            stmt.setString(11, mapper.writeValueAsString(game.getStats()));
+            stmt.setString(12, mapper.writeValueAsString(game.getSpell1()));
+            stmt.setString(13, mapper.writeValueAsString(game.getSpell2()));
+            stmt.setInt(14, game.getTeamId());
+            stmt.setString(15, mapper.writeValueAsString(game.getSummoner()));
+            stmt.setLong(16, game.getGameId());
+            stmt.setLong(17, game.getSummonerId());
+
+            int updated = stmt.executeUpdate();
+            if(updated < 1){
+                log.log(Level.WARNING, "Cache (new) game " + game.getGameId() + " failed.");
+                return false;
+            }
+            log.info("Cached (new) game " + game.getGameId());
+            return true;
+        } catch(IOException | SQLException e){
+            log.log(Level.SEVERE, e.getMessage(), e);
+            return false;
+        }
     }
 }

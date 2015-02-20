@@ -5,6 +5,17 @@ public class PlayerDto{
     private long summonerId;
     private int teamId;
 
+    public PlayerDto(){
+
+    }
+
+    public PlayerDto(int championId, long summonerId, int teamId){
+        super();
+        this.championId = championId;
+        this.summonerId = summonerId;
+        this.teamId = teamId;
+    }
+
     public int getChampionId(){
         return championId;
     }
