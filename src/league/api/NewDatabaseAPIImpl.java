@@ -29,7 +29,7 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueAPI{
     @Override
     public boolean cacheRankedMatch(RankedMatch match){
         try{
-            if(hasMatch(match))
+            if(hasRankedMatch(match))
                 return false;
 
             String sql = "INSERT INTO ranked_matches_new"
@@ -71,7 +71,8 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueAPI{
         }
     }
 
-    private boolean hasMatch(RankedMatch match){
+    @Override
+    public boolean hasRankedMatch(RankedMatch match){
         try{
             Statement stmt = db.createStatement();
             String sql;
