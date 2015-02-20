@@ -1,60 +1,60 @@
 <div id="matches" ng-show="showRankedResults">
 	<h2>Ranked Matches</h2>
 	<ul id="ranked-history">
-		<li ng-repeat="match in rankedData | orderBy:'matchCreation':true track by $index ">
-			<div class="match id_{{match.matchId}}" ng-class="match.participants[0].stats.winner ? 'win' : 'loss'">
+		<li ng-repeat="match in newRanked | orderBy:'matchCreation':true track by $index ">
+			<div class="match id_{{match.matchId}}" ng-class="match.players[0].stats.winner ? 'win' : 'loss'">
 				<div class="topRow">
 					<div class="queue box">{{ match.queueType | queueFilter }}</div>
 					<div class="time box">{{ match.matchCreation | date:'MM/dd/yy h:mm a' }}</div>
-					<div class="game-win box" ng-show="match.participants[0].stats.winner">Win</div>
-					<div class="game-win box" ng-hide="match.participants[0].stats.winner">Loss</div>
+					<div class="game-win box" ng-show="match.players[0].stats.winner">Win</div>
+					<div class="game-win box" ng-hide="match.players[0].stats.winner">Loss</div>
 				</div>
-	
+
 				<div class="midRow">
 					<div class="championImages">
-						<img class="championImage" alt="{{ match.champion == null ? 'champion' : match.champion.name }}"
-							ng-src="{{ match.champion == null ? '' : 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/champion/' + match.champion.key + '.png' }}">
-						<div class="championLevel">{{ match.participants[0].stats.champLevel }}</div>
+						<img class="championImage" alt="{{ match.players[match.lookupPlayer] == null ? 'champion' : match.players[match.lookupPlayer].champion.name }}"
+							ng-src="{{ match.players[match.lookupPlayer] == null ? '' : 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/champion/' + match.players[match.lookupPlayer].champion.image.full }}">
+						<div class="championLevel">{{ match.players[0].stats.champLevel }}</div>
 						<div class="summonerSpells">
-							<img class="summonerSpell spell1" alt="{{ match.sumSpell1 == null ? 'summoner spell 1' : match.summSpell1.name }}"
-								ng-src="{{ match.sumSpell1 == null ? '' : 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/spell/' + match.sumSpell1.image.full }}">
+							<img class="summonerSpell spell1" alt="{{ match.players[match.lookupPlayer].spell1 == null ? 'summoner spell 1' : match.players[match.lookupPlayer].spell1.name }}"
+								ng-src="{{ match.players[match.lookupPlayer].spell1 == null ? '' : 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/spell/' + match.players[match.lookupPlayer].spell1.image.full }}">
 							<br>
-							<img class="summonerSpell spell2" alt="{{ match.sumSpell2 == null ? 'summoner spell 2' : match.summSpell2.name }}"
-								ng-src="{{ match.sumSpell2 == null ? '' : 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/spell/' + match.sumSpell2.image.full }}">
+							<img class="summonerSpell spell2" alt="{{ match.players[match.lookupPlayer].spell1 == null ? 'summoner spell 2' : match.players[match.lookupPlayer].spell2.name }}"
+								ng-src="{{ match.players[match.lookupPlayer].spell2 == null ? '' : 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/spell/' + match.players[match.lookupPlayer].spell2.image.full }}">
 						</div>
 					</div>
 	
 					<div class="rightStatsBox">
 						<div class="scorePanel">
-							<div class="score box">{{ match.participants[0].stats.kills }}/{{ match.participants[0].stats.deaths }}/{{ match.participants[0].stats.assists }}</div>
-							<div class="kda box">(KDA: {{ (match.participants[0].stats.kills + match.participants[0].stats.assists) / match.participants[0].stats.deaths | number:2 }})</div>
+							<div class="score box">{{ match.players[0].stats.kills }}/{{ match.players[0].stats.deaths }}/{{ match.players[0].stats.assists }}</div>
+							<div class="kda box">(KDA: {{ (match.players[0].stats.kills + match.players[0].stats.assists) / match.players[0].stats.deaths | number:2 }})</div>
 						</div>
 						<div class="gold box">Gold: 
-							{{ (match.participants[0].stats.goldEarned / 1000) | number:0}}.{{ (match.participants[0].stats.timePlayed % 1000) / 100 | number:0}}k</div>
-						<div class="cs box">CS: {{ match.participants[0].stats.minionsKilled + match.participants[0].stats.neutralMinionsKilled }}</div>
+							{{ (match.players[0].stats.goldEarned / 1000) | number:0}}.{{ (match.players[0].stats.timePlayed % 1000) / 100 | number:0}}k</div>
+						<div class="cs box">CS: {{ match.players[0].stats.minionsKilled + match.players[0].stats.neutralMinionsKilled }}</div>
 						<div class="matchLength box">Game Length: 
 							{{ match.matchDuration / 60 | number:0}}:{{ (match.matchDuration % 60) | numberFixedLen:2}}</div>
-						<div class="multikill box">{{ match.participants[0].stats.largestMultiKill | multikill }}</div>
-						<div class="firstBlood box">{{ match.participants[0].stats.firstBloodKill ? 'First Blood' : '' }}</div>
+						<div class="multikill box">{{ match.players[0].stats.largestMultiKill | multikill }}</div>
+						<div class="firstBlood box">{{ match.players[0].stats.firstBloodKill ? 'First Blood' : '' }}</div>
 					</div>
 				</div>
 				
 				<div class="bottomRow">
 					<div class="items">
-						<img class="item item0" alt="{{ (match.participants[0].stats.item0 === 0 || match.participants[0].stats == null) ? 'item' : 'item ' +  match.participants[0].stats.item0 }}" 
-							ng-src="{{ (match.participants[0].stats.item0 === 0 || match.participants[0].stats == null) ? 'img/item_0.png' : 'http://ddragon.leagueoflegends.com/cdn/' + version + '/img/item/' + match.participants[0].stats.item0 + '.png' }}">
-						<img class="item item1" alt="{{ (match.participants[0].stats.item1 === 0 || match.participants[0].stats == null) ? 'item' : 'item ' +  match.participants[0].stats.item1 }}"
-							ng-src="{{ (match.participants[0].stats.item1 === 0 || match.participants[0].stats == null) ? 'img/item_0.png' : 'http://ddragon.leagueoflegends.com/cdn/' + version + '/img/item/' + match.participants[0].stats.item1 + '.png' }}">
-						<img class="item item2" alt="{{ (match.participants[0].stats.item2 === 0 || match.participants[0].stats == null) ? 'item' : 'item ' +  match.participants[0].stats.item2 }}"
-							ng-src="{{ (match.participants[0].stats.item2 === 0 || match.participants[0].stats == null) ? 'img/item_0.png' : 'http://ddragon.leagueoflegends.com/cdn/' + version + '/img/item/' + match.participants[0].stats.item2 + '.png' }}">
-						<img class="item item3" alt="{{ (match.participants[0].stats.item3 === 0 || match.participants[0].stats == null) ? 'item' : 'item ' +  match.participants[0].stats.item3 }}"
-							ng-src="{{ (match.participants[0].stats.item3 === 0 || match.participants[0].stats == null) ? 'img/item_0.png' : 'http://ddragon.leagueoflegends.com/cdn/' + version + '/img/item/' + match.participants[0].stats.item3 + '.png' }}">
-						<img class="item item4" alt="{{ (match.participants[0].stats.item4 === 0 || match.participants[0].stats == null) ? 'item' : 'item ' +  match.participants[0].stats.item4 }}"
-							ng-src="{{ (match.participants[0].stats.item4 === 0 || match.participants[0].stats == null) ? 'img/item_0.png' : 'http://ddragon.leagueoflegends.com/cdn/' + version + '/img/item/' + match.participants[0].stats.item4 + '.png' }}">
-						<img class="item item5" alt="{{ (match.participants[0].stats.item5 === 0 || match.participants[0].stats == null) ? 'item' : 'item ' +  match.participants[0].stats.item5 }}"
-							ng-src="{{ (match.participants[0].stats.item5 === 0 || match.participants[0].stats == null) ? 'img/item_0.png' : 'http://ddragon.leagueoflegends.com/cdn/' + version + '/img/item/' + match.participants[0].stats.item5 + '.png' }}">
-						<img class="item item6" alt="{{ (match.participants[0].stats.item6 === 0 || match.participants[0].stats == null) ? 'item' : 'item ' +  match.participants[0].stats.item6 }}"
-							ng-src="{{ (match.participants[0].stats.item6 === 0 || match.participants[0].stats == null) ? 'img/item_0.png' : 'http://ddragon.leagueoflegends.com/cdn/' + version + '/img/item/' + match.participants[0].stats.item6 + '.png' }}">
+						<img class="item item0" alt="{{ (match.players[0].stats.item0 === 0 || match.players[0].stats == null) ? 'item' : 'item ' +  match.players[0].stats.item0 }}" 
+							ng-src="{{ (match.players[0].stats.item0 === 0 || match.players[0].stats == null) ? 'img/item_0.png' : 'http://ddragon.leagueoflegends.com/cdn/' + version + '/img/item/' + match.players[0].stats.item0 + '.png' }}">
+						<img class="item item1" alt="{{ (match.players[0].stats.item1 === 0 || match.players[0].stats == null) ? 'item' : 'item ' +  match.players[0].stats.item1 }}"
+							ng-src="{{ (match.players[0].stats.item1 === 0 || match.players[0].stats == null) ? 'img/item_0.png' : 'http://ddragon.leagueoflegends.com/cdn/' + version + '/img/item/' + match.players[0].stats.item1 + '.png' }}">
+						<img class="item item2" alt="{{ (match.players[0].stats.item2 === 0 || match.players[0].stats == null) ? 'item' : 'item ' +  match.players[0].stats.item2 }}"
+							ng-src="{{ (match.players[0].stats.item2 === 0 || match.players[0].stats == null) ? 'img/item_0.png' : 'http://ddragon.leagueoflegends.com/cdn/' + version + '/img/item/' + match.players[0].stats.item2 + '.png' }}">
+						<img class="item item3" alt="{{ (match.players[0].stats.item3 === 0 || match.players[0].stats == null) ? 'item' : 'item ' +  match.players[0].stats.item3 }}"
+							ng-src="{{ (match.players[0].stats.item3 === 0 || match.players[0].stats == null) ? 'img/item_0.png' : 'http://ddragon.leagueoflegends.com/cdn/' + version + '/img/item/' + match.players[0].stats.item3 + '.png' }}">
+						<img class="item item4" alt="{{ (match.players[0].stats.item4 === 0 || match.players[0].stats == null) ? 'item' : 'item ' +  match.players[0].stats.item4 }}"
+							ng-src="{{ (match.players[0].stats.item4 === 0 || match.players[0].stats == null) ? 'img/item_0.png' : 'http://ddragon.leagueoflegends.com/cdn/' + version + '/img/item/' + match.players[0].stats.item4 + '.png' }}">
+						<img class="item item5" alt="{{ (match.players[0].stats.item5 === 0 || match.players[0].stats == null) ? 'item' : 'item ' +  match.players[0].stats.item5 }}"
+							ng-src="{{ (match.players[0].stats.item5 === 0 || match.players[0].stats == null) ? 'img/item_0.png' : 'http://ddragon.leagueoflegends.com/cdn/' + version + '/img/item/' + match.players[0].stats.item5 + '.png' }}">
+						<img class="item item6" alt="{{ (match.players[0].stats.item6 === 0 || match.players[0].stats == null) ? 'item' : 'item ' +  match.players[0].stats.item6 }}"
+							ng-src="{{ (match.players[0].stats.item6 === 0 || match.players[0].stats == null) ? 'img/item_0.png' : 'http://ddragon.leagueoflegends.com/cdn/' + version + '/img/item/' + match.players[0].stats.item6 + '.png' }}">
 					</div>
 					
 					<div class="expandMatchButton">
@@ -62,7 +62,7 @@
 					</div>
 				</div>
 				
-				<div class="expandMatch ranked" ng-class="match.participants[0].stats.winner ? 'win' : 'loss'" ng-show="match.showExpand">
+				<div class="expandMatch ranked" ng-class="match.players[0].stats.winner ? 'win' : 'loss'" ng-show="match.showExpand">
 					<div class="expandTitle">Match Details</div>
 						<div class="rankedTeam blue">
 							<div class="teamTitle">
@@ -108,19 +108,19 @@
 							</ul>
 							<div class="teamStats">
 								<div class="teamStat dragons">
-									<img ng-src="img/dragon_{{ matchDetails.teams[0].teamId }}.png" title="Dragons">
+									<img ng-src="img/dragon_100.png" title="Dragons">
 									{{ matchDetails.teams[0].dragonKills }}
 								</div>
 								<div class="teamStat barons">
-									<img ng-src="img/baron_nashor_{{ matchDetails.teams[0].teamId }}.png" title="Barons">
+									<img ng-src="img/baron_nashor_100.png" title="Barons">
 									{{ matchDetails.teams[0].baronKills }}
 								</div>
 								<div class="teamStat towers">
-									<img ng-src="img/turret_{{ matchDetails.teams[0].teamId }}.png" title="Towers">
+									<img ng-src="img/turret_100.png" title="Towers">
 									{{ matchDetails.teams[0].towerKills }}
 								</div>
 								<div class="teamStat inhibs">
-									<img ng-src="img/inhibitor_building_{{ matchDetails.teams[0].teamId }}.png" title="Inhibitors">
+									<img ng-src="img/inhibitor_building_100.png" title="Inhibitors">
 									{{ matchDetails.teams[0].inhibitorKills }}
 								</div>
 							</div>
@@ -170,19 +170,19 @@
 							</ul>
 							<div class="teamStats">
 								<div class="teamStat dragons">
-									<img ng-src="img/dragon_{{ matchDetails.teams[1].teamId }}.png" title="Dragons">
+									<img ng-src="img/dragon_200.png" title="Dragons">
 									{{ matchDetails.teams[1].dragonKills }}
 								</div>
 								<div class="teamStat barons">
-									<img ng-src="img/baron_nashor_{{ matchDetails.teams[1].teamId }}.png" title="Barons">
+									<img ng-src="img/baron_nashor_200.png" title="Barons">
 									{{ matchDetails.teams[1].baronKills }}
 								</div>
 								<div class="teamStat towers">
-									<img ng-src="img/turret_{{ matchDetails.teams[1].teamId }}.png" title="Towers">
+									<img ng-src="img/turret_200.png" title="Towers">
 									{{ matchDetails.teams[1].towerKills }}
 								</div>
 								<div class="teamStat inhibs">
-									<img ng-src="img/inhibitor_building_{{ matchDetails.teams[1].teamId }}.png" title="Inhibitors">
+									<img ng-src="img/inhibitor_building_200.png" title="Inhibitors">
 									{{ matchDetails.teams[1].inhibitorKills }}
 								</div>
 							</div>
@@ -191,56 +191,56 @@
 					<div class="moreMatchStats">
 						<div class="damageGraph total" ng-mouseover="showHoverText1 = false" ng-mouseout="showHoverText1 = true" ng-init="showHoverText1 = true">
 							<div class="textOverlay">
-								Damage dealt - {{ match.participants[0].stats.totalDamageDealt }} {{ showHoverText1 ? '(hover for details)' : '' }}
+								Damage dealt - {{ match.players[0].stats.totalDamageDealt }} {{ showHoverText1 ? '(hover for details)' : '' }}
 							</div>
 							<img class="damage physical" src="img/damage_physical.png" 
-								ng-attr-title="Physical: {{ match.participants[0].stats.physicalDamageDealt }} ({{ match.participants[0].stats.physicalDamageDealt / match.participants[0].stats.totalDamageDealt * 100 | number:1 }}%)"
-								ng-style="{ 'width': (match.participants[0].stats.physicalDamageDealt / match.participants[0].stats.totalDamageDealt * 100) + '%' }">
+								ng-attr-title="Physical: {{ match.players[0].stats.physicalDamageDealt }} ({{ match.players[0].stats.physicalDamageDealt / match.players[0].stats.totalDamageDealt * 100 | number:1 }}%)"
+								ng-style="{ 'width': (match.players[0].stats.physicalDamageDealt / match.players[0].stats.totalDamageDealt * 100) + '%' }">
 							<img class="damage magic" src="img/damage_magic.png" 
-								ng-attr-title="Magic: {{ match.participants[0].stats.magicDamageDealt }} ({{ match.participants[0].stats.magicDamageDealt / match.participants[0].stats.totalDamageDealt * 100 | number:1 }}%)"
-								ng-style="{ 'width': (match.participants[0].stats.magicDamageDealt / match.participants[0].stats.totalDamageDealt * 100) + '%' }">
+								ng-attr-title="Magic: {{ match.players[0].stats.magicDamageDealt }} ({{ match.players[0].stats.magicDamageDealt / match.players[0].stats.totalDamageDealt * 100 | number:1 }}%)"
+								ng-style="{ 'width': (match.players[0].stats.magicDamageDealt / match.players[0].stats.totalDamageDealt * 100) + '%' }">
 							<img class="damage true" src="img/damage_true.png" 
-								ng-attr-title="True: {{ match.participants[0].stats.trueDamageDealt }} ({{ match.participants[0].stats.trueDamageDealt / match.participants[0].stats.totalDamageDealt * 100 | number:1 }}%)"
-								ng-style="{ 'width': (match.participants[0].stats.trueDamageDealt / match.participants[0].stats.totalDamageDealt * 100) + '%' }">
+								ng-attr-title="True: {{ match.players[0].stats.trueDamageDealt }} ({{ match.players[0].stats.trueDamageDealt / match.players[0].stats.totalDamageDealt * 100 | number:1 }}%)"
+								ng-style="{ 'width': (match.players[0].stats.trueDamageDealt / match.players[0].stats.totalDamageDealt * 100) + '%' }">
 						</div>
 						<div class="damageGraph champs" ng-mouseover="showHoverText2 = false" ng-mouseout="showHoverText2 = true" ng-init="showHoverText2 = true">
 							<div class="textOverlay">
-								Damage dealt to champions - {{ match.participants[0].stats.totalDamageDealtToChampions }} {{ showHoverText2 ? '(hover for details)' : '' }}
+								Damage dealt to champions - {{ match.players[0].stats.totalDamageDealtToChampions }} {{ showHoverText2 ? '(hover for details)' : '' }}
 							</div>
 							<img class="damage physical" src="img/damage_physical.png" 
-								ng-attr-title="Physical: {{ match.participants[0].stats.physicalDamageDealtToChampions }} ({{ match.participants[0].stats.physicalDamageDealtToChampions / match.participants[0].stats.totalDamageDealtToChampions * 100 | number:1 }}%)"
-								ng-style="{ 'width': (match.participants[0].stats.physicalDamageDealtToChampions / match.participants[0].stats.totalDamageDealtToChampions * 100) + '%' }">
+								ng-attr-title="Physical: {{ match.players[0].stats.physicalDamageDealtToChampions }} ({{ match.players[0].stats.physicalDamageDealtToChampions / match.players[0].stats.totalDamageDealtToChampions * 100 | number:1 }}%)"
+								ng-style="{ 'width': (match.players[0].stats.physicalDamageDealtToChampions / match.players[0].stats.totalDamageDealtToChampions * 100) + '%' }">
 							<img class="damage magic" src="img/damage_magic.png" 
-								ng-attr-title="Magic: {{ match.participants[0].stats.magicDamageDealtToChampions }} ({{ match.participants[0].stats.magicDamageDealtToChampions / match.participants[0].stats.totalDamageDealtToChampions * 100 | number:1 }}%)"
-								ng-style="{ 'width': (match.participants[0].stats.magicDamageDealtToChampions / match.participants[0].stats.totalDamageDealtToChampions * 100) + '%' }">
+								ng-attr-title="Magic: {{ match.players[0].stats.magicDamageDealtToChampions }} ({{ match.players[0].stats.magicDamageDealtToChampions / match.players[0].stats.totalDamageDealtToChampions * 100 | number:1 }}%)"
+								ng-style="{ 'width': (match.players[0].stats.magicDamageDealtToChampions / match.players[0].stats.totalDamageDealtToChampions * 100) + '%' }">
 							<img class="damage true" src="img/damage_true.png"
-								ng-attr-title="True: {{ match.participants[0].stats.trueDamageDealtToChampions }} ({{ match.participants[0].stats.trueDamageDealtToChampions / match.participants[0].stats.totalDamageDealtToChampions * 100 | number:1 }}%)"
-								ng-style="{ 'width': (match.participants[0].stats.trueDamageDealtToChampions / match.participants[0].stats.totalDamageDealtToChampions * 100) + '%' }">
+								ng-attr-title="True: {{ match.players[0].stats.trueDamageDealtToChampions }} ({{ match.players[0].stats.trueDamageDealtToChampions / match.players[0].stats.totalDamageDealtToChampions * 100 | number:1 }}%)"
+								ng-style="{ 'width': (match.players[0].stats.trueDamageDealtToChampions / match.players[0].stats.totalDamageDealtToChampions * 100) + '%' }">
 						</div>
 						<div class="damageGraph taken"  ng-mouseover="showHoverText3 = false" ng-mouseout="showHoverText3 = true" ng-init="showHoverText3 = true">
 							<div class="textOverlay">
-								Damage taken - {{ match.participants[0].stats.totalDamageTaken }} {{ showHoverText3 ? '(hover for details)' : '' }}
+								Damage taken - {{ match.players[0].stats.totalDamageTaken }} {{ showHoverText3 ? '(hover for details)' : '' }}
 							</div>
 							<img class="damage physical" src="img/damage_physical.png" 
-								ng-attr-title="Physical: {{ match.participants[0].stats.physicalDamageTaken }} ({{ match.participants[0].stats.physicalDamageTaken / match.participants[0].stats.totalDamageTaken * 100 | number:1 }}%)"
-								ng-style="{ 'width': (match.participants[0].stats.physicalDamageTaken / match.participants[0].stats.totalDamageTaken * 100) + '%' }">
+								ng-attr-title="Physical: {{ match.players[0].stats.physicalDamageTaken }} ({{ match.players[0].stats.physicalDamageTaken / match.players[0].stats.totalDamageTaken * 100 | number:1 }}%)"
+								ng-style="{ 'width': (match.players[0].stats.physicalDamageTaken / match.players[0].stats.totalDamageTaken * 100) + '%' }">
 							<img class="damage magic" src="img/damage_magic.png" 
-								ng-attr-title="Magic: {{ match.participants[0].stats.magicDamageTaken }} ({{ match.participants[0].stats.magicDamageTaken / match.participants[0].stats.totalDamageTaken * 100 | number:1 }}%)"
-								ng-style="{ 'width': (match.participants[0].stats.magicDamageTaken / match.participants[0].stats.totalDamageTaken * 100) + '%' }">
+								ng-attr-title="Magic: {{ match.players[0].stats.magicDamageTaken }} ({{ match.players[0].stats.magicDamageTaken / match.players[0].stats.totalDamageTaken * 100 | number:1 }}%)"
+								ng-style="{ 'width': (match.players[0].stats.magicDamageTaken / match.players[0].stats.totalDamageTaken * 100) + '%' }">
 							<img class="damage true" src="img/damage_true.png" 
-								ng-attr-title="True: {{ match.participants[0].stats.trueDamageTaken }} ({{ match.participants[0].stats.trueDamageTaken / match.participants[0].stats.totalDamageTaken * 100 | number:1 }}%)"
-								ng-style="{ 'width': (match.participants[0].stats.trueDamageTaken / match.participants[0].stats.totalDamageTaken * 100) + '%' }">
+								ng-attr-title="True: {{ match.players[0].stats.trueDamageTaken }} ({{ match.players[0].stats.trueDamageTaken / match.players[0].stats.totalDamageTaken * 100 | number:1 }}%)"
+								ng-style="{ 'width': (match.players[0].stats.trueDamageTaken / match.players[0].stats.totalDamageTaken * 100) + '%' }">
 						</div>
 						
 						<div class="expandColumn left">
-							<div class="stats wardsPlaced">Wards placed: {{ match.participants[0].stats.wardsPlaced }}</div>
-							<div class="stats wardsPlaced">Wards killed: {{ match.participants[0].stats.wardsKilled }}</div>
-							<div class="stats cspm">CS/min: {{ (match.participants[0].stats.minionsKilled + match.participants[0].stats.neutralMinionsKilled) / match.matchDuration * 60 | number:1 }} </div>
+							<div class="stats wardsPlaced">Wards placed: {{ match.players[0].stats.wardsPlaced }}</div>
+							<div class="stats wardsPlaced">Wards killed: {{ match.players[0].stats.wardsKilled }}</div>
+							<div class="stats cspm">CS/min: {{ (match.players[0].stats.minionsKilled + match.players[0].stats.neutralMinionsKilled) / match.matchDuration * 60 | number:1 }} </div>
 						</div>
 						<div class="expandColumn right">
-							<div class="stats killingSpreee">Largest killing spree: {{ match.participants[0].stats.largestKillingSpree }}</div>
-							<div class="stats jungle">Neutral minions (own|enemy): {{ match.participants[0].stats.neutralMinionsKilledTeamJungle }} | {{ match.participants[0].stats.neutralMinionsKilledEnemyJungle }}</div>
-							<div class="stats gpm">Gold/min: {{ match.participants[0].stats.goldEarned / match.matchDuration * 60 | number:1 }}</div>
+							<div class="stats killingSpreee">Largest killing spree: {{ match.players[0].stats.largestKillingSpree }}</div>
+							<div class="stats jungle">Neutral minions (own|enemy): {{ match.players[0].stats.neutralMinionsKilledTeamJungle }} | {{ match.players[0].stats.neutralMinionsKilledEnemyJungle }}</div>
+							<div class="stats gpm">Gold/min: {{ match.players[0].stats.goldEarned / match.matchDuration * 60 | number:1 }}</div>
 						</div>
 					</div>
 				</div>

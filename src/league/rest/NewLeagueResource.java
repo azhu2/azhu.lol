@@ -45,7 +45,7 @@ public class NewLeagueResource extends LeagueResource{
             for(MatchSummary summary : history){
                 long matchId = summary.getMatchId();
                 MatchDetail detail = api.getMatchDetail(matchId);
-                matches.add(new RankedMatch(detail));
+                matches.add(new RankedMatch(detail, summonerId));
             }
             
             return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(matches)).build();
@@ -65,7 +65,7 @@ public class NewLeagueResource extends LeagueResource{
             for(MatchSummary summary : history){
                 long matchId = summary.getMatchId();
                 MatchDetail detail = api.getMatchDetail(matchId);
-                matches.add(new RankedMatch(detail));
+                matches.add(new RankedMatch(detail, summonerId));
             }
             
             return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(matches)).build();

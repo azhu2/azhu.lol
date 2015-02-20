@@ -8,7 +8,6 @@ import league.api.RiotAPIImpl.RiotPlsException;
 import league.entities.ChampionDto;
 import league.entities.Mastery;
 import league.entities.Participant;
-import league.entities.ParticipantIdentity;
 import league.entities.ParticipantStats;
 import league.entities.Rune;
 import league.entities.SummonerDto;
@@ -30,7 +29,7 @@ public class RankedPlayer{
 
     public RankedPlayer(SummonerDto summoner, Participant participant){
         try{
-            summoner = summoner;
+            this.summoner = summoner;
             champion = api.getChampFromId(participant.getChampionId());
             highestAchievedSeasonTier = participant.getHighestAchievedSeasonTier();
             masteries = participant.getMasteries();

@@ -26,16 +26,17 @@ public class RankedMatch{
     private String region;
     private String season;
     private List<Team> teams;
+    private int lookupPlayer;
 
     private static LeagueAPI api = DynamicLeagueAPIImpl.getInstance();
-    
+
     public RankedMatch(){
 
     }
 
     public RankedMatch(int mapId, long matchCreation, long matchDuration, long matchId, String matchMode,
             String matchType, String matchVersion, List<RankedPlayer> players, String platformId, String queueType,
-            String region, String season, List<Team> teams){
+            String region, String season, List<Team> teams, int lookupPlayer){
         super();
         this.mapId = mapId;
         this.matchCreation = matchCreation;
@@ -50,19 +51,24 @@ public class RankedMatch{
         this.region = region;
         this.season = season;
         this.teams = teams;
+        this.lookupPlayer = lookupPlayer;
     }
 
-    private void processPlayers(List<ParticipantIdentity> participantIdentities, List<Participant> participants) throws RiotPlsException{
+    private void processPlayers(List<ParticipantIdentity> participantIdentities, List<Participant> participants,
+            long summonerId) throws RiotPlsException{
         players = new LinkedList<>();
         List<Long> summonerIds = new LinkedList<>();
         for(ParticipantIdentity id : participantIdentities)
             summonerIds.add(id.getPlayer().getSummonerId());
         List<SummonerDto> summoners = api.getSummoners(summonerIds);
-        for(int i = 0; i < participantIdentities.size(); i++)
+        for(int i = 0; i < participantIdentities.size(); i++){
             players.add(new RankedPlayer(summoners.get(i), participants.get(i)));
+            if(participantIdentities.get(i).getPlayer().getSummonerId() == summonerId)
+                lookupPlayer = i;
+        }
     }
 
-    public RankedMatch(MatchDetail detail){
+    public RankedMatch(MatchDetail detail, long summonerId){
         this.mapId = detail.getMapId();
         this.matchCreation = detail.getMatchCreation();
         this.matchDuration = detail.getMatchDuration();
@@ -75,9 +81,9 @@ public class RankedMatch{
         this.region = detail.getRegion();
         this.season = detail.getSeason();
         this.teams = detail.getTeams();
-        
+
         try{
-            processPlayers(detail.getParticipantIdentities(), detail.getParticipants());
+            processPlayers(detail.getParticipantIdentities(), detail.getParticipants(), summonerId);
         } catch(RiotPlsException e){
             e.printStackTrace();
         }
@@ -212,6 +218,14 @@ public class RankedMatch{
         if(matchId != other.matchId)
             return false;
         return true;
+    }
+
+    public int getLookupPlayer(){
+        return lookupPlayer;
+    }
+
+    public void setLookupPlayer(int lookupPlayer){
+        this.lookupPlayer = lookupPlayer;
     }
 
 }
