@@ -86,13 +86,11 @@ leagueApp.controller('lookupController',
 		};
 
 		$rootScope.lookupAllRanked = function(summonerId) {
-			$rootScope.rankedData = [];
+			$rootScope.newRanked = [];
 			LeagueResource.allRanked(summonerId).query({
 				id : summonerId
 			}, function(data) {
-				for (var i = 0; i < data.length; i++) {
-					parseRankedGame($rootScope, data[i], data.length - i - 1);
-				}
+				$rootScope.newRanked = data;
 			});
 			$rootScope.showAll = true;
 		};
@@ -284,7 +282,7 @@ leagueApp.service('LeagueResource', function($resource) {
 	};
 
 	this.allRanked = function() {
-		return $resource('/azhu.lol/rest/ranked-matches/:id/all', {
+		return $resource('/azhu.lol/rest/new/ranked-matches/:id/all', {
 			id : '@id'
 		});
 	};
