@@ -28,9 +28,9 @@ public class RankedPlayer{
 
     private static LeagueAPI api = DynamicLeagueAPIImpl.getInstance();
 
-    public RankedPlayer(ParticipantIdentity id, Participant participant){
+    public RankedPlayer(SummonerDto summoner, Participant participant){
         try{
-            summoner = api.getSummonerFromId(id.getPlayer().getSummonerId());
+            summoner = summoner;
             champion = api.getChampFromId(participant.getChampionId());
             highestAchievedSeasonTier = participant.getHighestAchievedSeasonTier();
             masteries = participant.getMasteries();

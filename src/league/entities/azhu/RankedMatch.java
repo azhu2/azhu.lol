@@ -3,9 +3,13 @@ package league.entities.azhu;
 import java.util.LinkedList;
 import java.util.List;
 
+import league.api.DynamicLeagueAPIImpl;
+import league.api.LeagueAPI;
+import league.api.RiotAPIImpl.RiotPlsException;
 import league.entities.MatchDetail;
 import league.entities.Participant;
 import league.entities.ParticipantIdentity;
+import league.entities.SummonerDto;
 import league.entities.Team;
 
 public class RankedMatch{
@@ -23,6 +27,8 @@ public class RankedMatch{
     private String season;
     private List<Team> teams;
 
+    private static LeagueAPI api = DynamicLeagueAPIImpl.getInstance();
+    
     public RankedMatch(){
 
     }
@@ -46,10 +52,14 @@ public class RankedMatch{
         this.teams = teams;
     }
 
-    private void processPlayers(List<ParticipantIdentity> participantIdentities, List<Participant> participants){
+    private void processPlayers(List<ParticipantIdentity> participantIdentities, List<Participant> participants) throws RiotPlsException{
         players = new LinkedList<>();
+        List<Long> summonerIds = new LinkedList<>();
+        for(ParticipantIdentity id : participantIdentities)
+            summonerIds.add(id.getPlayer().getSummonerId());
+        List<SummonerDto> summoners = api.getSummoners(summonerIds);
         for(int i = 0; i < participantIdentities.size(); i++)
-            players.add(new RankedPlayer(participantIdentities.get(i), participants.get(i)));
+            players.add(new RankedPlayer(summoners.get(i), participants.get(i)));
     }
 
     public RankedMatch(MatchDetail detail){
@@ -66,7 +76,11 @@ public class RankedMatch{
         this.season = detail.getSeason();
         this.teams = detail.getTeams();
         
-        processPlayers(detail.getParticipantIdentities(), detail.getParticipants());
+        try{
+            processPlayers(detail.getParticipantIdentities(), detail.getParticipants());
+        } catch(RiotPlsException e){
+            e.printStackTrace();
+        }
     }
 
     public int getMapId(){

@@ -29,13 +29,38 @@ public class NewLeagueResource extends LeagueResource{
     public NewLeagueResource(){
         super();
     }
-    
+
+    /**
+     * For now, the DB still stores MatchSummaries and MatchDetails instead of RankedMatches.
+     * TODO: Fix that
+     */
+    @Override
     @GET
     @Path("/ranked-matches/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getRankedMatches(@PathParam("id") long summonerId) throws ServletException, IOException{
         try{
             List<MatchSummary> history = api.getRankedMatches(summonerId);
+            List<RankedMatch> matches = new LinkedList<>();
+            for(MatchSummary summary : history){
+                long matchId = summary.getMatchId();
+                MatchDetail detail = api.getMatchDetail(matchId);
+                matches.add(new RankedMatch(detail));
+            }
+            
+            return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(matches)).build();
+        } catch(RiotPlsException e){
+            return Response.status(e.getStatus()).entity(e.getMessage()).build();
+        }
+    }
+    
+    @Override
+    @GET
+    @Path("/ranked-matches/{id}/all")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAllRankedMatches(@PathParam("id") long summonerId) throws ServletException, IOException{
+        try{
+            List<MatchSummary> history = api.getAllRankedMatches(summonerId);
             List<RankedMatch> matches = new LinkedList<>();
             for(MatchSummary summary : history){
                 long matchId = summary.getMatchId();

@@ -105,7 +105,7 @@ public class RiotAPIImpl implements LeagueAPI{
             Collection<SummonerDto> summoners = map.values();
             for(SummonerDto summoner : summoners)
                 db.cacheSummoner(summoner);
-
+            
             return new LinkedList<SummonerDto>(summoners);
         } catch(IOException e){
             log.log(Level.SEVERE, e.getMessage(), e);
