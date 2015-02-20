@@ -30,8 +30,8 @@ import org.codehaus.jackson.map.SerializationConfig;
 
 @Path("/")
 public class LeagueResource{
-    private static LeagueAPI api = DynamicLeagueAPIImpl.getInstance();
-    private static ObjectMapper mapper = new ObjectMapper();
+    protected static LeagueAPI api = DynamicLeagueAPIImpl.getInstance();
+    protected static ObjectMapper mapper = new ObjectMapper();
 
     public LeagueResource(){
         mapper.configure(SerializationConfig.Feature.FAIL_ON_EMPTY_BEANS, false);
@@ -118,7 +118,7 @@ public class LeagueResource{
         }
     }
     
-    private class UpdateCount{
+    protected class UpdateCount{
         private int count;
         
         public int getCount(){

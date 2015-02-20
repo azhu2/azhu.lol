@@ -1,8 +1,10 @@
 package league.entities;
 
+import league.entities.ImageDto;
+
 public class ChampionDto{
     private int id;
-    // private ImageDto image;
+    private ImageDto image;
     private String name;
     private String title;
     private String key;
@@ -11,11 +13,40 @@ public class ChampionDto{
         
     }
     
-    public ChampionDto(int id, String name, String title, String key){
+    public ChampionDto(int id, ImageDto image, String name, String title, String key){
+        super();
         this.id = id;
+        this.image = image;
         this.name = name;
         this.title = title;
         this.key = key;
+    }
+
+    @Override
+    public String toString(){
+        return "Champion (" + id + "): " + name;
+    }
+
+    @Override
+    public int hashCode(){
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + id;
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj){
+        if(this == obj)
+            return true;
+        if(obj == null)
+            return false;
+        if(getClass() != obj.getClass())
+            return false;
+        ChampionDto other = (ChampionDto) obj;
+        if(id != other.id)
+            return false;
+        return true;
     }
 
     public int getId(){
@@ -24,6 +55,14 @@ public class ChampionDto{
 
     public void setId(int id){
         this.id = id;
+    }
+
+    public ImageDto getImage(){
+        return image;
+    }
+
+    public void setImage(ImageDto image){
+        this.image = image;
     }
 
     public String getName(){
@@ -50,16 +89,4 @@ public class ChampionDto{
         this.key = key;
     }
 
-    @Override
-    public boolean equals(Object obj){
-        if(!(obj instanceof ChampionDto))
-            return false;
-        ChampionDto champ = (ChampionDto) obj;
-        return champ.id == this.id;
-    }
-    
-    @Override
-    public String toString(){
-        return "Champion " + id + ": " + name;
-    }
 }

@@ -231,7 +231,7 @@ public class RiotAPIImpl implements LeagueAPI{
     public ChampionDto getChampFromId(long id) throws RiotPlsException{
         String uri = buildUri(String.format(CHAMP_QUERY, id));
         Map<String, String> params = new HashMap<>();
-        params.put("includeTimeline", "false");
+        params.put("champData", "image");
         String entity = getEntity(uri, params);
 
         if(entity == null)

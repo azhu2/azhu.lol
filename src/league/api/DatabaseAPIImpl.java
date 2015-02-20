@@ -368,19 +368,20 @@ public class DatabaseAPIImpl implements LeagueAPI{
         try{
             Statement stmt = db.createStatement();
             String sql;
-            sql = String.format("SELECT id, name, title, champKey FROM champions WHERE id = %d", champId);
+            sql = String.format("SELECT id, name, title, champKey, image FROM champions WHERE id = %d", champId);
             ResultSet rs = stmt.executeQuery(sql);
             if(rs.next()){
                 int id = rs.getInt("id");
                 String name = rs.getString("name");
                 String title = rs.getString("title");
                 String key = rs.getString("champKey");
-
-                ChampionDto champ = new ChampionDto(id, name, title, key);
+                ImageDto image = mapper.readValue(rs.getString("image"), ImageDto.class);
+                
+                ChampionDto champ = new ChampionDto(id, image, name, title, key);
                 log.info("Fetched champion " + champ + " from db.");
                 return champ;
             }
-        } catch(SQLException e){
+        } catch(SQLException | IOException e){
             log.log(Level.SEVERE, e.getMessage(), e);
         }
 
@@ -393,13 +394,15 @@ public class DatabaseAPIImpl implements LeagueAPI{
             String name = champ.getName();
             String title = champ.getTitle();
             String key = champ.getKey();
-
-            String sql = "INSERT INTO champions VALUES (?, ?, ?, ?)";
+            String image = mapper.writeValueAsString(champ.getImage());
+            
+            String sql = "INSERT INTO champions VALUES (?, ?, ?, ?, ?)";
             PreparedStatement stmt = db.prepareStatement(sql);
             stmt.setLong(1, id);
             stmt.setString(2, name);
             stmt.setString(3, title);
             stmt.setString(4, key);
+            stmt.setString(5, image);
 
             int updated = stmt.executeUpdate();
             if(updated < 1){
@@ -408,7 +411,7 @@ public class DatabaseAPIImpl implements LeagueAPI{
             }
             log.info("Cached champion " + champ);
             return true;
-        } catch(SQLException e){
+        } catch(SQLException | IOException e){
             log.log(Level.SEVERE, e.getMessage(), e);
             return false;
         }
