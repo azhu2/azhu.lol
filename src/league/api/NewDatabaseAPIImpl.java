@@ -32,10 +32,10 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueAPI{
     }
 
     @Override
-    public boolean cacheRankedMatch(RankedMatch match){
+    public void cacheRankedMatch(RankedMatch match){
         try{
             if(hasRankedMatch(match))
-                return false;
+                return;
 
             String sql = "INSERT INTO ranked_matches_new"
                     + "(mapId, matchCreation, matchDuration, matchId, matchMode, matchType, "
@@ -63,16 +63,9 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueAPI{
             stmt.setString(18, mapper.writeValueAsString(match.getPlayers()));
             stmt.setLong(19, match.getSummonerId());
 
-            int updated = stmt.executeUpdate();
-            if(updated < 1){
-                log.log(Level.WARNING, "Cache (new) ranked match " + match.getMatchId() + " failed.");
-                return false;
-            }
-            log.info("Cached (new) ranked match " + match.getMatchId());
-            return true;
+            new CacheThread(stmt, match).start();
         } catch(IOException | SQLException e){
             log.log(Level.SEVERE, e.getMessage(), e);
-            return false;
         }
     }
 
@@ -211,10 +204,10 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueAPI{
     }
 
     @Override
-    public boolean cacheGame(Game game){
+    public void cacheGame(Game game){
         try{
             if(hasGame(game))
-                return false;
+                return;
 
             String sql = "INSERT INTO games_new (mapId, createDate, gameMode, gameType, subType, "
                     + "lookupPlayer, blueTeam, redTeam, ipEarned, level, stats, spell1, spell2, "
@@ -239,16 +232,9 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueAPI{
             stmt.setLong(16, game.getGameId());
             stmt.setLong(17, game.getSummonerId());
 
-            int updated = stmt.executeUpdate();
-            if(updated < 1){
-                log.log(Level.WARNING, "Cache (new) game " + game.getGameId() + " failed.");
-                return false;
-            }
-            log.info("Cached (new) game " + game.getGameId());
-            return true;
+            new CacheThread(stmt, game).start();
         } catch(IOException | SQLException e){
             log.log(Level.SEVERE, e.getMessage(), e);
-            return false;
         }
     }
 }

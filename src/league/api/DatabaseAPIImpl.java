@@ -131,9 +131,9 @@ public class DatabaseAPIImpl implements LeagueAPI{
         return null;
     }
 
-    public boolean cacheSummoner(SummonerDto summoner){
+    public void cacheSummoner(SummonerDto summoner){
         if(summoner == null)
-            return false;
+            return;
 
         try{
             String sql = "INSERT INTO summoners (id, name, profileIconId, summonerLevel, revisionDate)"
@@ -146,16 +146,9 @@ public class DatabaseAPIImpl implements LeagueAPI{
             stmt.setLong(4, summoner.getSummonerLevel());
             stmt.setLong(5, summoner.getRevisionDate());
 
-            int updated = stmt.executeUpdate();
-            if(updated < 1){
-                log.log(Level.WARNING, "Cache summoner " + summoner + " failed.");
-                return false;
-            }
-            log.info("Cached summoner " + summoner);
-            return true;
+            new CacheThread(stmt, summoner).start();
         } catch(SQLException e){
             log.log(Level.SEVERE, e.getMessage(), e);
-            return false;
         }
     }
 
@@ -247,10 +240,10 @@ public class DatabaseAPIImpl implements LeagueAPI{
         }
     }
 
-    public boolean cacheRankedMatch(long summonerId, MatchSummary match){
+    public void cacheRankedMatch(long summonerId, MatchSummary match){
         try{
             if(hasRankedMatch(summonerId, match)){
-                return false;
+                return;
             }
 
             String sql = "INSERT INTO ranked_matches VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -270,17 +263,9 @@ public class DatabaseAPIImpl implements LeagueAPI{
             stmt.setString(13, match.getRegion());
             stmt.setString(14, match.getSeason());
 
-            int updated = stmt.executeUpdate();
-            if(updated < 1){
-                log.log(Level.WARNING, "Cache ranked match " + match.getMatchId() + " for summoner " + summonerId
-                        + " failed.");
-                return false;
-            }
-            log.info("Cached ranked match " + match.getMatchId() + " for summoner " + summonerId);
-            return true;
+            new CacheThread(stmt, match).start();
         } catch(IOException | SQLException e){
             log.log(Level.SEVERE, e.getMessage(), e);
-            return false;
         }
     }
 
@@ -336,7 +321,7 @@ public class DatabaseAPIImpl implements LeagueAPI{
         }
     }
 
-    public boolean cacheMatchHistoryMatch(long summonerId, GameDto game){
+    public void cacheMatchHistoryMatch(long summonerId, GameDto game){
         try{
             long gameId = game.getGameId();
             long createDate = game.getCreateDate();
@@ -349,17 +334,9 @@ public class DatabaseAPIImpl implements LeagueAPI{
             stmt.setLong(3, createDate);
             stmt.setString(4, gameData);
 
-            int updated = stmt.executeUpdate();
-            if(updated < 1){
-                log.log(Level.WARNING, "Cache match history match " + gameId + " for summoner " + summonerId
-                        + " failed.");
-                return false;
-            }
-            log.info("Cached match history match " + gameId + " for summoner " + summonerId);
-            return true;
+            new CacheThread(stmt, game).start();
         } catch(IOException | SQLException e){
             log.log(Level.SEVERE, e.getMessage(), e);
-            return false;
         }
     }
 
@@ -376,7 +353,7 @@ public class DatabaseAPIImpl implements LeagueAPI{
                 String title = rs.getString("title");
                 String key = rs.getString("champKey");
                 ImageDto image = mapper.readValue(rs.getString("image"), ImageDto.class);
-                
+
                 ChampionDto champ = new ChampionDto(id, image, name, title, key);
                 log.info("Fetched champion " + champ + " from db.");
                 return champ;
@@ -388,14 +365,14 @@ public class DatabaseAPIImpl implements LeagueAPI{
         return null;
     }
 
-    public boolean cacheChampion(ChampionDto champ){
+    public void cacheChampion(ChampionDto champ){
         try{
             long id = champ.getId();
             String name = champ.getName();
             String title = champ.getTitle();
             String key = champ.getKey();
             String image = mapper.writeValueAsString(champ.getImage());
-            
+
             String sql = "INSERT INTO champions VALUES (?, ?, ?, ?, ?)";
             PreparedStatement stmt = db.prepareStatement(sql);
             stmt.setLong(1, id);
@@ -404,16 +381,9 @@ public class DatabaseAPIImpl implements LeagueAPI{
             stmt.setString(4, key);
             stmt.setString(5, image);
 
-            int updated = stmt.executeUpdate();
-            if(updated < 1){
-                log.log(Level.WARNING, "Cache champion " + champ + " failed.");
-                return false;
-            }
-            log.info("Cached champion " + champ);
-            return true;
+            new CacheThread(stmt, champ).start();
         } catch(SQLException | IOException e){
             log.log(Level.SEVERE, e.getMessage(), e);
-            return false;
         }
     }
 
@@ -450,20 +420,14 @@ public class DatabaseAPIImpl implements LeagueAPI{
         return null;
     }
 
-    public boolean cacheSummonerSpell(SummonerSpellDto spell){
+    public void cacheSummonerSpell(SummonerSpellDto spell){
         try{
             long id = spell.getId();
             String name = spell.getName();
             String description = spell.getDescription();
             String key = spell.getKey();
             int summonerLevel = spell.getSummonerLevel();
-            String image;
-            try{
-                image = mapper.writeValueAsString(spell.getImage());
-            } catch(IOException e){
-                e.printStackTrace();
-                return false;
-            }
+            String image = mapper.writeValueAsString(spell.getImage());
 
             String sql = "INSERT INTO summoner_spells VALUES (?, ?, ?, ?, ?, ?)";
             PreparedStatement stmt = db.prepareStatement(sql);
@@ -474,16 +438,9 @@ public class DatabaseAPIImpl implements LeagueAPI{
             stmt.setInt(5, summonerLevel);
             stmt.setString(6, image);
 
-            int updated = stmt.executeUpdate();
-            if(updated < 1){
-                log.log(Level.WARNING, "Cache summoner spell " + spell + " failed.");
-                return false;
-            }
-            log.info("Cached summoner spell " + spell);
-            return true;
-        } catch(SQLException e){
+            new CacheThread(stmt, spell).start();
+        } catch(SQLException | IOException e){
             log.log(Level.SEVERE, e.getMessage(), e);
-            return false;
         }
     }
 
@@ -547,10 +504,10 @@ public class DatabaseAPIImpl implements LeagueAPI{
         }
     }
 
-    public boolean cacheMatchDetail(MatchDetail match){
+    public void cacheMatchDetail(MatchDetail match){
         try{
             if(hasMatch(match))
-                return false;
+                return;
 
             String sql = "INSERT INTO matches VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement stmt = db.prepareStatement(sql);
@@ -569,16 +526,34 @@ public class DatabaseAPIImpl implements LeagueAPI{
             stmt.setString(13, match.getSeason());
             stmt.setString(14, mapper.writeValueAsString(match.getTeams()));
 
-            int updated = stmt.executeUpdate();
-            if(updated < 1){
-                log.log(Level.WARNING, "Cache ranked match " + match.getMatchId() + " failed.");
-                return false;
-            }
-            log.info("Cached ranked match " + match.getMatchId());
-            return true;
+            new CacheThread(stmt, match).start();
         } catch(IOException | SQLException e){
             log.log(Level.SEVERE, e.getMessage(), e);
-            return false;
+        }
+    }
+
+    protected class CacheThread extends Thread{
+        private volatile PreparedStatement stmt;
+        private volatile Object obj;
+
+        public CacheThread(PreparedStatement stmt, Object obj){
+            this.stmt = stmt;
+            this.obj = obj;
+        }
+
+        @Override
+        public void run(){
+            int updated;
+            try{
+                updated = stmt.executeUpdate();
+                if(updated < 1){
+                    log.log(Level.WARNING, "Cache " + obj + " failed.");
+                    return;
+                }
+                log.info("Cached " + obj);
+            } catch(SQLException e){
+                log.log(Level.WARNING, "Cache " + obj + " failed.");
+            }
         }
     }
 
