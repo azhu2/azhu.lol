@@ -33,6 +33,25 @@ public class NewLeagueResource extends LeagueResource{
         super();
     }
 
+    @GET
+    @Path("/ranked-match/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getMatchDetail(@PathParam("id") long matchId, @QueryParam("summonerId") long summonerId) throws ServletException, IOException{
+        try{
+            RankedMatch match = api_new.getRankedMatch(matchId, summonerId);
+            if(match != null)
+                return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(match)).build();
+            
+            MatchDetail detail = api.getMatchDetail(matchId);
+            match = new RankedMatch(detail, summonerId);
+            api_new.cacheRankedMatch(match);
+            
+            return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(match)).build();
+        } catch(RiotPlsException e){
+            return Response.status(e.getStatus()).entity(e.getMessage()).build();
+        }
+    }
+
     /**
      * For now, the DB still stores MatchSummaries and MatchDetails instead of RankedMatches. TODO: Fix that
      */
@@ -54,25 +73,6 @@ public class NewLeagueResource extends LeagueResource{
             }
 
             return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(matches)).build();
-        } catch(RiotPlsException e){
-            return Response.status(e.getStatus()).entity(e.getMessage()).build();
-        }
-    }
-
-    @GET
-    @Path("/ranked-match/{id}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getMatchDetail(@PathParam("id") long matchId, @QueryParam("summoner") long summonerId) throws ServletException, IOException{
-        try{
-            RankedMatch match = api_new.getRankedMatch(matchId);
-            if(match != null)
-                return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(match)).build();
-            
-            MatchDetail detail = api.getMatchDetail(matchId);
-            match = new RankedMatch(detail, summonerId);
-            api_new.cacheRankedMatch(match);
-            
-            return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(match)).build();
         } catch(RiotPlsException e){
             return Response.status(e.getStatus()).entity(e.getMessage()).build();
         }
