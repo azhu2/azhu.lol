@@ -42,213 +42,137 @@ leagueApp.controller('routeController',
 		$rootScope.showMatchHistory = false;
 	});
 
-leagueApp.controller('lookupController',
-	function($scope, $rootScope, $routeParams, LeagueResource) {
-		$rootScope.version = "5.2.2";
+leagueApp.controller('lookupController', function($scope, $rootScope, $routeParams,
+	LeagueResource) {
+	$rootScope.version = "5.2.2";
 
-		if ($routeParams.summonerId) {
-			if (!$rootScope.summoner) {
-				LeagueResource.summonerFromId().get({
-					id : $routeParams.summonerId
-				}, function(data) {
-					$rootScope.summoner = data;
-				}, function(error) {
-					$rootScope.summoner = {};
-				});
-			}
-			$rootScope.showLookupResults = true;
-		}
-
-		$rootScope.lookup = function() {
-			LeagueResource.lookupSummoner().get({
-				name : $scope.summonerName
+	if ($routeParams.summonerId) {
+		if (!$rootScope.summoner) {
+			LeagueResource.summonerFromId().get({
+				id : $routeParams.summonerId
 			}, function(data) {
 				$rootScope.summoner = data;
 			}, function(error) {
 				$rootScope.summoner = {};
 			});
-			$rootScope.showLookupResults = true;
-			$rootScope.showRankedResults = false;
-			$rootScope.showMatchHistory = false;
-		};
+		}
+		$rootScope.showLookupResults = true;
+	}
 
-		$rootScope.lookupRanked = function(summonerId) {
-			$rootScope.rankedData = [];
+	$rootScope.lookup = function() {
+		LeagueResource.lookupSummoner().get({
+			name : $scope.summonerName
+		}, function(data) {
+			$rootScope.summoner = data;
+		}, function(error) {
+			$rootScope.summoner = {};
+		});
+		$rootScope.showLookupResults = true;
+		$rootScope.showRankedResults = false;
+		$rootScope.showMatchHistory = false;
+	};
 
-			LeagueResource.lookupRanked(summonerId).query({
-				id : summonerId
-			}, function(data) {
-				$rootScope.newRanked = data;
-			});
-			$rootScope.showRankedResults = true;
-			$rootScope.showMatchHistory = false;
-			$rootScope.showAll = false;
-		};
+	$rootScope.lookupRanked = function(summonerId) {
+		$rootScope.rankedData = [];
 
-		$rootScope.lookupAllRanked = function(summonerId) {
-			$rootScope.newRanked = [];
-			LeagueResource.allRanked(summonerId).query({
-				id : summonerId
-			}, function(data) {
-				$rootScope.newRanked = data;
-			});
-			$rootScope.showAll = true;
-		};
+		LeagueResource.lookupRanked(summonerId).query({
+			id : summonerId
+		}, function(data) {
+			$rootScope.newRanked = data;
+		});
+		$rootScope.showRankedResults = true;
+		$rootScope.showMatchHistory = false;
+		$rootScope.showAll = false;
+	};
 
-		$rootScope.lookupMatches = function(summonerId) {
-			$rootScope.matchData = [];
-			LeagueResource.lookupMatches(summonerId).query({
-				id : summonerId
-			}, function(data) {
-				for (var i = 0; i < data.length; i++) {
-					parseGame($rootScope, data[i], data.length - i - 1);
-				}
-			});
-			$rootScope.showRankedResults = false;
-			$rootScope.showMatchHistory = true;
-			$rootScope.showAll = false;
-		};
+	$rootScope.lookupAllRanked = function(summonerId) {
+		$rootScope.newRanked = [];
+		LeagueResource.allRanked(summonerId).query({
+			id : summonerId
+		}, function(data) {
+			$rootScope.newRanked = data;
+		});
+		$rootScope.showAll = true;
+	};
 
-		$rootScope.lookupAllMatches = function(summonerId) {
-			$rootScope.matchData = [];
-			LeagueResource.lookupAllMatches(summonerId).query({
-				id : summonerId
-			}, function(data) {
-				for (var i = 0; i < data.length; i++) {
-					parseGame($rootScope, data[i], data.length - i - 1);
-				}
-			});
-			$rootScope.showAll = true;
-		};
-
-		// Process champion and summoner spells
-		var parseGame = function($rootScope, match, index) {
-			LeagueResource.champFromId().get({
-				id : match.championId
-			}, function(champData) {
-				match.champion = champData;
-			});
-
-			LeagueResource.summSpellFromId().get({
-				id : match.spell1
-			}, function(champData) {
-				match.sumSpell1 = champData;
-			});
-
-			LeagueResource.summSpellFromId().get({
-				id : match.spell2
-			}, function(champData) {
-				match.sumSpell2 = champData;
-			});
-
-			$rootScope.matchData[index] = match;
-		};
-
-		// Used to check before pushing data if it's for the right match
-		var expandedMatch = 0;
-
-		$rootScope.expandMatch = function(match, summoner) {
-			if (match.showExpand) {
-				match.showExpand = false;
-				return;
-			}
-
-			expandedMatch++;
-			closeAllMatches($rootScope);
-			match.showExpand = true;
-
-			// This part is terrible
-			if (!isRanked(match)) {
-				var ids = [ summoner.id ];
-				var champs = [ match.championId ];
-				var teamIds = [ match.teamId ];
-				for (var i = 0; i < match.fellowPlayers.length; i++) {
-					ids.push(match.fellowPlayers[i].summonerId);
-					champs.push(match.fellowPlayers[i].championId);
-					teamIds.push(match.fellowPlayers[i].teamId);
-				}
-				lookupSummonerIds($rootScope, ids, champs, teamIds, expandedMatch);
-			}
-		};
-
-		// Lookup for expanding a match
-		var lookupSummonerIds = function($rootScope, players, champs, teamIds, matchId) {
-			var ids = "";
-			for (var i = 0; i < players.length; i++)
-				ids += players[i] + ",";
-
-			LeagueResource.lookupSummoners().query(
-				{
-					ids : ids
-				},
-				function(summoners) {
-					var matchPlayers = [];
-
-					for (var i = 0; i < summoners.length; i++) {
-						var champId = champs[i];
-						var summoner = summoners[i];
-
-						parsePlayer($rootScope, matchPlayers, champId, summoner, teamIds,
-							matchId, i);
-					}
-				});
-		};
-
-		// Process a single player in a match
-		var parsePlayer = function($rootScope, matchPlayers, champId, summoner, teamIds,
-			matchId, index) {
-			if (matchPlayers[index] == null)
-				matchPlayers[index] = {};
-			matchPlayers[index].summoner = summoner;
-
-			LeagueResource.champFromId().get({
-				id : champId
-			}, function(champData) {
-				matchPlayers[index].champ = champData;
-
-				if (expandedMatch != matchId)
-					return;
-				if (teamIds[index] === 100)
-					$rootScope.matchPlayerBlue.push(matchPlayers[index]);
+	$rootScope.lookupMatches = function(summonerId) {
+		$rootScope.newGames = [];
+		LeagueResource.matchHistory(summonerId).query({
+			id : summonerId
+		}, function(data) {
+			for (var i = 0; i < data.length; i++) {
+				if (data[i].teamId == 100)
+					data[i].champion = data[i].blueTeam[data[i].lookupPlayer];
 				else
-					$rootScope.matchPlayerRed.push(matchPlayers[index]);
-			});
-		};
+					data[i].champion = data[i].redTeam[data[i].lookupPlayer];
+			}
+			$rootScope.newGames = data;
+		});
+		$rootScope.showRankedResults = false;
+		$rootScope.showMatchHistory = true;
+		$rootScope.showAll = false;
+	};
 
-		var closeAllMatches = function($rootScope) {
-			if ($rootScope.matchData != null)
-				for (var i = 0; i < $rootScope.matchData.length; i++) {
-					$rootScope.matchData[i].showExpand = false;
-				}
+	$rootScope.lookupAllMatches = function(summonerId) {
+		$rootScope.matchData = [];
+		LeagueResource.lookupAllMatches(summonerId).query({
+			id : summonerId
+		}, function(data) {
+			for (var i = 0; i < data.length; i++) {
+				parseGame($rootScope, data[i], data.length - i - 1);
+			}
+		});
+		$rootScope.showAll = true;
+	};
 
-			if ($rootScope.rankedData != null)
-				for (var i = 0; i < $rootScope.rankedData.length; i++) {
-					$rootScope.rankedData[i].showExpand = false;
-				}
+	// Used to check before pushing data if it's for the right match
+	var expandedMatch = 0;
 
-			$rootScope.matchPlayerBlue = [];
-			$rootScope.matchPlayerRed = [];
-		};
+	$rootScope.expandMatch = function(match, summoner) {
+		if (match.showExpand) {
+			match.showExpand = false;
+			return;
+		}
 
-		// Very dirty, but it works fine
-		var isRanked = function(match) {
-			return match.season != null;
-		};
+		expandedMatch++;
+		closeAllMatches($rootScope);
+		match.showExpand = true;
+	};
 
-		$rootScope.importAllRanked = function(summonerId) {
-			$scope.working = ' (working)';
-			$scope.disableImportButton = true;
+	var closeAllMatches = function($rootScope) {
+		if ($rootScope.matchData != null)
+			for (var i = 0; i < $rootScope.matchData.length; i++) {
+				$rootScope.matchData[i].showExpand = false;
+			}
 
-			LeagueResource.allRanked().save({
-				id : summonerId
-			}, function(data) {
-				$scope.working = ' (' + data.count + ' matches imported)';
-				$rootScope.showAll = false;
-			});
-		};
-		
-		$scope.working = ' (slow)';
-	});
+		if ($rootScope.rankedData != null)
+			for (var i = 0; i < $rootScope.rankedData.length; i++) {
+				$rootScope.rankedData[i].showExpand = false;
+			}
+
+		$rootScope.matchPlayerBlue = [];
+		$rootScope.matchPlayerRed = [];
+	};
+
+	// Very dirty, but it works fine
+	var isRanked = function(match) {
+		return match.season != null;
+	};
+
+	$rootScope.importAllRanked = function(summonerId) {
+		$scope.working = ' (working)';
+		$scope.disableImportButton = true;
+
+		LeagueResource.allRanked().save({
+			id : summonerId
+		}, function(data) {
+			$scope.working = ' (' + data.count + ' matches imported)';
+			$rootScope.showAll = false;
+		});
+	};
+
+	$scope.working = ' (slow)';
+});
 
 leagueApp.service('LeagueResource', function($resource) {
 	this.lookupSummoner = function() {
@@ -291,6 +215,12 @@ leagueApp.service('LeagueResource', function($resource) {
 
 	this.lookupRanked = function() {
 		return $resource('/azhu.lol/rest/new/ranked-matches/:id', {
+			id : '@id'
+		});
+	};
+
+	this.matchHistory = function() {
+		return $resource('/azhu.lol/rest/new/match-history/:id', {
 			id : '@id'
 		});
 	};

@@ -1,7 +1,7 @@
 <div id="matches" ng-show="showMatchHistory">
 	<h2>Match History</h2>
 	<ul id="matches-list">
-		<li	ng-repeat="match in matchData | orderBy:'createDate':true track by $index ">
+		<li	ng-repeat="match in newGames | orderBy:'createDate':true track by $index ">
 			<div class="match id_{{ match.gameId }}" ng-class="(match.stats.win == 1) ? 'win' : 'loss'">
 
 				<div class="topRow">
@@ -14,14 +14,14 @@
 				<div class="midRow">
 					<div class="championImages">
 						<img class="championImage" alt="{{ match.champion == null ? 'champion' : match.champion.name }}"
-							ng-src="{{ match.champion == null ? '' : 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/champion/' + match.champion.key + '.png' }}">
+							ng-src="{{ match.champion == null ? '' : 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/champion/' + match.champion.champion.image.full }}">
 						<div class="championLevel">{{ match.stats.level }}</div>
 						<div class="summonerSpells">
-							<img class="summonerSpell spell1" alt="{{ match.sumSpell1 == null ? 'summoner spell 1' : match.summSpell1.name }}"
-								ng-src="{{ match.sumSpell1 == null ? '' : 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/spell/' + match.sumSpell1.image.full }}">
+							<img class="summonerSpell spell1" alt="{{ match.spell1 == null ? 'summoner spell 1' : match.summSpell1.name }}"
+								ng-src="{{ match.spell1 == null ? '' : 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/spell/' + match.spell1.image.full }}">
 							<br>
-							<img class="summonerSpell spell2" alt="{{ match.sumSpell2 == null ? 'summoner spell 2' : match.summSpell2.name }}"
-								ng-src="{{ match.sumSpell2 == null ? '' : 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/spell/' + match.sumSpell2.image.full }}">
+							<img class="summonerSpell spell2" alt="{{ match.spell2 == null ? 'summoner spell 2' : match.summSpell2.name }}"
+								ng-src="{{ match.spell2 == null ? '' : 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/spell/' + match.spell2.image.full }}">
 						</div>
 					</div>
 
@@ -70,11 +70,11 @@
 								<div class="teamTitle">
 									Blue Team ({{ (match.teamId === 100 && match.stats.win || match.teamId === 200 && !match.stats.win) ? "WIN" : "LOSS" }})
 								</div>
-								<li ng-repeat="player in matchPlayerBlue track by player.summoner.id">
+								<li ng-repeat="player in match.blueTeam track by player.summoner.id">
 									<a class="playerInfo" ng-href="#{{ player.summoner.id }}">
 										{{ player.summoner.name }}
-										<img class="playerChampionImage" alt="{{ (player == null || player.champ == null) ? 'champion' : player.champ.name }}"
-											ng-src="{{ (player == null || player.champ == null) ? '' : 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/champion/' + player.champ.key + '.png' }}">
+										<img class="playerChampionImage" alt="{{ (player == null || player.champion == null) ? 'champion' : player.champion.name }}"
+											ng-src="{{ (player == null || player.champion == null) ? '' : 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/champion/' + player.champion.image.full }}">
 									</a> 								
 								</li>
 							</div>
@@ -82,10 +82,10 @@
 								<div class="teamTitle">
 									Purple Team ({{ (match.teamId === 200 && match.stats.win || match.teamId === 100 && !match.stats.win) ? "WIN" : "LOSS" }})
 								</div>
-								<li ng-repeat="player in matchPlayerRed track by player.summoner.id">
+								<li ng-repeat="player in match.redTeam track by player.summoner.id">
 									<a class="playerInfo" ng-href="#{{ player.summoner.id }}">
-										<img class="playerChampionImage" alt="{{ (player == null || player.champ == null) ? 'champion' : player.champ.name }}"
-											ng-src="{{ (player == null || player.champ == null) ? '' : 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/champion/' + player.champ.key + '.png' }}">
+										<img class="playerChampionImage" alt="{{ (player == null || player.champion == null) ? 'champion' : player.champion.name }}"
+											ng-src="{{ (player == null || player.champion == null) ? '' : 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/champion/' + player.champion.image.full }}">
 										{{ player.summoner.name }}
 									</a> 								
 								</li>
