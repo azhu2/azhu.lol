@@ -160,7 +160,7 @@ public class MatchDetail{
 
     @Override
     public String toString(){
-        return "MatchDetail " + matchId + "]";
+        return "MatchDetail " + matchId;
     }
 
     @Override

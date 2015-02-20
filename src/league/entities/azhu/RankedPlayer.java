@@ -27,6 +27,10 @@ public class RankedPlayer{
 
     private static LeagueAPI api = DynamicLeagueAPIImpl.getInstance();
 
+    public RankedPlayer(){
+        
+    }
+    
     public RankedPlayer(SummonerDto summoner, Participant participant){
         try{
             this.summoner = summoner;

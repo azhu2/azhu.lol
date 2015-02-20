@@ -31,7 +31,7 @@ import org.codehaus.jackson.map.SerializationConfig;
 import org.codehaus.jackson.type.TypeReference;
 
 public class DatabaseAPIImpl implements LeagueAPI{
-    private static Logger log = Logger.getLogger(DatabaseAPIImpl.class.getName());
+    protected static Logger log = Logger.getLogger(DatabaseAPIImpl.class.getName());
 
     private static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
     private static final String DB_URL = "jdbc:mysql://localhost/lol";
@@ -40,8 +40,8 @@ public class DatabaseAPIImpl implements LeagueAPI{
 
     private static final int FETCH_ALL = -1;
 
-    private Connection db;
-    private ObjectMapper mapper = new ObjectMapper();
+    protected Connection db;
+    protected ObjectMapper mapper = new ObjectMapper();
 
     private static DatabaseAPIImpl _instance = new DatabaseAPIImpl();
 
@@ -49,7 +49,7 @@ public class DatabaseAPIImpl implements LeagueAPI{
         return _instance;
     }
 
-    private DatabaseAPIImpl(){
+    protected DatabaseAPIImpl(){
         try{
             Class.forName(JDBC_DRIVER);
             log.info("Connecting to database...");

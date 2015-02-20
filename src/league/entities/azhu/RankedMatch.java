@@ -34,6 +34,7 @@ public class RankedMatch{
     private List<Integer> redPlayers;
     private List<ChampionDto> blueBans;
     private List<ChampionDto> redBans;
+    private long summonerId;
 
     private static LeagueAPI api = DynamicLeagueAPIImpl.getInstance();
 
@@ -44,7 +45,7 @@ public class RankedMatch{
     public RankedMatch(int mapId, long matchCreation, long matchDuration, long matchId, String matchMode,
             String matchType, String matchVersion, List<RankedPlayer> players, String platformId, String queueType,
             String region, String season, List<Team> teams, int lookupPlayer, List<Integer> bluePlayers,
-            List<Integer> redPlayers, List<ChampionDto> blueBans, List<ChampionDto> redBans){
+            List<Integer> redPlayers, List<ChampionDto> blueBans, List<ChampionDto> redBans, long summonerId){
         super();
         this.mapId = mapId;
         this.matchCreation = matchCreation;
@@ -64,6 +65,7 @@ public class RankedMatch{
         this.redPlayers = redPlayers;
         this.blueBans = blueBans;
         this.redBans = redBans;
+        this.summonerId = summonerId;
     }
 
     private void processPlayers(List<ParticipantIdentity> participantIdentities, List<Participant> participants,
@@ -94,7 +96,7 @@ public class RankedMatch{
         redBans = new LinkedList<>();
         banLists.add(blueBans);
         banLists.add(redBans);
-        
+
         for(int i = 0; i < teamsData.size(); i++){
             List<BannedChampion> bans = teamsData.get(i).getBans();
             for(BannedChampion ban : bans){
@@ -117,6 +119,7 @@ public class RankedMatch{
         this.region = detail.getRegion();
         this.season = detail.getSeason();
         this.teams = detail.getTeams();
+        this.summonerId = summonerId;
 
         try{
             processPlayers(detail.getParticipantIdentities(), detail.getParticipants(), summonerId);
@@ -232,29 +235,7 @@ public class RankedMatch{
 
     @Override
     public String toString(){
-        return "RankedMatch [matchId=" + matchId + "]";
-    }
-
-    @Override
-    public int hashCode(){
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + (int) (matchId ^ (matchId >>> 32));
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj){
-        if(this == obj)
-            return true;
-        if(obj == null)
-            return false;
-        if(getClass() != obj.getClass())
-            return false;
-        RankedMatch other = (RankedMatch) obj;
-        if(matchId != other.matchId)
-            return false;
-        return true;
+        return "RankedMatch " + matchId;
     }
 
     public int getLookupPlayer(){
@@ -295,6 +276,39 @@ public class RankedMatch{
 
     public void setRedBans(List<ChampionDto> redBans){
         this.redBans = redBans;
+    }
+
+    public long getSummonerId(){
+        return summonerId;
+    }
+
+    public void setSummonerId(long summonerId){
+        this.summonerId = summonerId;
+    }
+
+    @Override
+    public int hashCode(){
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (int) (matchId ^ (matchId >>> 32));
+        result = prime * result + (int) (summonerId ^ (summonerId >>> 32));
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj){
+        if(this == obj)
+            return true;
+        if(obj == null)
+            return false;
+        if(getClass() != obj.getClass())
+            return false;
+        RankedMatch other = (RankedMatch) obj;
+        if(matchId != other.matchId)
+            return false;
+        if(summonerId != other.summonerId)
+            return false;
+        return true;
     }
 
 }
