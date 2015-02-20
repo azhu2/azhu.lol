@@ -102,9 +102,9 @@ leagueApp.controller('lookupController', function($scope, $rootScope, $routePara
 		}, function(data) {
 			for (var i = 0; i < data.length; i++) {
 				if (data[i].teamId == 100)
-					data[i].champion = data[i].blueTeam[data[i].lookupPlayer];
+					data[i].champion = data[i].blueTeam[data[i].blueTeam.length - 1];
 				else
-					data[i].champion = data[i].redTeam[data[i].lookupPlayer];
+					data[i].champion = data[i].redTeam[data[i].redTeam.length - 1];
 			}
 			$rootScope.newGames = data;
 		});

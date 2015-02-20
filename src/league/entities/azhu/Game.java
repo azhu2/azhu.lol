@@ -31,6 +31,8 @@ public class Game{
     private int teamId;
     private SummonerDto summoner;
     private long summonerId;        // Redundant, just used for table index
+    
+    @Deprecated
     private int lookupPlayer;
 
     private LeagueAPI api = DynamicLeagueAPIImpl.getInstance();
@@ -82,7 +84,7 @@ public class Game{
             }
             
             // Last one is lookup player... this is so bad lol
-            lookupPlayer = 4;
+            lookupPlayer = blueTeam.size();
         } catch(RiotPlsException e){
             e.printStackTrace();
         }
