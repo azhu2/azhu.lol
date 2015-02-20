@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -15,10 +16,13 @@ import javax.ws.rs.core.Response;
 
 import league.api.APIConstants;
 import league.api.NewDatabaseAPIImpl;
+import league.api.NewLeagueAPI;
+import league.api.RiotAPIImpl;
 import league.api.RiotAPIImpl.RiotPlsException;
 import league.entities.MatchDetail;
 import league.entities.MatchSummary;
 import league.entities.azhu.RankedMatch;
+import league.rest.LeagueResource.UpdateCount;
 
 /**
  * An updated version of LeagueResource that does the processing on the back-end instead of in js
@@ -27,7 +31,8 @@ import league.entities.azhu.RankedMatch;
  */
 @Path("/new/")
 public class NewLeagueResource extends LeagueResource{
-    private static NewDatabaseAPIImpl api_new = NewDatabaseAPIImpl.getInstance();
+    private static NewLeagueAPI api_new = NewDatabaseAPIImpl.getInstance();
+    private static RiotAPIImpl api_riot = RiotAPIImpl.getInstance();
 
     public NewLeagueResource(){
         super();
@@ -36,16 +41,17 @@ public class NewLeagueResource extends LeagueResource{
     @GET
     @Path("/ranked-match/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getMatchDetail(@PathParam("id") long matchId, @QueryParam("summonerId") long summonerId) throws ServletException, IOException{
+    public Response getMatchDetail(@PathParam("id") long matchId, @QueryParam("summonerId") long summonerId)
+            throws ServletException, IOException{
         try{
             RankedMatch match = api_new.getRankedMatch(matchId, summonerId);
             if(match != null)
                 return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(match)).build();
-            
+
             MatchDetail detail = api.getMatchDetail(matchId);
             match = new RankedMatch(detail, summonerId);
             api_new.cacheRankedMatch(match);
-            
+
             return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(match)).build();
         } catch(RiotPlsException e){
             return Response.status(e.getStatus()).entity(e.getMessage()).build();
@@ -97,6 +103,43 @@ public class NewLeagueResource extends LeagueResource{
             }
 
             return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(matches)).build();
+        } catch(RiotPlsException e){
+            return Response.status(e.getStatus()).entity(e.getMessage()).build();
+        }
+    }
+
+    @POST
+    @Path("/ranked-matches/{id}/all")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response cacheAllRankedMatches(@PathParam("id") long summonerId) throws ServletException, IOException{
+        try{
+            int start = 0;
+            int count = 0;
+
+            List<MatchSummary> matchPage = null;
+            do{
+                matchPage = api_riot.getRankedMatches(summonerId, start);
+                if(matchPage != null)
+                    for(MatchSummary matchSummary : matchPage){
+                        long matchId = matchSummary.getMatchId();
+                        RankedMatch match = api_new.getRankedMatch(matchId, summonerId);
+                        if(match == null){
+                            MatchDetail detail = api.getMatchDetail(matchId);
+                            match = new RankedMatch(detail, summonerId);
+                            api_new.cacheRankedMatch(match);
+                        }
+                        count++;
+                    }
+                start += APIConstants.MAX_PAGE_SIZE;
+            } while(matchPage != null);
+
+            UpdateCount countObj = new UpdateCount();
+            countObj.count = count;
+            if(count != APIConstants.INVALID)
+                return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(countObj)).build();
+            else
+                return Response.status(APIConstants.HTTP_INTERNAL_SERVER_ERROR)
+                               .entity("Error caching all ranked matches").build();
         } catch(RiotPlsException e){
             return Response.status(e.getStatus()).entity(e.getMessage()).build();
         }

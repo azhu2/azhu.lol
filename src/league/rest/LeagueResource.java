@@ -119,7 +119,7 @@ public class LeagueResource{
     }
     
     protected class UpdateCount{
-        private int count;
+        int count;
         
         public int getCount(){
             return count;

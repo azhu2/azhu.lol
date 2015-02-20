@@ -246,6 +246,8 @@ leagueApp.controller('lookupController',
 				$rootScope.showAll = false;
 			});
 		};
+		
+		$scope.working = ' (slow)';
 	});
 
 leagueApp.service('LeagueResource', function($resource) {
