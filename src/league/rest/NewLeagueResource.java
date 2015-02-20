@@ -83,12 +83,17 @@ public class NewLeagueResource extends LeagueResource{
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllRankedMatches(@PathParam("id") long summonerId) throws ServletException, IOException{
         try{
-            List<MatchSummary> history = api.getAllRankedMatches(summonerId);
+            List<MatchSummary> oldApiResults = api.getAllRankedMatches(summonerId);
             List<RankedMatch> matches = new LinkedList<>();
-            for(MatchSummary summary : history){
+            for(MatchSummary summary : oldApiResults){
                 long matchId = summary.getMatchId();
-                MatchDetail detail = api.getMatchDetail(matchId);
-                matches.add(new RankedMatch(detail, summonerId));
+                RankedMatch match = api_new.getRankedMatch(matchId, summonerId);
+                if(match == null){
+                    MatchDetail detail = api.getMatchDetail(matchId);
+                    match = new RankedMatch(detail, summonerId);
+                    api_new.cacheRankedMatch(match);
+                }
+                matches.add(match);
             }
 
             return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(matches)).build();
