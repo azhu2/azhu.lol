@@ -7,6 +7,8 @@ import league.api.APIConstants;
 import league.api.DynamicLeagueAPIImpl;
 import league.api.LeagueAPI;
 import league.api.RiotAPIImpl.RiotPlsException;
+import league.entities.BannedChampion;
+import league.entities.ChampionDto;
 import league.entities.MatchDetail;
 import league.entities.Participant;
 import league.entities.ParticipantIdentity;
@@ -30,6 +32,8 @@ public class RankedMatch{
     private int lookupPlayer;
     private List<Integer> bluePlayers;
     private List<Integer> redPlayers;
+    private List<ChampionDto> blueBans;
+    private List<ChampionDto> redBans;
 
     private static LeagueAPI api = DynamicLeagueAPIImpl.getInstance();
 
@@ -39,7 +43,8 @@ public class RankedMatch{
 
     public RankedMatch(int mapId, long matchCreation, long matchDuration, long matchId, String matchMode,
             String matchType, String matchVersion, List<RankedPlayer> players, String platformId, String queueType,
-            String region, String season, List<Team> teams, int lookupPlayer, List<Integer> bluePlayers, List<Integer> redPlayers){
+            String region, String season, List<Team> teams, int lookupPlayer, List<Integer> bluePlayers,
+            List<Integer> redPlayers, List<ChampionDto> blueBans, List<ChampionDto> redBans){
         super();
         this.mapId = mapId;
         this.matchCreation = matchCreation;
@@ -57,6 +62,8 @@ public class RankedMatch{
         this.lookupPlayer = lookupPlayer;
         this.bluePlayers = bluePlayers;
         this.redPlayers = redPlayers;
+        this.blueBans = blueBans;
+        this.redBans = redBans;
     }
 
     private void processPlayers(List<ParticipantIdentity> participantIdentities, List<Participant> participants,
@@ -64,7 +71,7 @@ public class RankedMatch{
         players = new LinkedList<>();
         bluePlayers = new LinkedList<>();
         redPlayers = new LinkedList<>();
-        
+
         List<Long> summonerIds = new LinkedList<>();
         for(ParticipantIdentity id : participantIdentities)
             summonerIds.add(id.getPlayer().getSummonerId());
@@ -78,6 +85,22 @@ public class RankedMatch{
                 bluePlayers.add(i);
             else
                 redPlayers.add(i);
+        }
+    }
+
+    private void processBans(List<Team> teamsData) throws RiotPlsException{
+        List<List<ChampionDto>> banLists = new LinkedList<>();
+        blueBans = new LinkedList<>();
+        redBans = new LinkedList<>();
+        banLists.add(blueBans);
+        banLists.add(redBans);
+        
+        for(int i = 0; i < teamsData.size(); i++){
+            List<BannedChampion> bans = teamsData.get(i).getBans();
+            for(BannedChampion ban : bans){
+                ChampionDto champ = api.getChampFromId(ban.getChampionId());
+                banLists.get(i).add(champ);
+            }
         }
     }
 
@@ -97,6 +120,7 @@ public class RankedMatch{
 
         try{
             processPlayers(detail.getParticipantIdentities(), detail.getParticipants(), summonerId);
+            processBans(detail.getTeams());
         } catch(RiotPlsException e){
             e.printStackTrace();
         }
@@ -255,6 +279,22 @@ public class RankedMatch{
 
     public void setRedPlayers(List<Integer> redPlayers){
         this.redPlayers = redPlayers;
+    }
+
+    public List<ChampionDto> getBlueBans(){
+        return blueBans;
+    }
+
+    public void setBlueBans(List<ChampionDto> blueBans){
+        this.blueBans = blueBans;
+    }
+
+    public List<ChampionDto> getRedBans(){
+        return redBans;
+    }
+
+    public void setRedBans(List<ChampionDto> redBans){
+        this.redBans = redBans;
     }
 
 }

@@ -123,6 +123,13 @@
 									<img ng-src="img/inhibitor_building_100.png" title="Inhibitors">
 									{{ match.teams[0].inhibitorKills }}
 								</div>
+								
+								<ul class="teamStat bans">
+									Bans: 
+									<li ng-repeat="ban in match.blueBans" class="banImage">
+										<img ng-src="{{ 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/champion/' + ban.image.full }}">									
+									</li>
+								</ul>
 							</div>
 						</div>
 						<div class="rankedTeam red">
@@ -185,7 +192,14 @@
 									<img ng-src="img/inhibitor_building_200.png" title="Inhibitors">
 									{{ match.teams[1].inhibitorKills }}
 								</div>
-							</div>
+								
+								<ul class="teamStat bans">
+									Bans: 
+									<li ng-repeat="ban in match.redBans" class="banImage">
+										<img ng-src="{{ 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/champion/' + ban.image.full }}">									
+									</li>
+								</ul>
+							</div>							
 						</div>
 					
 					<div class="moreMatchStats">
