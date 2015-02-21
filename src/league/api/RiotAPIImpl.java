@@ -105,7 +105,7 @@ public class RiotAPIImpl implements LeagueAPI{
             Collection<SummonerDto> summoners = map.values();
             for(SummonerDto summoner : summoners)
                 db.cacheSummoner(summoner);
-            
+
             return new LinkedList<SummonerDto>(summoners);
         } catch(IOException e){
             log.log(Level.SEVERE, e.getMessage(), e);
@@ -174,7 +174,8 @@ public class RiotAPIImpl implements LeagueAPI{
     }
 
     /**
-     * @deprecated Should not be used. Read ranked matches one page at a time from the Riot API until you hit a match already cached
+     * @deprecated Should not be used. Read ranked matches one page at a time from the Riot API until you hit a match already
+     *             cached
      */
     @Override
     public List<MatchSummary> getAllRankedMatches(long summonerId) throws RiotPlsException{
@@ -188,14 +189,14 @@ public class RiotAPIImpl implements LeagueAPI{
     public int cacheAllRankedMatches(long summonerId) throws RiotPlsException{
         int start = 0;
         int count = 0;
-        
+
         List<MatchSummary> matchPage = null;
         do{
             matchPage = getRankedMatches(summonerId, start);
             if(matchPage != null)
                 for(MatchSummary match : matchPage){
                     db.cacheRankedMatch(summonerId, match);
-                    count ++;
+                    count++;
                 }
             start += APIConstants.MAX_PAGE_SIZE;
         } while(matchPage != null);
@@ -210,7 +211,7 @@ public class RiotAPIImpl implements LeagueAPI{
     public Set<GameDto> getMatchHistoryAll(long summonerId) throws RiotPlsException{
         return getMatchHistory(summonerId);
     }
-    
+
     @Override
     public Set<GameDto> getMatchHistory(long summonerId) throws RiotPlsException{
         String uri = buildUri(String.format(MATCHHISTORY_QUERY, summonerId));
@@ -332,8 +333,11 @@ public class RiotAPIImpl implements LeagueAPI{
         } else if(status == APIConstants.HTTP_RATELIMIT){
             log.warning("429 Ratelimit hit oops | URI: " + uriStr);
             return retryGetEntity(target, 1);
-        } else
-            throw new RiotPlsException(status, uriStr);
+        } else{
+            RiotPlsException e = new RiotPlsException(status, uriStr);
+            log.warning(e.getMessage());
+            throw e;
+        }
     }
 
     public class RiotPlsException extends Exception{
