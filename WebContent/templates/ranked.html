@@ -27,7 +27,7 @@
 					<div class="rightStatsBox">
 						<div class="scorePanel">
 							<div class="score box">{{ match.players[match.lookupPlayer].stats.kills }}/{{ match.players[match.lookupPlayer].stats.deaths }}/{{ match.players[match.lookupPlayer].stats.assists }}</div>
-							<div class="kda box">(KDA: {{ (match.players[match.lookupPlayer].stats.kills + match.players[match.lookupPlayer].stats.assists) / match.players[match.lookupPlayer].stats.deaths | number:2 }})</div>
+							<div class="kda box">(KDA: {{ match.players[match.lookupPlayer].stats.deaths == 0 ? '--' : (match.players[match.lookupPlayer].stats.kills + match.players[match.lookupPlayer].stats.assists) / match.players[match.lookupPlayer].stats.deaths | number:2 }})</div>
 						</div>
 						<div class="gold box">Gold: 
 							{{ (match.players[match.lookupPlayer].stats.goldEarned / 1000) | number:0}}.{{ (match.players[match.lookupPlayer].stats.timePlayed % 1000) / 100 | number:0}}k</div>

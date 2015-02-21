@@ -143,6 +143,8 @@ public class RiotAPIImpl implements LeagueAPI{
 
         try{
             PlayerHistory history = mapper.readValue(entity, PlayerHistory.class);
+            if(history.getMatches() == null)
+                return null;
             for(MatchSummary match : history.getMatches())
                 db.cacheRankedMatch(summonerId, match);
             return history.getMatches();

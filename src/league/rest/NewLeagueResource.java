@@ -67,6 +67,9 @@ public class NewLeagueResource extends LeagueResource{
     public Response getRankedMatches(@PathParam("id") long summonerId) throws ServletException, IOException{
         try{
             List<MatchSummary> oldApiResults = api.getRankedMatches(summonerId);
+            if(oldApiResults == null)
+                return Response.status(APIConstants.HTTP_OK).build();
+            
             List<RankedMatch> matches = new LinkedList<>();
             for(MatchSummary summary : oldApiResults){
                 long matchId = summary.getMatchId();
@@ -154,6 +157,30 @@ public class NewLeagueResource extends LeagueResource{
     public Response getMatchHistory(@PathParam("id") long summonerId) throws ServletException, IOException{
         try{
             Set<GameDto> oldApiResults = api.getMatchHistory(summonerId);
+            List<Game> matches = new LinkedList<>();
+            for(GameDto gameData : oldApiResults){
+                long matchId = gameData.getGameId();
+                Game match = api_new.getGame(matchId, summonerId);
+                if(match == null){
+                    match = new Game(gameData, summonerId);
+                    api_new.cacheGame(match);
+                }
+                matches.add(match);
+            }
+
+            return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(matches)).build();
+        } catch(RiotPlsException e){
+            return Response.status(e.getStatus()).entity(e.getMessage()).build();
+        }
+    }
+    
+    @Override
+    @GET
+    @Path("/match-history/{id}/all")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getMatchHistoryAll(@PathParam("id") long summonerId) throws ServletException, IOException{
+        try{
+            Set<GameDto> oldApiResults = api.getMatchHistoryAll(summonerId);
             List<Game> matches = new LinkedList<>();
             for(GameDto gameData : oldApiResults){
                 long matchId = gameData.getGameId();
