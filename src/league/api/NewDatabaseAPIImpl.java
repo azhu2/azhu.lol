@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -141,6 +142,63 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueAPI{
         }
         return null;
     }
+    
+    @Override
+    public List<RankedMatch> getRankedMatchesAll(long summonerId){
+        try{
+            Statement stmt = db.createStatement();
+            String sql;
+            sql = String.format("SELECT matchId, mapId, matchCreation, matchDuration, matchId, matchMode, matchType, "
+                    + "matchVersion, platformId, queueType, region, season, teams, "
+                    + "lookupPlayer, bluePlayers, redPlayers, blueBans, redBans, players "
+                    + "FROM ranked_matches_new WHERE summonerId = %d", summonerId);
+
+            ResultSet rs = stmt.executeQuery(sql);
+
+            List<RankedMatch> matches = new LinkedList<>();
+            while(rs.next()){
+                long matchId = rs.getLong("matchId");
+                int mapId = rs.getInt("mapId");
+                long matchCreation = rs.getLong("matchCreation");
+                long matchDuration = rs.getLong("matchDuration");
+                String matchMode = rs.getString("matchMode");
+                String matchType = rs.getString("matchType");
+                String matchVersion = rs.getString("matchVersion");
+                String platformId = rs.getString("platformId");
+                String queueType = rs.getString("queueType");
+                String region = rs.getString("region");
+                String season = rs.getString("season");
+                List<Team> teams = mapper.readValue(rs.getString("teams"), new TypeReference<List<Team>>(){
+                });
+                int lookupPlayer = rs.getInt("lookupPlayer");
+                List<Integer> bluePlayers = mapper.readValue(rs.getString("bluePlayers"),
+                    new TypeReference<List<Integer>>(){
+                    });
+                List<Integer> redPlayers = mapper.readValue(rs.getString("redPlayers"),
+                    new TypeReference<List<Integer>>(){
+                    });
+                List<ChampionDto> blueBans = mapper.readValue(rs.getString("blueBans"),
+                    new TypeReference<List<ChampionDto>>(){
+                    });
+                List<ChampionDto> redBans = mapper.readValue(rs.getString("redBans"),
+                    new TypeReference<List<ChampionDto>>(){
+                    });
+                List<RankedPlayer> players = mapper.readValue(rs.getString("players"),
+                    new TypeReference<List<RankedPlayer>>(){
+                    });
+
+                RankedMatch match = new RankedMatch(mapId, matchCreation, matchDuration, matchId, matchMode, matchType,
+                        matchVersion, players, platformId, queueType, region, season, teams, lookupPlayer, bluePlayers,
+                        redPlayers, blueBans, redBans, summonerId);
+                log.info("Fetched (new) ranked match " + match + " from db.");
+                matches.add(match);
+            }
+            return matches;
+        } catch(SQLException | IOException e){
+            log.log(Level.SEVERE, e.getMessage(), e);
+        }
+        return null;
+    }
 
     @Override
     public Game getGame(long gameId, long summonerId){
@@ -185,6 +243,52 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueAPI{
         return null;
     }
 
+    @Override
+    public List<Game> getGamesAll(long summonerId){
+        try{
+            Statement stmt = db.createStatement();
+            String sql;
+            sql = String.format("SELECT gameId, mapId, createDate, gameMode, gameType, subType, "
+                    + "lookupPlayer, blueTeam, redTeam, ipEarned, level, stats, spell1, spell2, stats, "
+                    + "teamId, summoner FROM games_new WHERE summonerId = %d", summonerId);
+
+            ResultSet rs = stmt.executeQuery(sql);
+
+            List<Game> games = new LinkedList<>();
+            while(rs.next()){
+                long gameId = rs.getLong("gameId");
+                int mapId = rs.getInt("mapId");
+                long createDate = rs.getLong("createDate");
+                String gameMode = rs.getString("gameMode");
+                String gameType = rs.getString("gameType");
+                String subType = rs.getString("subType");
+                int lookupPlayer = rs.getInt("lookupPlayer");
+                List<GamePlayer> blueTeam = mapper.readValue(rs.getString("blueTeam"),
+                    new TypeReference<List<GamePlayer>>(){
+                    });
+                List<GamePlayer> redTeam = mapper.readValue(rs.getString("redTeam"),
+                    new TypeReference<List<GamePlayer>>(){
+                    });
+                int ipEarned = rs.getInt("ipEarned");
+                int level = rs.getInt("level");
+                int teamId = rs.getInt("teamId");
+                RawStatsDto stats = mapper.readValue(rs.getString("stats"), RawStatsDto.class);
+                SummonerSpellDto spell1 = mapper.readValue(rs.getString("spell1"), SummonerSpellDto.class);
+                SummonerSpellDto spell2 = mapper.readValue(rs.getString("spell2"), SummonerSpellDto.class);
+                SummonerDto summoner = mapper.readValue(rs.getString("summoner"), SummonerDto.class);
+
+                Game game = new Game(createDate, blueTeam, redTeam, gameId, gameMode, gameType, ipEarned, level, mapId,
+                        spell1, spell2, stats, subType, teamId, summoner, lookupPlayer, summonerId);
+                log.info("Fetched (new) game " + game + " from db.");
+                games.add(game);
+            }
+            return games;
+        } catch(SQLException | IOException e){
+            log.log(Level.SEVERE, e.getMessage(), e);
+        }
+        return null;
+    }
+    
     @Override
     public boolean hasGame(Game game){
         try{

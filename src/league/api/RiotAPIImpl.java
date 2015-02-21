@@ -174,9 +174,8 @@ public class RiotAPIImpl implements LeagueAPI{
     }
 
     /**
-     * Should not be used. Read ranked matches one page at a time from the Riot API until you hit a match already cached
+     * @deprecated Should not be used. Read ranked matches one page at a time from the Riot API until you hit a match already cached
      */
-    @Deprecated
     @Override
     public List<MatchSummary> getAllRankedMatches(long summonerId) throws RiotPlsException{
         return null;

@@ -234,7 +234,6 @@ leagueApp.filter("queueFilter", function() {
 		var filtered = type ? type.replace("RANKED_SOLO_5x5", "Ranked Solo 5v5") : "";
 		filtered = filtered.replace("RANKED_TEAM_5x5", "Ranked Team 5v5");
 		filtered = filtered.replace("RANKED_TEAM_3x3", "Ranked Team 3v3");
-		filtered = filtered.replace("NORMAL", "Normal 5v5");
 		filtered = filtered.replace("BOT", "Bot");
 		filtered = filtered.replace("NORMAL_3x3", "Normal 3v3");
 		filtered = filtered.replace("BOT_3x3", "Bot 3v3");
@@ -242,6 +241,7 @@ leagueApp.filter("queueFilter", function() {
 		filtered = filtered.replace("CAP_5x5", "Team Builder");
 		filtered = filtered.replace("ODIN_UNRANKED", "Dominion");
 		filtered = filtered.replace("COUNTER_PICK", "Nemesis Draft");
+		filtered = filtered.replace("NORMAL", "Normal 5v5");
 		filtered = filtered.replace("NONE", "Custom");
 		return filtered;
 	};

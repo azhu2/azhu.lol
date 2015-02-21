@@ -30,7 +30,7 @@ import org.codehaus.jackson.map.SerializationConfig;
 
 @Path("/")
 public class LeagueResource{
-    protected static LeagueAPI api = DynamicLeagueAPIImpl.getInstance();
+    private static LeagueAPI api = DynamicLeagueAPIImpl.getInstance();
     protected static ObjectMapper mapper = new ObjectMapper();
 
     public LeagueResource(){

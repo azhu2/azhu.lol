@@ -213,10 +213,9 @@ public class DatabaseAPIImpl implements LeagueAPI{
     }
 
     /**
-     * Nothing to do here. See {@link RiotAPIImpl}
+     * @deprecated Nothing to do here. See {@link RiotAPIImpl}
      */
     @Override
-    @Deprecated
     public int cacheAllRankedMatches(long summonerId){
         return APIConstants.INVALID;
     }
