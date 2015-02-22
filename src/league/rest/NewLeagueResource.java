@@ -16,6 +16,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import league.api.APIConstants;
+import league.api.DynamicLeagueAPIImpl;
 import league.api.NewDatabaseAPIImpl;
 import league.api.NewLeagueAPI;
 import league.api.RiotAPIImpl;
@@ -35,6 +36,7 @@ import league.entities.azhu.RankedMatch;
 public class NewLeagueResource extends LeagueResource{
     private static NewLeagueAPI api = NewDatabaseAPIImpl.getInstance();
     private static RiotAPIImpl api_riot = RiotAPIImpl.getInstance();
+    private static DynamicLeagueAPIImpl api_dynamic = DynamicLeagueAPIImpl.getInstance();
 
     public NewLeagueResource(){
         super();
@@ -50,7 +52,7 @@ public class NewLeagueResource extends LeagueResource{
             if(match != null)
                 return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(match)).build();
 
-            MatchDetail detail = api.getMatchDetail(matchId);
+            MatchDetail detail = api_dynamic.getMatchDetail(matchId);
             match = new RankedMatch(detail, summonerId);
             api.cacheRankedMatch(match);
 
@@ -75,7 +77,7 @@ public class NewLeagueResource extends LeagueResource{
                 long matchId = summary.getMatchId();
                 RankedMatch match = api.getRankedMatch(matchId, summonerId);
                 if(match == null){
-                    MatchDetail detail = api.getMatchDetail(matchId);
+                    MatchDetail detail = api_dynamic.getMatchDetail(matchId);
                     match = new RankedMatch(detail, summonerId);
                     api.cacheRankedMatch(match);
                 }
@@ -113,7 +115,7 @@ public class NewLeagueResource extends LeagueResource{
                         long matchId = matchSummary.getMatchId();
                         RankedMatch match = api.getRankedMatch(matchId, summonerId);
                         if(match == null){
-                            MatchDetail detail = api.getMatchDetail(matchId);
+                            MatchDetail detail = api_dynamic.getMatchDetail(matchId);
                             match = new RankedMatch(detail, summonerId);
                             api.cacheRankedMatch(match);
                         }
