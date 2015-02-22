@@ -73,7 +73,7 @@ leagueApp.controller('lookupController', function($scope, $rootScope, $routePara
 	};
 
 	$rootScope.lookupRanked = function(summonerId) {
-		$rootScope.rankedData = [];
+		$rootScope.newRanked = [];
 
 		LeagueResource.lookupRanked(summonerId).query({
 			id : summonerId
@@ -86,7 +86,6 @@ leagueApp.controller('lookupController', function($scope, $rootScope, $routePara
 	};
 
 	$rootScope.lookupAllRanked = function(summonerId) {
-		$rootScope.newRanked = [];
 		LeagueResource.allRanked(summonerId).query({
 			id : summonerId
 		}, function(data) {
@@ -114,7 +113,6 @@ leagueApp.controller('lookupController', function($scope, $rootScope, $routePara
 	};
 
 	$rootScope.lookupAllMatches = function(summonerId) {
-		$rootScope.newGames = [];
 		LeagueResource.matchHistoryAll(summonerId).query({
 			id : summonerId
 		}, function(data) {

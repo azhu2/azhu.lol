@@ -42,7 +42,7 @@ public class RiotAPIImpl implements LeagueAPI{
     private static final String SUMMONERSPELL_QUERY = "/api/lol/static-data/na/v1.2/summoner-spell/%d";
     private static final String MATCH_QUERY = "/api/lol/na/v2.2/match/%d";
 
-    private static final int MAX_ATTEMPTS = 15;
+    private static final int MAX_ATTEMPTS = 20;
     private static final long ATTEMPT_INTERVAL = 1000;      // in ms
 
     private JerseyClient client;

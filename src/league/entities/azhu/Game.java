@@ -31,7 +31,7 @@ public class Game{
     private int teamId;
     private SummonerDto summoner;
     private long summonerId;        // Redundant, just used for table index
-    
+
     @Deprecated
     private int lookupPlayer;
 
@@ -41,7 +41,7 @@ public class Game{
 
     }
 
-    public Game(GameDto game, long summonerId){
+    public Game(GameDto game, long summonerId) throws RiotPlsException{
         createDate = game.getCreateDate();
         gameId = game.getGameId();
         gameMode = game.getGameMode();
@@ -56,38 +56,34 @@ public class Game{
 
         blueTeam = new LinkedList<>();
         redTeam = new LinkedList<>();
-        
-        try{
-            spell1 = api.getSummonerSpellFromId(game.getSpell1());
-            spell2 = api.getSummonerSpellFromId(game.getSpell2());
-            
-            List<PlayerDto> fellowPlayers = new LinkedList<>(game.getFellowPlayers());
-            fellowPlayers.add(new PlayerDto(game.getChampionId(), summonerId, game.getTeamId()));
-            List<Long> summonerIds = new LinkedList<>();
-            for(PlayerDto player : fellowPlayers)
-                summonerIds.add(player.getSummonerId());
-            List<SummonerDto> summoners = api.getSummoners(summonerIds);
-            
-            // Janky stuff that works cause getSummoners returns summoners in same order as requested ids
-            for(int i = 0; i < fellowPlayers.size(); i++){
-                PlayerDto p = fellowPlayers.get(i);
-                
-                SummonerDto summoner = summoners.get(i);
-                ChampionDto champion = api.getChampFromId(p.getChampionId());
-                int teamId = p.getTeamId();
-                GamePlayer player = new GamePlayer(champion, summoner, teamId);
-                
-                if(player.getTeamId() == APIConstants.BLUE_TEAM)
-                    blueTeam.add(player);
-                else
-                    redTeam.add(player);
-            }
-            
-            // Last one is lookup player... this is so bad lol
-            lookupPlayer = blueTeam.size();
-        } catch(RiotPlsException e){
-            e.printStackTrace();
+
+        spell1 = api.getSummonerSpellFromId(game.getSpell1());
+        spell2 = api.getSummonerSpellFromId(game.getSpell2());
+
+        List<PlayerDto> fellowPlayers = new LinkedList<>(game.getFellowPlayers());
+        fellowPlayers.add(new PlayerDto(game.getChampionId(), summonerId, game.getTeamId()));
+        List<Long> summonerIds = new LinkedList<>();
+        for(PlayerDto player : fellowPlayers)
+            summonerIds.add(player.getSummonerId());
+        List<SummonerDto> summoners = api.getSummoners(summonerIds);
+
+        // Janky stuff that works cause getSummoners returns summoners in same order as requested ids
+        for(int i = 0; i < fellowPlayers.size(); i++){
+            PlayerDto p = fellowPlayers.get(i);
+
+            SummonerDto summoner = summoners.get(i);
+            ChampionDto champion = api.getChampFromId(p.getChampionId());
+            int teamId = p.getTeamId();
+            GamePlayer player = new GamePlayer(champion, summoner, teamId);
+
+            if(player.getTeamId() == APIConstants.BLUE_TEAM)
+                blueTeam.add(player);
+            else
+                redTeam.add(player);
         }
+
+        // Last one is lookup player... this is so bad lol
+        lookupPlayer = blueTeam.size();
     }
 
     public Game(long createDate, List<GamePlayer> blueTeam, List<GamePlayer> redTeam, long gameId, String gameMode,

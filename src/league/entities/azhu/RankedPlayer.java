@@ -28,24 +28,20 @@ public class RankedPlayer{
     private static LeagueAPI api = DynamicLeagueAPIImpl.getInstance();
 
     public RankedPlayer(){
-        
+
     }
-    
-    public RankedPlayer(SummonerDto summoner, Participant participant){
-        try{
-            this.summoner = summoner;
-            champion = api.getChampFromId(participant.getChampionId());
-            highestAchievedSeasonTier = participant.getHighestAchievedSeasonTier();
-            masteries = participant.getMasteries();
-            participantId = participant.getParticipantId();
-            runes = participant.getRunes();
-            spell1 = api.getSummonerSpellFromId(participant.getSpell1Id());
-            spell2 = api.getSummonerSpellFromId(participant.getSpell2Id());
-            stats = participant.getStats();
-            teamId = participant.getTeamId();
-        } catch(RiotPlsException e){
-            e.printStackTrace();
-        }
+
+    public RankedPlayer(SummonerDto summoner, Participant participant) throws RiotPlsException{
+        this.summoner = summoner;
+        champion = api.getChampFromId(participant.getChampionId());
+        highestAchievedSeasonTier = participant.getHighestAchievedSeasonTier();
+        masteries = participant.getMasteries();
+        participantId = participant.getParticipantId();
+        runes = participant.getRunes();
+        spell1 = api.getSummonerSpellFromId(participant.getSpell1Id());
+        spell2 = api.getSummonerSpellFromId(participant.getSpell2Id());
+        stats = participant.getStats();
+        teamId = participant.getTeamId();
     }
 
     @Override

@@ -106,7 +106,7 @@ public class RankedMatch{
         }
     }
 
-    public RankedMatch(MatchDetail detail, long summonerId){
+    public RankedMatch(MatchDetail detail, long summonerId) throws RiotPlsException{
         this.mapId = detail.getMapId();
         this.matchCreation = detail.getMatchCreation();
         this.matchDuration = detail.getMatchDuration();
@@ -121,12 +121,8 @@ public class RankedMatch{
         this.teams = detail.getTeams();
         this.summonerId = summonerId;
 
-        try{
-            processPlayers(detail.getParticipantIdentities(), detail.getParticipants(), summonerId);
-            processBans(detail.getTeams());
-        } catch(RiotPlsException e){
-            e.printStackTrace();
-        }
+        processPlayers(detail.getParticipantIdentities(), detail.getParticipants(), summonerId);
+        processBans(detail.getTeams());
     }
 
     public int getMapId(){
