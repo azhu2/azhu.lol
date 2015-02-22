@@ -34,7 +34,7 @@ public class DatabaseAPIImpl implements LeagueAPI{
     protected static Logger log = Logger.getLogger(DatabaseAPIImpl.class.getName());
 
     private static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-    private static final String DB_URL = "jdbc:mysql://localhost/lol";
+    private static final String DB_URL = "jdbc:mysql://localhost/lol?autoReconnect=true";
     private static final String USER = SecurityConstants.DB_USER;
     private static final String PASS = SecurityConstants.DB_PASS;
 
