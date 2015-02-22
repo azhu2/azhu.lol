@@ -42,7 +42,7 @@ public class RiotAPIImpl implements LeagueAPI{
     private static final String SUMMONERSPELL_QUERY = "/api/lol/static-data/na/v1.2/summoner-spell/%d";
     private static final String MATCH_QUERY = "/api/lol/na/v2.2/match/%d";
 
-    private static final int MAX_ATTEMPTS = 20;
+    private static final int MAX_ATTEMPTS = 15;
     private static final long ATTEMPT_INTERVAL = 1000;      // in ms
 
     private JerseyClient client;
@@ -295,11 +295,11 @@ public class RiotAPIImpl implements LeagueAPI{
         return getEntity(uri, null);
     }
 
-    private String retryGetEntity(JerseyWebTarget target, int tries){
+    private String retryGetEntity(JerseyWebTarget target, int tries) throws RiotPlsException{
         String uri = target.getUri().toString();
         if(tries > MAX_ATTEMPTS){
             log.warning(String.format("Maximum attempts for uri %s failed", uri));
-            return null;
+            throw new RiotPlsException(APIConstants.HTTP_RATELIMIT, uri);
         }
 
         try{
@@ -318,7 +318,7 @@ public class RiotAPIImpl implements LeagueAPI{
             log.warning(String.format("Attempt %d for uri %s failed", tries, uri));
             return retryGetEntity(target, tries + 1);
         } else
-            return null;
+            throw new RiotPlsException(status, uri);
     }
 
     private String getEntity(String uri, Map<String, String> params) throws RiotPlsException{
