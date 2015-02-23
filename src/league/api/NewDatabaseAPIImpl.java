@@ -19,6 +19,7 @@ import league.entities.azhu.GamePlayer;
 import league.entities.azhu.RankedMatch;
 import league.entities.azhu.RankedPlayer;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.codehaus.jackson.type.TypeReference;
 
 public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueAPI{
@@ -78,8 +79,9 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueAPI{
             sql = String.format("SELECT COUNT(*) AS rowCount FROM ranked_matches_new WHERE " + "matchId = %d",
                 match.getMatchId());
 
-            ResultSet rs = stmt.executeQuery(sql);
-
+            Pair<ResultSet, Long> results = runQuery(stmt, sql);
+            ResultSet rs = results.getLeft();
+                    
             rs.next();
             int rows = rs.getInt("rowCount");
             return rows > 0;
@@ -99,7 +101,9 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueAPI{
                     + "lookupPlayer, bluePlayers, redPlayers, blueBans, redBans, players "
                     + "FROM ranked_matches_new WHERE matchId = %d AND summonerId = %d", matchId, summonerId);
 
-            ResultSet rs = stmt.executeQuery(sql);
+            Pair<ResultSet, Long> results = runQuery(stmt, sql);
+            ResultSet rs = results.getLeft();
+            long time = results.getRight();
 
             if(rs.next()){
                 int mapId = rs.getInt("mapId");
@@ -134,7 +138,7 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueAPI{
                 RankedMatch match = new RankedMatch(mapId, matchCreation, matchDuration, matchId, matchMode, matchType,
                         matchVersion, players, platformId, queueType, region, season, teams, lookupPlayer, bluePlayers,
                         redPlayers, blueBans, redBans, summonerId);
-                log.info("Fetched (new) ranked match " + match + " from db.");
+                log.info("Fetched (new) ranked match " + match + " from db in " + time + " ms.");
                 return match;
             }
         } catch(SQLException | IOException e){
@@ -153,7 +157,9 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueAPI{
                     + "lookupPlayer, bluePlayers, redPlayers, blueBans, redBans, players "
                     + "FROM ranked_matches_new WHERE summonerId = %d", summonerId);
 
-            ResultSet rs = stmt.executeQuery(sql);
+            Pair<ResultSet, Long> results = runQuery(stmt, sql);
+            ResultSet rs = results.getLeft();
+            long time = results.getRight();
 
             List<RankedMatch> matches = new LinkedList<>();
             while(rs.next()){
@@ -190,7 +196,7 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueAPI{
                 RankedMatch match = new RankedMatch(mapId, matchCreation, matchDuration, matchId, matchMode, matchType,
                         matchVersion, players, platformId, queueType, region, season, teams, lookupPlayer, bluePlayers,
                         redPlayers, blueBans, redBans, summonerId);
-                log.info("Fetched (new) ranked match " + match + " from db.");
+                log.info("Fetched (new) ranked match " + match + " from db in " + time + " ms.");
                 matches.add(match);
             }
             return matches;
@@ -209,7 +215,9 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueAPI{
                     + "lookupPlayer, blueTeam, redTeam, ipEarned, level, stats, spell1, spell2, stats, "
                     + "teamId, summoner FROM games_new WHERE gameId = %d AND summonerId = %d", gameId, summonerId);
 
-            ResultSet rs = stmt.executeQuery(sql);
+            Pair<ResultSet, Long> results = runQuery(stmt, sql);
+            ResultSet rs = results.getLeft();
+            long time = results.getRight();
 
             if(rs.next()){
                 int mapId = rs.getInt("mapId");
@@ -234,7 +242,7 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueAPI{
 
                 Game game = new Game(createDate, blueTeam, redTeam, gameId, gameMode, gameType, ipEarned, level, mapId,
                         spell1, spell2, stats, subType, teamId, summoner, lookupPlayer, summonerId);
-                log.info("Fetched (new) game " + game + " from db.");
+                log.info("Fetched (new) game " + game + " from db in " + time + " ms.");
                 return game;
             }
         } catch(SQLException | IOException e){
@@ -252,7 +260,9 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueAPI{
                     + "lookupPlayer, blueTeam, redTeam, ipEarned, level, stats, spell1, spell2, stats, "
                     + "teamId, summoner FROM games_new WHERE summonerId = %d", summonerId);
 
-            ResultSet rs = stmt.executeQuery(sql);
+            Pair<ResultSet, Long> results = runQuery(stmt, sql);
+            ResultSet rs = results.getLeft();
+            long time = results.getRight();
 
             List<Game> games = new LinkedList<>();
             while(rs.next()){
@@ -279,7 +289,7 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueAPI{
 
                 Game game = new Game(createDate, blueTeam, redTeam, gameId, gameMode, gameType, ipEarned, level, mapId,
                         spell1, spell2, stats, subType, teamId, summoner, lookupPlayer, summonerId);
-                log.info("Fetched (new) game " + game + " from db.");
+                log.info("Fetched (new) game " + game + " from db in " + time + " ms.");
                 games.add(game);
             }
             return games;

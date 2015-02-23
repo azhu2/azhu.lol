@@ -29,6 +29,8 @@ import league.entities.Team;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig;
 import org.codehaus.jackson.type.TypeReference;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 public class DatabaseAPIImpl implements LeagueAPI{
     protected static Logger log = Logger.getLogger(DatabaseAPIImpl.class.getName());
@@ -69,7 +71,10 @@ public class DatabaseAPIImpl implements LeagueAPI{
             sql = String.format(
                 "SELECT id, name, profileIconId, summonerLevel, revisionDate FROM summoners WHERE name = '%s'",
                 summonerName);
-            ResultSet rs = stmt.executeQuery(sql);
+            Pair<ResultSet, Long> results = runQuery(stmt, sql);
+            ResultSet rs = results.getLeft();
+            long time = results.getRight();
+            
             if(rs.next()){
                 long id = rs.getLong("id");
                 String name = rs.getString("name");
@@ -78,7 +83,7 @@ public class DatabaseAPIImpl implements LeagueAPI{
                 long revisionDate = rs.getLong("revisionDate");
 
                 SummonerDto summoner = new SummonerDto(id, name, profileIconId, summonerLevel, revisionDate);
-                log.info("Fetched summoner " + summoner + " from db.");
+                log.info("Fetched summoner " + summoner + " from db in " + time + " ms");
                 return summoner;
             }
         } catch(SQLException e){
@@ -112,7 +117,10 @@ public class DatabaseAPIImpl implements LeagueAPI{
             String sql;
             sql = String.format(
                 "SELECT id, name, profileIconId, summonerLevel, revisionDate FROM summoners WHERE id = %d", summonerId);
-            ResultSet rs = stmt.executeQuery(sql);
+            Pair<ResultSet, Long> results = runQuery(stmt, sql);
+            ResultSet rs = results.getLeft();
+            long time = results.getRight();
+            
             if(rs.next()){
                 long id = rs.getLong("id");
                 String name = rs.getString("name");
@@ -121,7 +129,7 @@ public class DatabaseAPIImpl implements LeagueAPI{
                 long revisionDate = rs.getLong("revisionDate");
 
                 SummonerDto summoner = new SummonerDto(id, name, profileIconId, summonerLevel, revisionDate);
-                log.info("Fetched summoner " + summoner + " from db.");
+                log.info("Fetched summoner " + summoner + " from db in " + time + " ms.");
                 return summoner;
             }
         } catch(SQLException e){
@@ -163,7 +171,9 @@ public class DatabaseAPIImpl implements LeagueAPI{
             if(numRecords != FETCH_ALL)
                 sql += " LIMIT " + numRecords;
 
-            ResultSet rs = stmt.executeQuery(sql);
+            Pair<ResultSet, Long> results = runQuery(stmt, sql);
+            ResultSet rs = results.getLeft();
+            long time = results.getRight();
 
             List<MatchSummary> matches = new LinkedList<>();
             while(rs.next()){
@@ -190,7 +200,7 @@ public class DatabaseAPIImpl implements LeagueAPI{
                         season);
                 matches.add(match);
 
-                log.info("Fetched ranked match " + match.getMatchId() + " for summoner " + summonerId + " from db.");
+                log.info("Fetched ranked match " + match.getMatchId() + " for summoner " + summonerId + " from db in " + time + " ms.");
             }
             return matches;
         } catch(SQLException | IOException e){
@@ -228,7 +238,8 @@ public class DatabaseAPIImpl implements LeagueAPI{
                     + "WHERE summonerId = %d AND matchId = %d ORDER BY matchCreation DESC", summonerId,
                 match.getMatchId());
 
-            ResultSet rs = stmt.executeQuery(sql);
+            Pair<ResultSet, Long> results = runQuery(stmt, sql);
+            ResultSet rs = results.getLeft();
 
             rs.next();
             int rows = rs.getInt("rowCount");
@@ -275,7 +286,9 @@ public class DatabaseAPIImpl implements LeagueAPI{
             String sql;
             sql = String.format("SELECT id, summonerId, createDate, gameData FROM match_history "
                     + "WHERE summonerId = %d ORDER BY createDate DESC LIMIT " + APIConstants.PAGE_SIZE, summonerId);
-            ResultSet rs = stmt.executeQuery(sql);
+            Pair<ResultSet, Long> results = runQuery(stmt, sql);
+            ResultSet rs = results.getLeft();
+            long time = results.getRight();
 
             Set<GameDto> games = new HashSet<>();
             while(rs.next()){
@@ -285,7 +298,7 @@ public class DatabaseAPIImpl implements LeagueAPI{
                 games.add(game);
 
                 log.info("Fetched match " + game.getGameId() + " from match history for summoner " + summonerId
-                        + " from db.");
+                        + " from db in " + time + " ms.");
             }
             return games;
         } catch(SQLException | IOException e){
@@ -301,7 +314,9 @@ public class DatabaseAPIImpl implements LeagueAPI{
             String sql;
             sql = String.format("SELECT id, summonerId, createDate, gameData FROM match_history WHERE summonerId = %d",
                 summonerId);
-            ResultSet rs = stmt.executeQuery(sql);
+            Pair<ResultSet, Long> results = runQuery(stmt, sql);
+            ResultSet rs = results.getLeft();
+            long time = results.getRight();
 
             Set<GameDto> games = new HashSet<>();
             while(rs.next()){
@@ -311,7 +326,7 @@ public class DatabaseAPIImpl implements LeagueAPI{
                 games.add(game);
 
                 log.info("Fetched match " + game.getGameId() + " from match history for summoner " + summonerId
-                        + " from db.");
+                        + " from db in " + time + " ms.");
             }
             return games;
         } catch(SQLException | IOException e){
@@ -345,7 +360,10 @@ public class DatabaseAPIImpl implements LeagueAPI{
             Statement stmt = db.createStatement();
             String sql;
             sql = String.format("SELECT id, name, title, champKey, image FROM champions WHERE id = %d", champId);
-            ResultSet rs = stmt.executeQuery(sql);
+            Pair<ResultSet, Long> results = runQuery(stmt, sql);
+            ResultSet rs = results.getLeft();
+            long time = results.getRight();
+            
             if(rs.next()){
                 int id = rs.getInt("id");
                 String name = rs.getString("name");
@@ -354,7 +372,7 @@ public class DatabaseAPIImpl implements LeagueAPI{
                 ImageDto image = mapper.readValue(rs.getString("image"), ImageDto.class);
 
                 ChampionDto champ = new ChampionDto(id, image, name, title, key);
-                log.info("Fetched champion " + champ + " from db.");
+                log.info("Fetched champion " + champ + " from db in " + time + " ms.");
                 return champ;
             }
         } catch(SQLException | IOException e){
@@ -394,7 +412,10 @@ public class DatabaseAPIImpl implements LeagueAPI{
             sql = String.format(
                 "SELECT id, name, description, spellKey, summonerLevel, image FROM summoner_spells WHERE id = %d",
                 spellId);
-            ResultSet rs = stmt.executeQuery(sql);
+            Pair<ResultSet, Long> results = runQuery(stmt, sql);
+            ResultSet rs = results.getLeft();
+            long time = results.getRight();
+            
             if(rs.next()){
                 int id = rs.getInt("id");
                 String name = rs.getString("name");
@@ -409,7 +430,7 @@ public class DatabaseAPIImpl implements LeagueAPI{
                 }
 
                 SummonerSpellDto spell = new SummonerSpellDto(id, name, description, key, summonerLevel, image);
-                log.info("Fetched summoner spell " + spell + " from db.");
+                log.info("Fetched summoner spell " + spell + " from db in " + time + " ms.");
                 return spell;
             }
         } catch(SQLException e){
@@ -453,7 +474,9 @@ public class DatabaseAPIImpl implements LeagueAPI{
                     + "participants, platformId, queueType, region, season, teams "
                     + "FROM matches WHERE matchId = %d ORDER BY matchCreation DESC", matchId);
 
-            ResultSet rs = stmt.executeQuery(sql);
+            Pair<ResultSet, Long> results = runQuery(stmt, sql);
+            ResultSet rs = results.getLeft();
+            long time = results.getRight();
 
             if(rs.next()){
                 int mapId = rs.getInt("mapId");
@@ -477,7 +500,7 @@ public class DatabaseAPIImpl implements LeagueAPI{
 
                 MatchDetail match = new MatchDetail(mapId, matchCreation, matchDuration, matchId, matchMode, matchType,
                         matchVersion, participantIdentities, participants, platformId, queueType, region, season, teams);
-                log.info("Fetched match " + match + " from db.");
+                log.info("Fetched match " + match + " from db in " + time + " ms.");
                 return match;
             }
         } catch(SQLException | IOException e){
@@ -492,7 +515,8 @@ public class DatabaseAPIImpl implements LeagueAPI{
             String sql;
             sql = String.format("SELECT COUNT(*) AS rowCount FROM matches WHERE " + "matchId = %d", match.getMatchId());
 
-            ResultSet rs = stmt.executeQuery(sql);
+            Pair<ResultSet, Long> results = runQuery(stmt, sql);
+            ResultSet rs = results.getLeft();
 
             rs.next();
             int rows = rs.getInt("rowCount");
@@ -544,16 +568,25 @@ public class DatabaseAPIImpl implements LeagueAPI{
         public void run(){
             int updated;
             try{
+                long start = System.currentTimeMillis();
                 updated = stmt.executeUpdate();
                 if(updated < 1){
                     log.log(Level.WARNING, "Cache " + obj + " failed.");
                     return;
                 }
-                log.info("Cached " + obj);
+                long end = System.currentTimeMillis();
+                log.info("Cached " + obj + " in " + (end - start) + " ms.");
             } catch(SQLException e){
                 log.log(Level.WARNING, "Cache " + obj + " failed.");
             }
         }
+    }
+
+    protected Pair<ResultSet, Long> runQuery(Statement stmt, String sql) throws SQLException{
+        long start = System.currentTimeMillis();
+        ResultSet rs = stmt.executeQuery(sql);
+        long end = System.currentTimeMillis();
+        return new ImmutablePair<ResultSet, Long>(rs, end - start);
     }
 
     public static void main(String[] args){

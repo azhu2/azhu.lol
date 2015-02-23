@@ -295,11 +295,11 @@ public class RiotAPIImpl implements LeagueAPI{
         return getEntity(uri, null);
     }
 
-    private String retryGetEntity(JerseyWebTarget target, int tries) throws RiotPlsException{
+    private String retryGetEntity(JerseyWebTarget target, int tries, long start) throws RiotPlsException{
         String uri = target.getUri().toString();
         if(tries > MAX_ATTEMPTS){
             log.warning(String.format("Maximum attempts for uri %s failed", uri));
-            throw new RiotPlsException(APIConstants.HTTP_RATELIMIT, uri);
+            throw new RiotPlsException(APIConstants.HTTP_RATELIMIT, uri, System.currentTimeMillis() - start);
         }
 
         try{
@@ -312,29 +312,32 @@ public class RiotAPIImpl implements LeagueAPI{
         int status = response.getStatus();
 
         if(status == APIConstants.HTTP_OK){
-            log.info(String.format("Successful retry for uri %s", uri));
+            long time = System.currentTimeMillis() - start;
+            log.info(String.format("Successful retry for uri %s in %d ms.", uri, time));
             return response.readEntity(String.class);
         } else if(status == APIConstants.HTTP_RATELIMIT){
             log.warning(String.format("Attempt %d for uri %s failed", tries, uri));
-            return retryGetEntity(target, tries + 1);
+            return retryGetEntity(target, tries + 1, start);
         } else
-            throw new RiotPlsException(status, uri);
+            throw new RiotPlsException(status, uri, System.currentTimeMillis() - start);
     }
 
     private String getEntity(String uri, Map<String, String> params) throws RiotPlsException{
+        long start = System.currentTimeMillis();
         JerseyWebTarget target = query(uri, params);
         Response response = target.request().get();
         String uriStr = target.getUri().toString();
         int status = response.getStatus();
-
+        long time = System.currentTimeMillis() - start;
+        
         if(status == APIConstants.HTTP_OK){
-            log.info("Success for uri " + uriStr);
+            log.info("Success for uri " + uriStr + " in " + time + " ms.");
             return response.readEntity(String.class);
         } else if(status == APIConstants.HTTP_RATELIMIT){
             log.warning("429 Ratelimit hit oops | URI: " + uriStr);
-            return retryGetEntity(target, 1);
+            return retryGetEntity(target, 1, start);
         } else{
-            RiotPlsException e = new RiotPlsException(status, uriStr);
+            RiotPlsException e = new RiotPlsException(status, uriStr, time);
             log.warning(e.getMessage());
             throw e;
         }
@@ -344,29 +347,29 @@ public class RiotAPIImpl implements LeagueAPI{
         private int status;
         private String message;
         private String uriStr;
-
-        public RiotPlsException(int statusCode, String uri){
+        
+        public RiotPlsException(int statusCode, String uri, long time){
             status = statusCode;
             uriStr = uri;
-            setMessage();
+            setMessage(time);
         }
 
-        private void setMessage(){
+        private void setMessage(long time){
             switch(status){
                 case APIConstants.HTTP_UNAUTHORIZED:
-                    message = "401 Unauthorized - did you forget the API key? | URI: " + uriStr;
+                    message = "401 Unauthorized - did you forget the API key? | URI: " + uriStr + " in " + time + " ms.";
                     break;
                 case APIConstants.HTTP_NOT_FOUND:
                     message = "404 Not found | URI: " + uriStr;
                     break;
                 case APIConstants.HTTP_INTERNAL_SERVER_ERROR:
-                    message = "500 Rito pls. They broke something | URI: " + uriStr;
+                    message = "500 Rito pls. They broke something | URI: " + uriStr + " in " + time + " ms.";
                     break;
                 case APIConstants.HTTP_UNAVAILABLE:
-                    message = "503 Riot API unavailable | URI: " + uriStr;
+                    message = "503 Riot API unavailable | URI: " + uriStr + " in " + time + " ms.";
                     break;
                 default:
-                    message = status + " Something else broke | URI: " + uriStr;
+                    message = status + " Something else broke | URI: " + uriStr + " in " + time + " ms.";
                     break;
             }
         }
