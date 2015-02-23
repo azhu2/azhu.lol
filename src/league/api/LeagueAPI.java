@@ -6,6 +6,7 @@ import java.util.Set;
 import league.api.RiotAPIImpl.RiotPlsException;
 import league.entities.ChampionDto;
 import league.entities.GameDto;
+import league.entities.LeagueDto;
 import league.entities.MatchDetail;
 import league.entities.MatchSummary;
 import league.entities.SummonerDto;
@@ -27,4 +28,6 @@ public interface LeagueAPI{
      */
     public List<MatchSummary> getAllRankedMatches(long summonerId) throws RiotPlsException;
     public int cacheAllRankedMatches(long summonerId) throws RiotPlsException;
+    public LeagueDto getLeague(long summonerId) throws RiotPlsException;
+    public List<LeagueDto> getLeagues(List<Long> idList) throws RiotPlsException;
 }

@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import league.api.RiotAPIImpl.RiotPlsException;
 import league.entities.ChampionDto;
 import league.entities.GameDto;
+import league.entities.LeagueDto;
 import league.entities.MatchDetail;
 import league.entities.MatchSummary;
 import league.entities.SummonerDto;
@@ -182,4 +183,15 @@ public class DynamicLeagueAPIImpl implements LeagueAPI{
         SummonerSpellDto result = dbApi.getSummonerSpellFromId(spellId);
         return result == null ? riotApi.getSummonerSpellFromId(spellId) : result;
     }
+
+    @Override
+    public LeagueDto getLeague(long summonerId) throws RiotPlsException{
+        return riotApi.getLeague(summonerId);
+    }
+
+    @Override
+    public List<LeagueDto> getLeagues(List<Long> ids) throws RiotPlsException{
+        return riotApi.getLeagues(ids);
+    }
+
 }

@@ -15,9 +15,11 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import league.api.RiotAPIImpl.RiotPlsException;
 import league.entities.ChampionDto;
 import league.entities.GameDto;
 import league.entities.ImageDto;
+import league.entities.LeagueDto;
 import league.entities.MatchDetail;
 import league.entities.MatchSummary;
 import league.entities.Participant;
@@ -74,7 +76,7 @@ public class DatabaseAPIImpl implements LeagueAPI{
             Pair<ResultSet, Long> results = runQuery(stmt, sql);
             ResultSet rs = results.getLeft();
             long time = results.getRight();
-            
+
             if(rs.next()){
                 long id = rs.getLong("id");
                 String name = rs.getString("name");
@@ -120,7 +122,7 @@ public class DatabaseAPIImpl implements LeagueAPI{
             Pair<ResultSet, Long> results = runQuery(stmt, sql);
             ResultSet rs = results.getLeft();
             long time = results.getRight();
-            
+
             if(rs.next()){
                 long id = rs.getLong("id");
                 String name = rs.getString("name");
@@ -200,7 +202,8 @@ public class DatabaseAPIImpl implements LeagueAPI{
                         season);
                 matches.add(match);
 
-                log.info("Fetched ranked match " + match.getMatchId() + " for summoner " + summonerId + " from db in " + time + " ms.");
+                log.info("Fetched ranked match " + match.getMatchId() + " for summoner " + summonerId + " from db in "
+                        + time + " ms.");
             }
             return matches;
         } catch(SQLException | IOException e){
@@ -363,7 +366,7 @@ public class DatabaseAPIImpl implements LeagueAPI{
             Pair<ResultSet, Long> results = runQuery(stmt, sql);
             ResultSet rs = results.getLeft();
             long time = results.getRight();
-            
+
             if(rs.next()){
                 int id = rs.getInt("id");
                 String name = rs.getString("name");
@@ -415,7 +418,7 @@ public class DatabaseAPIImpl implements LeagueAPI{
             Pair<ResultSet, Long> results = runQuery(stmt, sql);
             ResultSet rs = results.getLeft();
             long time = results.getRight();
-            
+
             if(rs.next()){
                 int id = rs.getInt("id");
                 String name = rs.getString("name");
@@ -570,6 +573,7 @@ public class DatabaseAPIImpl implements LeagueAPI{
             try{
                 long start = System.currentTimeMillis();
                 updated = stmt.executeUpdate();
+                stmt.close();
                 if(updated < 1){
                     log.log(Level.WARNING, "Cache " + obj + " failed.");
                     return;
@@ -592,5 +596,21 @@ public class DatabaseAPIImpl implements LeagueAPI{
     public static void main(String[] args){
         DatabaseAPIImpl r = new DatabaseAPIImpl();
         System.out.println(r.searchSummoner("Zedenstein"));
+    }
+
+    /**
+     * @deprecated Use from RiotAPIImpl
+     */
+    @Override
+    public LeagueDto getLeague(long summonerId){
+        return null;
+    }
+
+    /**
+     * @deprecated Use from RiotAPIImpl
+     */
+    @Override
+    public List<LeagueDto> getLeagues(List<Long> idList) throws RiotPlsException{
+        return null;
     }
 }

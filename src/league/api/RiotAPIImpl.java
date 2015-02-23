@@ -14,6 +14,7 @@ import javax.ws.rs.core.Response;
 
 import league.entities.ChampionDto;
 import league.entities.GameDto;
+import league.entities.LeagueDto;
 import league.entities.MatchDetail;
 import league.entities.MatchSummary;
 import league.entities.PlayerHistory;
@@ -41,6 +42,7 @@ public class RiotAPIImpl implements LeagueAPI{
     private static final String CHAMP_QUERY = "/api/lol/static-data/na/v1.2/champion/%d";
     private static final String SUMMONERSPELL_QUERY = "/api/lol/static-data/na/v1.2/summoner-spell/%d";
     private static final String MATCH_QUERY = "/api/lol/na/v2.2/match/%d";
+    private static final String LEAGUE_QUERY = "/api/lol/na/v2.5/league/by-summoner/%s/entry";
 
     private static final int MAX_ATTEMPTS = 15;
     private static final long ATTEMPT_INTERVAL = 1000;      // in ms
@@ -74,7 +76,7 @@ public class RiotAPIImpl implements LeagueAPI{
             Map<String, SummonerDto> map = mapper.readValue(entity, new TypeReference<Map<String, SummonerDto>>(){
             });
             SummonerDto summoner = map.get(summonerName);
-            summoner.setName(summoner.getName().replace(" ", ""));
+//            summoner.setName(summoner.getName().replace(" ", ""));
             db.cacheSummoner(summoner);
             return summoner;
         } catch(IOException e){
@@ -287,6 +289,55 @@ public class RiotAPIImpl implements LeagueAPI{
         }
     }
 
+    @Override
+    public LeagueDto getLeague(long summonerId) throws RiotPlsException{
+        String uri = buildUri(String.format(LEAGUE_QUERY, summonerId));
+        String entity = getEntity(uri);
+
+        if(entity == null)
+            return null;
+
+        try{
+            Map<String, List<LeagueDto>> map = mapper.readValue(entity, new TypeReference<Map<String, List<LeagueDto>>>(){
+            });
+            LeagueDto league = map.get(summonerId + "").get(0);
+            return league;
+        } catch(IOException e){
+            log.log(Level.SEVERE, e.getMessage(), e);
+            return null;
+        }
+    }
+    
+    public List<LeagueDto> getLeagues(List<Long> summonerIds) throws RiotPlsException{
+        if(summonerIds == null || summonerIds.isEmpty())
+            return null;
+
+        String ids = "";
+        for(long id : summonerIds)
+            ids += id + ",";
+
+        String uri = buildUri(String.format(LEAGUE_QUERY, ids));
+        String entity = getEntity(uri);
+
+        if(entity == null)
+            return null;
+
+        try{
+            Map<String, List<LeagueDto>> map = mapper.readValue(entity, new TypeReference<Map<String, List<LeagueDto>>>(){
+            });
+
+            Collection<List<LeagueDto>> leagueLists = map.values();
+            List<LeagueDto> leagues = new LinkedList<>();
+            for(List<LeagueDto> league : leagueLists)
+                leagues.add(league.get(0));
+
+            return leagues;
+        } catch(IOException e){
+            log.log(Level.SEVERE, e.getMessage(), e);
+            return null;
+        }
+    }
+
     private static String buildUri(String method){
         return BASE_URL + method + "?api_key=" + API_KEY;
     }
@@ -399,6 +450,10 @@ public class RiotAPIImpl implements LeagueAPI{
         try{
             System.out.println(r.searchSummoner("Zedenstein"));
             System.out.println(r.getMatchHistory(31569637));
+            List<Long> summoners = new LinkedList<>();
+            summoners.add(26106125L);
+            summoners.add(20389591L);
+            System.out.println(r.getLeagues(summoners));
         } catch(RiotPlsException e){
             e.printStackTrace();
         }
