@@ -169,9 +169,9 @@
 }
 
 #matches .match .expandMatch.ranked {
-	width: 600px;
+	width: 580px;
 	position: relative;
-	left: -100px;
+	left: -90px;
 }
 
 #matches .match .expandMatch .expandTitle {
@@ -256,11 +256,17 @@
 
 #matches .match .expandMatch .rankedTeam .playerRank {
 	width: 65px;
-	font-size: 0.55em;
 	text-align: center;
+}
+
+#matches .match .expandMatch .rankedTeam .playerRank.heading {
+	width: 71px;
+}
+
+#matches .match .expandMatch .rankedTeam .playerRank.rank {
+	font-size: 0.55em;
 	position: relative;
 	top: -3px;
-	
 }
 
 #matches .match .expandMatch .rankedTeam .playerSummoners {
@@ -328,7 +334,7 @@
 #matches .match .expandMatch .rankedTeam .bans {
 	position: relative;
 	top: 5px;
-	margin-left: 190px;
+	margin-left: 240px;
 }
 
 #matches .match .expandMatch .rankedTeam .bans .banImage {
