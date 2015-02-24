@@ -20,11 +20,11 @@ import league.api.LeagueAPI;
 import league.api.RiotAPIImpl.RiotPlsException;
 import league.entities.ChampionDto;
 import league.entities.GameDto;
-import league.entities.LeagueDto;
 import league.entities.MatchDetail;
 import league.entities.MatchSummary;
 import league.entities.SummonerDto;
 import league.entities.SummonerSpellDto;
+import league.entities.azhu.League;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig;
@@ -78,6 +78,9 @@ public class LeagueResource{
         }
     }
 
+    /**
+     * @deprecated in favor of {@link NewLeagueResource}
+     */
     @GET
     @Path("/ranked-matches/{id}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -90,6 +93,9 @@ public class LeagueResource{
         }
     }
 
+    /**
+     * @deprecated in favor of {@link NewLeagueResource}
+     */
     @GET
     @Path("/ranked-matches/{id}/all")
     @Produces(MediaType.APPLICATION_JSON)
@@ -102,6 +108,9 @@ public class LeagueResource{
         }
     }
 
+    /**
+     * @deprecated in favor of {@link NewLeagueResource}
+     */
     @POST
     @Path("/ranked-matches/{id}/all")
     @Produces(MediaType.APPLICATION_JSON)
@@ -127,6 +136,9 @@ public class LeagueResource{
         }
     }
 
+    /**
+     * @deprecated in favor of {@link NewLeagueResource}
+     */
     @GET
     @Path("/match-history/{id}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -139,6 +151,9 @@ public class LeagueResource{
         }
     }
 
+    /**
+     * @deprecated in favor of {@link NewLeagueResource}
+     */
     @GET
     @Path("/match-history/{id}/all")
     @Produces(MediaType.APPLICATION_JSON)
@@ -192,7 +207,7 @@ public class LeagueResource{
     @Produces(MediaType.APPLICATION_JSON)
     public Response getLeague(@PathParam("id") long summonerId) throws ServletException, IOException{
         try{
-            LeagueDto league = api.getLeague(summonerId);
+            League league = api.getLeague(summonerId);
             return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(league)).build();
         } catch(RiotPlsException e){
             return Response.status(e.getStatus()).entity(e.getMessage()).build();
@@ -208,7 +223,7 @@ public class LeagueResource{
             for(String id : ids.split(","))
                 idList.add(Long.parseLong(id.trim()));
 
-            List<LeagueDto> leagues = api.getLeagues(idList);
+            List<League> leagues = api.getLeagues(idList);
             return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(leagues)).build();
         } catch(RiotPlsException e){
             return Response.status(e.getStatus()).entity(e.getMessage()).build();

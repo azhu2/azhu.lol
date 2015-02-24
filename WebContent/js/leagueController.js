@@ -175,15 +175,15 @@ leagueApp.controller('lookupController', function($scope, $rootScope, $routePara
 
 leagueApp.service('LeagueResource', function($resource) {
 	this.lookupSummoner = function() {
-		return $resource('/azhu.lol/rest/summoner/:name');
+		return $resource('/azhu.lol/rest/new/summoner/:name');
 	};
 
 	this.lookupSummoners = function() {
-		return $resource('/azhu.lol/rest/summoners/:ids');
+		return $resource('/azhu.lol/rest/new/summoners/:ids');
 	};
 
 	this.summonerFromId = function() {
-		return $resource('/azhu.lol/rest/summoner/id/:id');
+		return $resource('/azhu.lol/rest/new/summoner/id/:id');
 	};
 
 	this.champFromId = function() {

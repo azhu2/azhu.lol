@@ -37,6 +37,9 @@
 							<div id="summonerLevel">
 								Level {{ summoner.id == null ? '--' : summoner.summonerLevel }}
 							</div>
+							<div id="summonerRank" class="rank rank_{{ summoner.league.tier }}">
+									{{ summoner.league == null ? 'UNRANKED' : summoner.league.tier + ' ' + summoner.league.division }}
+							</div>
 						</div>
 					</div>
 

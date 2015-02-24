@@ -24,8 +24,11 @@ import league.api.RiotAPIImpl.RiotPlsException;
 import league.entities.GameDto;
 import league.entities.MatchDetail;
 import league.entities.MatchSummary;
+import league.entities.SummonerDto;
 import league.entities.azhu.Game;
+import league.entities.azhu.League;
 import league.entities.azhu.RankedMatch;
+import league.entities.azhu.Summoner;
 
 /**
  * An updated version of LeagueResource that does the processing on the back-end instead of in js
@@ -167,5 +170,57 @@ public class NewLeagueResource extends LeagueResource{
     public Response getMatchHistoryAll(@PathParam("id") long summonerId) throws ServletException, IOException{
         List<Game> matches = api.getGamesAll(summonerId);
         return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(matches)).build();
+    }
+
+    /**
+     * If we search by name, force update
+     */
+    @GET
+    @Path("/summoner/{name}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getSummoner(@PathParam("name") String name) throws ServletException, IOException{
+        try{
+            SummonerDto summ = api_riot.searchSummoner(name);
+            League league = api_riot.getLeague(summ.getId());
+            Summoner summoner = new Summoner(summ, league);
+            api.cacheSummoner(summoner);
+            return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(summoner)).build();
+        } catch(RiotPlsException e){
+            return Response.status(e.getStatus()).entity(e.getMessage()).build();
+        }
+    }
+
+    @GET
+    @Path("/summoner/id/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getSummonerById(@PathParam("id") long id) throws ServletException, IOException{
+        try{
+            SummonerDto summ = api_riot.getSummonerFromId(id);
+            League league = api_riot.getLeague(summ.getId());
+            Summoner summoner = new Summoner(summ, league);
+            api.cacheSummoner(summoner);
+            return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(summoner)).build();
+        } catch(RiotPlsException e){
+            return Response.status(e.getStatus()).entity(e.getMessage()).build();
+        }
+    }
+
+    /**
+     * Batch League lookups here
+     */
+    @GET
+    @Path("/summoners/{ids}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getSummoners(@PathParam("ids") String ids) throws ServletException, IOException{
+        try{
+            List<Long> idList = new LinkedList<>();
+            for(String id : ids.split(","))
+                idList.add(Long.parseLong(id.trim()));
+
+            List<SummonerDto> summoners = api.getSummoners(idList);
+            return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(summoners)).build();
+        } catch(RiotPlsException e){
+            return Response.status(e.getStatus()).entity(e.getMessage()).build();
+        }
     }
 }

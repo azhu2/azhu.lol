@@ -10,7 +10,11 @@ public class LeagueDto{
     private String tier;
     
     public LeagueDto(){
-        
+        this.entries = null;
+        this.name = "UNRANKED";
+        this.participantId = null;
+        this.queue = "RANKED_SOLO_5x5";
+        this.tier = "UNRANKED";
     }
 
     public LeagueDto(List<LeagueEntryDto> entries, String name, String participantId, String queue, String tier){

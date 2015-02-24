@@ -19,7 +19,6 @@ import league.api.RiotAPIImpl.RiotPlsException;
 import league.entities.ChampionDto;
 import league.entities.GameDto;
 import league.entities.ImageDto;
-import league.entities.LeagueDto;
 import league.entities.MatchDetail;
 import league.entities.MatchSummary;
 import league.entities.Participant;
@@ -27,12 +26,13 @@ import league.entities.ParticipantIdentity;
 import league.entities.SummonerDto;
 import league.entities.SummonerSpellDto;
 import league.entities.Team;
+import league.entities.azhu.League;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig;
 import org.codehaus.jackson.type.TypeReference;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 
 public class DatabaseAPIImpl implements LeagueAPI{
     protected static Logger log = Logger.getLogger(DatabaseAPIImpl.class.getName());
@@ -602,7 +602,7 @@ public class DatabaseAPIImpl implements LeagueAPI{
      * @deprecated Use from RiotAPIImpl
      */
     @Override
-    public LeagueDto getLeague(long summonerId){
+    public League getLeague(long summonerId){
         return null;
     }
 
@@ -610,7 +610,7 @@ public class DatabaseAPIImpl implements LeagueAPI{
      * @deprecated Use from RiotAPIImpl
      */
     @Override
-    public List<LeagueDto> getLeagues(List<Long> idList) throws RiotPlsException{
+    public List<League> getLeagues(List<Long> idList) throws RiotPlsException{
         return null;
     }
 }

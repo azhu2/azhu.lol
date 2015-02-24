@@ -23,10 +23,17 @@
 #summaryData #summonerName {
 	font-weight: bold;
 	font-size: 2em;
+	text-decoration: none;
 }
 
 #summaryData #summonerLevel {
 	font-style: italic;
 	color: #666666;
-	padding-left: 20px;
+	margin-left: 20px;
+}
+
+#summaryData #summonerRank {
+	margin-top: 3px;
+	margin-left: 20px;
+	font-size: 0.7em;
 }

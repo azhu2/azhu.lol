@@ -9,11 +9,11 @@ import java.util.logging.Logger;
 import league.api.RiotAPIImpl.RiotPlsException;
 import league.entities.ChampionDto;
 import league.entities.GameDto;
-import league.entities.LeagueDto;
 import league.entities.MatchDetail;
 import league.entities.MatchSummary;
 import league.entities.SummonerDto;
 import league.entities.SummonerSpellDto;
+import league.entities.azhu.League;
 
 public class DynamicLeagueAPIImpl implements LeagueAPI{
     private static Logger log = Logger.getLogger(DynamicLeagueAPIImpl.class.getName());
@@ -185,12 +185,12 @@ public class DynamicLeagueAPIImpl implements LeagueAPI{
     }
 
     @Override
-    public LeagueDto getLeague(long summonerId) throws RiotPlsException{
+    public League getLeague(long summonerId) throws RiotPlsException{
         return riotApi.getLeague(summonerId);
     }
 
     @Override
-    public List<LeagueDto> getLeagues(List<Long> ids) throws RiotPlsException{
+    public List<League> getLeagues(List<Long> ids) throws RiotPlsException{
         return riotApi.getLeagues(ids);
     }
 

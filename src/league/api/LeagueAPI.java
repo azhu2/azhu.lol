@@ -6,11 +6,11 @@ import java.util.Set;
 import league.api.RiotAPIImpl.RiotPlsException;
 import league.entities.ChampionDto;
 import league.entities.GameDto;
-import league.entities.LeagueDto;
 import league.entities.MatchDetail;
 import league.entities.MatchSummary;
 import league.entities.SummonerDto;
 import league.entities.SummonerSpellDto;
+import league.entities.azhu.League;
 
 public interface LeagueAPI{
     public ChampionDto getChampFromId(long champId) throws RiotPlsException;
@@ -28,6 +28,6 @@ public interface LeagueAPI{
      */
     public List<MatchSummary> getAllRankedMatches(long summonerId) throws RiotPlsException;
     public int cacheAllRankedMatches(long summonerId) throws RiotPlsException;
-    public LeagueDto getLeague(long summonerId) throws RiotPlsException;
-    public List<LeagueDto> getLeagues(List<Long> idList) throws RiotPlsException;
+    public League getLeague(long summonerId) throws RiotPlsException;
+    public List<League> getLeagues(List<Long> idList) throws RiotPlsException;
 }

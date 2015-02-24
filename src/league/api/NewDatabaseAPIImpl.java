@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.logging.Level;
 
 import league.entities.ChampionDto;
@@ -16,8 +17,10 @@ import league.entities.SummonerSpellDto;
 import league.entities.Team;
 import league.entities.azhu.Game;
 import league.entities.azhu.GamePlayer;
+import league.entities.azhu.League;
 import league.entities.azhu.RankedMatch;
 import league.entities.azhu.RankedPlayer;
+import league.entities.azhu.Summoner;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.codehaus.jackson.type.TypeReference;
@@ -81,7 +84,7 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueAPI{
 
             Pair<ResultSet, Long> results = runQuery(stmt, sql);
             ResultSet rs = results.getLeft();
-                    
+
             rs.next();
             int rows = rs.getInt("rowCount");
             return rows > 0;
@@ -146,7 +149,7 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueAPI{
         }
         return null;
     }
-    
+
     @Override
     public List<RankedMatch> getRankedMatchesAll(long summonerId){
         try{
@@ -298,7 +301,7 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueAPI{
         }
         return null;
     }
-    
+
     @Override
     public boolean hasGame(Game game){
         try{
@@ -348,6 +351,112 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueAPI{
 
             new CacheThread(stmt, game).start();
         } catch(IOException | SQLException e){
+            log.log(Level.SEVERE, e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public Summoner searchSummonerNew(String summonerName){
+        try{
+            Statement stmt = db.createStatement();
+            String sql;
+            sql = String.format(
+                "SELECT id, name, profileIconId, summonerLevel, revisionDate, league FROM summoners WHERE name = '%s'",
+                summonerName);
+            Pair<ResultSet, Long> results = runQuery(stmt, sql);
+            ResultSet rs = results.getLeft();
+            long time = results.getRight();
+
+            if(rs.next()){
+                long id = rs.getLong("id");
+                String name = rs.getString("name");
+                int profileIconId = rs.getInt("profileIconId");
+                long summonerLevel = rs.getLong("summonerLevel");
+                long revisionDate = rs.getLong("revisionDate");
+                League league = null;
+                if(rs.getString("league") != null)
+                    league = mapper.readValue(rs.getString("league"), League.class);
+
+                Summoner summoner = new Summoner(id, name, profileIconId, summonerLevel, revisionDate, league);
+                log.info("Fetched summoner " + summoner + " from db in " + time + " ms");
+                return summoner;
+            }
+        } catch(SQLException | IOException e){
+            log.log(Level.SEVERE, e.getMessage(), e);
+        }
+
+        return null;
+    }
+
+    @Override
+    public List<Summoner> getSummonersNew(List<Long> summonerIds){
+        List<Summoner> summoners = new LinkedList<>();
+
+        ListIterator<Long> itr = summonerIds.listIterator();
+        while(itr.hasNext()){
+            Long id = itr.next();
+            Summoner summ = getSummonerNewFromId(id);
+            if(summ != null){
+                summoners.add(summ);
+                itr.remove();
+            }
+        }
+
+        return summoners;
+    }
+
+    @Override
+    public Summoner getSummonerNewFromId(long summonerId){
+        try{
+            Statement stmt = db.createStatement();
+            String sql;
+            sql = String.format(
+                "SELECT id, name, profileIconId, summonerLevel, revisionDate, league FROM summoners WHERE id = %d",
+                summonerId);
+            Pair<ResultSet, Long> results = runQuery(stmt, sql);
+            ResultSet rs = results.getLeft();
+            long time = results.getRight();
+
+            if(rs.next()){
+                long id = rs.getLong("id");
+                String name = rs.getString("name");
+                int profileIconId = rs.getInt("profileIconId");
+                long summonerLevel = rs.getLong("summonerLevel");
+                long revisionDate = rs.getLong("revisionDate");
+                League league = null;
+                if(rs.getString("league") != null)
+                    league = mapper.readValue(rs.getString("league"), League.class);
+
+                Summoner summoner = new Summoner(id, name, profileIconId, summonerLevel, revisionDate, league);
+                log.info("Fetched summoner " + summoner + " from db in " + time + " ms.");
+                return summoner;
+            }
+        } catch(SQLException | IOException e){
+            log.log(Level.SEVERE, e.getMessage(), e);
+        }
+
+        return null;
+    }
+
+    @Override
+    public void cacheSummoner(Summoner summoner){
+        if(summoner == null)
+            return;
+
+        try{
+            String sql = "INSERT INTO summoners (id, name, profileIconId, summonerLevel, revisionDate, league)"
+                    + "VALUES (?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE profileIconId=VALUES(profileIconId), "
+                    + "summonerLevel=VALUES(summonerLevel), revisionDate=VALUES(revisionDate), name=VALUES(name), league=VALUES(league)";
+            PreparedStatement stmt = db.prepareStatement(sql);
+            stmt.setLong(1, summoner.getId());
+            stmt.setString(2, summoner.getName());
+            stmt.setInt(3, summoner.getProfileIconId());
+            stmt.setLong(4, summoner.getSummonerLevel());
+            stmt.setLong(5, summoner.getRevisionDate());
+            stmt.setString(6, mapper.writeValueAsString(summoner.getLeague()));
+
+            new CacheThread(stmt, summoner).start();
+        } catch(SQLException | IOException e){
             log.log(Level.SEVERE, e.getMessage(), e);
         }
     }
