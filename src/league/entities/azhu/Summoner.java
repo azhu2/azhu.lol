@@ -5,6 +5,10 @@ import league.entities.SummonerDto;
 public class Summoner extends SummonerDto{
     private League league;
 
+    public Summoner(){
+        
+    }
+    
     public Summoner(SummonerDto summoner, League league){
         this(summoner.getId(), summoner.getName(), summoner.getProfileIconId(), summoner.getSummonerLevel(),
              summoner.getRevisionDate(), league);

@@ -169,9 +169,9 @@
 }
 
 #matches .match .expandMatch.ranked {
-	width: 500px;
+	width: 600px;
 	position: relative;
-	left: -50px;
+	left: -100px;
 }
 
 #matches .match .expandMatch .expandTitle {
@@ -252,6 +252,15 @@
 #matches .match .expandMatch .rankedTeam .playerStat {
 	display: inline-block;
 	font-size: 0.85em;
+}
+
+#matches .match .expandMatch .rankedTeam .playerRank {
+	width: 65px;
+	font-size: 0.55em;
+	text-align: center;
+	position: relative;
+	top: -3px;
+	
 }
 
 #matches .match .expandMatch .rankedTeam .playerSummoners {

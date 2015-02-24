@@ -395,14 +395,18 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueAPI{
         List<Summoner> dbResults = new LinkedList<>();
         List<Long> idsCopy = new LinkedList<>(summonerIds);
 
+        List<League> leagues = api_riot.getLeagues(summonerIds);
         ListIterator<Long> itr = summonerIds.listIterator();
+        int index = 0;
         while(itr.hasNext()){
             Long id = itr.next();
             Summoner summ = getSummonerNewFromId(id);
             if(summ != null){
+                summ.setLeague(leagues.get(index));
                 dbResults.add(summ);
                 itr.remove();
             }
+            index++;
         }
 
         if(summonerIds.isEmpty())
