@@ -82,10 +82,14 @@ public class NewLeagueResource extends LeagueResource{
                 if(match == null){
                     MatchDetail detail = api_dynamic.getMatchDetail(matchId);
                     match = new RankedMatch(detail, summonerId);
-                    api.cacheRankedMatch(match);
                 }
                 matches.add(match);
+                
+                // Limit page size since apparently doesn't work in api call
+                if(matches.size() >= APIConstants.RANKED_PAGE_SIZE)
+                    break;
             }
+            api.cacheRankedMatches(matches);
 
             return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(matches)).build();
         } catch(RiotPlsException e){

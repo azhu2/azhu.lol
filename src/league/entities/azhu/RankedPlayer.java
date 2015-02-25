@@ -10,11 +10,10 @@ import league.entities.Mastery;
 import league.entities.Participant;
 import league.entities.ParticipantStats;
 import league.entities.Rune;
-import league.entities.SummonerDto;
 import league.entities.SummonerSpellDto;
 
 public class RankedPlayer{
-    private SummonerDto summoner;
+    private Summoner summoner;
     private ChampionDto champion;
     private String highestAchievedSeasonTier;
     private List<Mastery> masteries;
@@ -31,7 +30,7 @@ public class RankedPlayer{
 
     }
 
-    public RankedPlayer(SummonerDto summoner, Participant participant) throws RiotPlsException{
+    public RankedPlayer(Summoner summoner, Participant participant) throws RiotPlsException{
         this.summoner = summoner;
         champion = api.getChampFromId(participant.getChampionId());
         highestAchievedSeasonTier = participant.getHighestAchievedSeasonTier();
@@ -49,7 +48,7 @@ public class RankedPlayer{
         return "RankedPlayer [summoner=" + summoner + ", champion=" + champion + "]";
     }
 
-    public RankedPlayer(SummonerDto summoner, ChampionDto champion, String highestAchievedSeasonTier,
+    public RankedPlayer(Summoner summoner, ChampionDto champion, String highestAchievedSeasonTier,
             List<Mastery> masteries, int participantId, List<Rune> runes, SummonerSpellDto spell1,
             SummonerSpellDto spell2, ParticipantStats stats, int teamId){
         super();
@@ -65,11 +64,11 @@ public class RankedPlayer{
         this.teamId = teamId;
     }
 
-    public SummonerDto getSummoner(){
+    public Summoner getSummoner(){
         return summoner;
     }
 
-    public void setSummoner(SummonerDto summoner){
+    public void setSummoner(Summoner summoner){
         this.summoner = summoner;
     }
 

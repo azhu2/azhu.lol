@@ -217,7 +217,7 @@ public class DatabaseAPIImpl implements LeagueAPI{
      */
     @Override
     public List<MatchSummary> getRankedMatches(long summonerId){
-        return getRankedMatches(summonerId, APIConstants.MAX_PAGE_SIZE);
+        return getRankedMatches(summonerId, APIConstants.RANKED_PAGE_SIZE);
     }
 
     @Override

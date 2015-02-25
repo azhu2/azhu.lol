@@ -69,6 +69,7 @@
 								Blue Team ({{ match.players[match.bluePlayers[0]].stats.winner ? "WIN" : "LOSS" }})
 							</div>
 							<div class="tableHeadings">
+								<div class="playerStat playerRank heading">Rank</div>
 								<div class="playerStat playerLevel">Lvl</div>
 								<div class="playerStat playerChampionImage"></div>
 								<div class="playerStat playerSummoners"></div>
@@ -81,6 +82,9 @@
 							<ul class="expandPlayersBlue">
 								<li ng-repeat="index in match.bluePlayers">
 									<div class="playerInfo">
+										<div class="playerStat playerRank rank rank_{{ match.players[index].summoner.league == null ? 'UNRANKED' : match.players[index].summoner.league.tier }}">
+											{{ match.players[index].summoner.league == null ? 'UNRANKED' : match.players[index].summoner.league.tier + ' ' + match.players[index].summoner.league.division }}
+										</div>
 										<div class="playerStat playerLevel">{{ match.players[index].stats.champLevel }}</div>
 										<img class="playerStat playerChampionImage" alt="{{ match.players[index].champion == null ? 'champion' : match.players[index].champion.name }}"
 											ng-src="{{ (match.players[index] == null || match.players[index].champion == null) ? '' : 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/champion/' + match.players[index].champion.image.full }}">
@@ -137,6 +141,7 @@
 								Purple Team ({{ match.players[match.redPlayers[0]].stats.winner ? "WIN" : "LOSS" }})
 							</div>
 							<div class="tableHeadings">
+								<div class="playerStat playerRank heading">Rank</div>
 								<div class="playerStat playerLevel">Lvl</div>
 								<div class="playerStat playerChampionImage"></div>
 								<div class="playerStat playerSummoners"></div>
@@ -150,6 +155,9 @@
 							<ul class="expandPlayersRed">
 								<li ng-repeat="index in match.redPlayers">
 									<div class="playerInfo">
+										<div class="playerStat playerRank rank rank_{{ match.players[index].summoner.league == null ? 'UNRANKED' : match.players[index].summoner.league.tier }}">
+											{{ match.players[index].summoner.league == null ? 'UNRANKED' : match.players[index].summoner.league.tier + ' ' + match.players[index].summoner.league.division }}
+										</div>									
 										<div class="playerStat playerLevel">{{ match.players[index].stats.champLevel }}</div>
 										<img class="playerStat playerChampionImage" alt="{{ match.players[index].champion == null ? 'champion' : match.players[index].champion.name }}"
 											ng-src="{{ (match.players[index] == null || match.players[index].champion == null) ? '' : 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/champion/' + match.players[index].champion.image.full }}">

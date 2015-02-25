@@ -6,13 +6,14 @@ import java.util.List;
 import league.api.APIConstants;
 import league.api.DynamicLeagueAPIImpl;
 import league.api.LeagueAPI;
+import league.api.NewDatabaseAPIImpl;
+import league.api.NewLeagueAPI;
 import league.api.RiotAPIImpl.RiotPlsException;
 import league.entities.BannedChampion;
 import league.entities.ChampionDto;
 import league.entities.MatchDetail;
 import league.entities.Participant;
 import league.entities.ParticipantIdentity;
-import league.entities.SummonerDto;
 import league.entities.Team;
 
 public class RankedMatch{
@@ -37,6 +38,7 @@ public class RankedMatch{
     private long summonerId;
 
     private static LeagueAPI api = DynamicLeagueAPIImpl.getInstance();
+    private static NewLeagueAPI api_new = NewDatabaseAPIImpl.getInstance();
 
     public RankedMatch(){
 
@@ -77,7 +79,7 @@ public class RankedMatch{
         List<Long> summonerIds = new LinkedList<>();
         for(ParticipantIdentity id : participantIdentities)
             summonerIds.add(id.getPlayer().getSummonerId());
-        List<SummonerDto> summoners = api.getSummoners(summonerIds);
+        List<Summoner> summoners = api_new.getSummonersNew(summonerIds);
         for(int i = 0; i < participantIdentities.size(); i++){
             RankedPlayer player = new RankedPlayer(summoners.get(i), participants.get(i));
             players.add(player);

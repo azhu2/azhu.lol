@@ -139,6 +139,8 @@ public class RiotAPIImpl implements LeagueAPI{
     @Override
     public List<MatchSummary> getRankedMatches(long summonerId) throws RiotPlsException{
         String uri = buildUri(String.format(RANKED_QUERY, summonerId));
+        Map<String, String> params = new HashMap<>();
+        params.put("endIndex", APIConstants.RANKED_PAGE_SIZE + "");
         String entity = getEntity(uri);
 
         if(entity == null)
@@ -161,7 +163,7 @@ public class RiotAPIImpl implements LeagueAPI{
         String uri = buildUri(String.format(RANKED_QUERY, summonerId));
         Map<String, String> params = new HashMap<>();
         params.put("beginIndex", startIndex + "");
-        params.put("endIndex", (startIndex + APIConstants.MAX_PAGE_SIZE) + "");
+        params.put("endIndex", (startIndex + APIConstants.RANKED_PAGE_SIZE) + "");
         String entity = getEntity(uri, params);
 
         if(entity == null)
@@ -282,7 +284,7 @@ public class RiotAPIImpl implements LeagueAPI{
 
         try{
             MatchDetail match = mapper.readValue(entity, MatchDetail.class);
-            db.cacheMatchDetail(match);
+//            db.cacheMatchDetail(match);
             return match;
         } catch(IOException e){
             log.log(Level.SEVERE, e.getMessage(), e);

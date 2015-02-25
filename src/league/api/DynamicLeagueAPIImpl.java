@@ -125,7 +125,7 @@ public class DynamicLeagueAPIImpl implements LeagueAPI{
                         dbApi.cacheRankedMatch(summonerId, match);
                     }
                 }
-            start += APIConstants.PAGE_SIZE;
+            start += APIConstants.RANKED_PAGE_SIZE;
         } while(!apiDone && matchPage != null);
 
         return matches;
