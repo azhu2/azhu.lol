@@ -425,6 +425,7 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueAPI{
                 summoner = getSummonerFromList(riotSummoners, id);
                 cacheSummoner(summoner);
             }
+            
             results.add(summoner);
         }
         return results;
