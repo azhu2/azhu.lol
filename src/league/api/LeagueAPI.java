@@ -30,4 +30,5 @@ public interface LeagueAPI{
     public int cacheAllRankedMatches(long summonerId) throws RiotPlsException;
     public League getLeague(long summonerId) throws RiotPlsException;
     public List<League> getLeagues(List<Long> idList) throws RiotPlsException;
+    public void setInifiteRetry(boolean infinite);
 }

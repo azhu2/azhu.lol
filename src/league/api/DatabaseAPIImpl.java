@@ -613,4 +613,9 @@ public class DatabaseAPIImpl implements LeagueAPI{
     public List<League> getLeagues(List<Long> idList) throws RiotPlsException{
         return null;
     }
+
+    @Override
+    public void setInifiteRetry(boolean infinite){
+        // Do nothing
+    }
 }

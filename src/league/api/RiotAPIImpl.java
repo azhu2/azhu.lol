@@ -47,7 +47,8 @@ public class RiotAPIImpl implements LeagueAPI{
 
     private static final int MAX_ATTEMPTS = 15;
     private static final long ATTEMPT_INTERVAL = 1000;      // in ms
-
+    private boolean RETRY_INFINITE = false;
+    
     private JerseyClient client;
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -352,10 +353,14 @@ public class RiotAPIImpl implements LeagueAPI{
     private String getEntity(String uri) throws RiotPlsException{
         return getEntity(uri, null);
     }
+    
+    public void setInifiteRetry(boolean infinite){
+        RETRY_INFINITE = infinite;
+    }
 
     private String retryGetEntity(JerseyWebTarget target, int tries, long start) throws RiotPlsException{
         String uri = target.getUri().toString();
-        if(tries > MAX_ATTEMPTS){
+        if(!RETRY_INFINITE && tries > MAX_ATTEMPTS){
             log.warning(String.format("Maximum attempts for uri %s failed", uri));
             throw new RiotPlsException(APIConstants.HTTP_RATELIMIT, uri, System.currentTimeMillis() - start);
         }

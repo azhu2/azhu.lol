@@ -194,4 +194,8 @@ public class DynamicLeagueAPIImpl implements LeagueAPI{
         return riotApi.getLeagues(ids);
     }
 
+    @Override
+    public void setInifiteRetry(boolean infinite){
+        riotApi.setInifiteRetry(infinite);
+    }
 }

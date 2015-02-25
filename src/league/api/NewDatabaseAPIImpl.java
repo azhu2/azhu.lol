@@ -402,7 +402,8 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueAPI{
             Long id = itr.next();
             Summoner summoner = getSummonerNewFromId(id);
             if(summoner != null){
-                summoner.setLeague(leagues.get(index));
+                if(leagues != null)
+                    summoner.setLeague(leagues.get(index));
                 dbResults.add(summoner);
                 itr.remove();
             }
@@ -411,26 +412,30 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueAPI{
 
         if(summonerIds.isEmpty())
             return dbResults;
-        
+
         List<SummonerDto> riotResults = api_riot.getSummoners(summonerIds);
         List<League> leagueResults = api_riot.getLeagues(summonerIds);
         List<Summoner> riotSummoners = new LinkedList<>();
-        for(int i = 0; i < riotResults.size(); i++)
-            riotSummoners.add(new Summoner(riotResults.get(i), leagueResults.get(i)));
-        
+        for(int i = 0; i < riotResults.size(); i++){
+            if(leagueResults != null)
+                riotSummoners.add(new Summoner(riotResults.get(i), leagueResults.get(i)));
+            else
+                riotSummoners.add(new Summoner(riotResults.get(i), new League()));
+        }
+
         List<Summoner> results = new LinkedList<>();
-        for(long id: idsCopy){
+        for(long id : idsCopy){
             Summoner summoner = getSummonerFromList(dbResults, id);
             if(summoner == null){
                 summoner = getSummonerFromList(riotSummoners, id);
                 cacheSummoner(summoner);
             }
-            
+
             results.add(summoner);
         }
         return results;
     }
-    
+
     private Summoner getSummonerFromList(List<Summoner> list, long id){
         for(Summoner summoner : list)
             if(summoner.getId() == id)
