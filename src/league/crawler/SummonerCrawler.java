@@ -3,19 +3,19 @@ package league.crawler;
 import java.util.LinkedList;
 import java.util.List;
 
-import league.api.LeagueAPI;
 import league.api.NewDatabaseAPIImpl;
 import league.api.NewLeagueAPI;
 import league.api.RiotAPIImpl.RiotPlsException;
 import league.entities.azhu.Summoner;
 
 public class SummonerCrawler{
-    private static final long REQUEST_SIZE = 10;
+    private static final long REQUEST_SIZE = 40;
+    private static final long START_ID = 224080;
 
     public static void main(String[] args){
         NewLeagueAPI api = NewDatabaseAPIImpl.getInstance();
         api.setInifiteRetry(true);
-        long start = 0;
+        long start = START_ID;
 
         List<Summoner> summoners = null;
         do{

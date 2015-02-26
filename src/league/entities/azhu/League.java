@@ -9,10 +9,10 @@ import league.entities.MiniSeriesDto;
  * Only for solo-queue for now
  */
 public class League{
-    private String name;
-    private String queue;
-    private String tier;
-    private String division;
+    private String name = "";
+    private String queue = "";
+    private String tier = "";
+    private String division = "";
     private boolean isFreshBlood;
     private boolean isHotStreak;
     private boolean isInactive;
@@ -101,7 +101,8 @@ public class League{
     }
 
     public void setTier(String tier){
-        this.tier = tier.toLowerCase();
+        if(tier != null)
+            this.tier = tier.toLowerCase();
     }
 
     public String getDivision(){

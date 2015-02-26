@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -48,7 +49,7 @@ public class RiotAPIImpl implements LeagueAPI{
     private static final int MAX_ATTEMPTS = 15;
     private static final long ATTEMPT_INTERVAL = 1000;      // in ms
     private boolean RETRY_INFINITE = false;
-    
+
     private JerseyClient client;
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -78,8 +79,8 @@ public class RiotAPIImpl implements LeagueAPI{
             Map<String, SummonerDto> map = mapper.readValue(entity, new TypeReference<Map<String, SummonerDto>>(){
             });
             SummonerDto summoner = map.get(summonerName);
-//            summoner.setName(summoner.getName().replace(" ", ""));
-//            db.cacheSummoner(summoner);
+            // summoner.setName(summoner.getName().replace(" ", ""));
+            // db.cacheSummoner(summoner);
             return summoner;
         } catch(IOException e){
             log.log(Level.SEVERE, e.getMessage(), e);
@@ -107,8 +108,8 @@ public class RiotAPIImpl implements LeagueAPI{
             });
 
             Collection<SummonerDto> summoners = map.values();
-//            for(SummonerDto summoner : summoners)
-//                db.cacheSummoner(summoner);
+            // for(SummonerDto summoner : summoners)
+            // db.cacheSummoner(summoner);
 
             return new LinkedList<SummonerDto>(summoners);
         } catch(IOException e){
@@ -129,7 +130,7 @@ public class RiotAPIImpl implements LeagueAPI{
             Map<String, SummonerDto> map = mapper.readValue(entity, new TypeReference<Map<String, SummonerDto>>(){
             });
             SummonerDto summoner = map.get(summonerId + "");
-//            db.cacheSummoner(summoner);
+            // db.cacheSummoner(summoner);
             return summoner;
         } catch(IOException e){
             log.log(Level.SEVERE, e.getMessage(), e);
@@ -151,8 +152,8 @@ public class RiotAPIImpl implements LeagueAPI{
             PlayerHistory history = mapper.readValue(entity, PlayerHistory.class);
             if(history.getMatches() == null)
                 return null;
-//            for(MatchSummary match : history.getMatches())
-//                db.cacheRankedMatch(summonerId, match);
+            // for(MatchSummary match : history.getMatches())
+            // db.cacheRankedMatch(summonerId, match);
             return history.getMatches();
         } catch(IOException e){
             log.log(Level.SEVERE, e.getMessage(), e);
@@ -285,7 +286,7 @@ public class RiotAPIImpl implements LeagueAPI{
 
         try{
             MatchDetail match = mapper.readValue(entity, MatchDetail.class);
-//            db.cacheMatchDetail(match);
+            // db.cacheMatchDetail(match);
             return match;
         } catch(IOException e){
             log.log(Level.SEVERE, e.getMessage(), e);
@@ -311,39 +312,52 @@ public class RiotAPIImpl implements LeagueAPI{
             return null;
         }
     }
-    
-    public List<League> getLeagues(List<Long> summonerIds) throws RiotPlsException{
-        if(summonerIds == null || summonerIds.isEmpty())
+
+    public List<League> getLeagues(List<Long> idList) throws RiotPlsException{
+        if(idList == null || idList.isEmpty())
             return null;
 
-        String ids = "";
-        for(long id : summonerIds)
-            ids += id + ",";
+        List<League> leagues = new LinkedList<>();
 
-        String uri = buildUri(String.format(LEAGUE_QUERY, ids));
-        String entity = getEntity(uri);
+        List<Long> summonerIds = new LinkedList<>(idList);
+        while(!summonerIds.isEmpty()){
+            int count = 0;
+            String ids = "";
+            ListIterator<Long> itr = summonerIds.listIterator();
+            while(itr.hasNext()){
+                count++;
+                if(count > APIConstants.LEAGUES_PAGE_SIZE)
+                    break;
 
-        if(entity == null)
-            return null;
-
-        try{
-            Map<Long, List<LeagueDto>> map = mapper.readValue(entity, new TypeReference<Map<Long, List<LeagueDto>>>(){
-            });
-
-            List<League> leagues = new LinkedList<>();
-            for(Long summonerId : summonerIds){
-                List<LeagueDto> list = map.get(summonerId);
-                if(list != null)
-                    leagues.add(new League(list.get(0)));
-                else
-                    leagues.add(new League(new LeagueDto()));
+                long id = itr.next();
+                itr.remove();
+                ids += id + ",";
             }
 
-            return leagues;
-        } catch(IOException e){
-            log.log(Level.SEVERE, e.getMessage(), e);
-            return null;
+            String uri = buildUri(String.format(LEAGUE_QUERY, ids));
+            String entity = getEntity(uri);
+
+            if(entity == null)
+                return null;
+
+            try{
+                Map<Long, List<LeagueDto>> map = mapper.readValue(entity,
+                    new TypeReference<Map<Long, List<LeagueDto>>>(){
+                    });
+
+                for(Long summonerId : summonerIds){
+                    List<LeagueDto> list = map.get(summonerId);
+                    if(list != null)
+                        leagues.add(new League(list.get(0)));
+                    else
+                        leagues.add(new League(new LeagueDto()));
+                }
+
+            } catch(IOException e){
+                log.log(Level.SEVERE, e.getMessage(), e);
+            }
         }
+        return leagues;
     }
 
     private static String buildUri(String method){
@@ -353,7 +367,7 @@ public class RiotAPIImpl implements LeagueAPI{
     private String getEntity(String uri) throws RiotPlsException{
         return getEntity(uri, null);
     }
-    
+
     public void setInifiteRetry(boolean infinite){
         RETRY_INFINITE = infinite;
     }
@@ -392,7 +406,7 @@ public class RiotAPIImpl implements LeagueAPI{
         String uriStr = target.getUri().toString();
         int status = response.getStatus();
         long time = System.currentTimeMillis() - start;
-        
+
         if(status == APIConstants.HTTP_OK){
             log.info("Success for uri " + uriStr + " in " + time + " ms.");
             return response.readEntity(String.class);
@@ -413,7 +427,7 @@ public class RiotAPIImpl implements LeagueAPI{
         private int status;
         private String message;
         private String uriStr;
-        
+
         public RiotPlsException(int statusCode, String uri, long time){
             status = statusCode;
             uriStr = uri;
@@ -423,7 +437,8 @@ public class RiotAPIImpl implements LeagueAPI{
         private void setMessage(long time){
             switch(status){
                 case APIConstants.HTTP_UNAUTHORIZED:
-                    message = "401 Unauthorized - did you forget the API key? | URI: " + uriStr + " in " + time + " ms.";
+                    message = "401 Unauthorized - did you forget the API key? | URI: " + uriStr + " in " + time
+                            + " ms.";
                     break;
                 case APIConstants.HTTP_NOT_FOUND:
                     message = "404 Not found | URI: " + uriStr;
