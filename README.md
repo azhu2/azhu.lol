@@ -2,8 +2,10 @@
 
 Teaching myself front-end stuff by making a website for lol match history and statistics similar to lolking.
 
-StacK:
-AngularJS
-JAX-RS
-Java
-mySQL
+Stack:
+<ul>
+<li>AngularJS</li>
+<li>JAX-RS</li>
+<li>Java</li>
+<li>mySQL</li>
+</ul>
