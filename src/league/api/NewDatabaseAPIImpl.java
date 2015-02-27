@@ -402,7 +402,7 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueAPI{
             Long id = itr.next();
             Summoner summoner = getSummonerNewFromId(id);
             if(summoner != null){
-                if(leagues != null)
+                if(leagues != null && !leagues.isEmpty())
                     summoner.setLeague(leagues.get(index));
                 dbResults.add(summoner);
                 itr.remove();
@@ -417,7 +417,7 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueAPI{
         List<League> leagueResults = api_riot.getLeagues(summonerIds);
         List<Summoner> riotSummoners = new LinkedList<>();
         for(int i = 0; i < riotResults.size(); i++){
-            if(leagueResults != null)
+            if(leagueResults != null && !leagueResults.isEmpty())
                 riotSummoners.add(new Summoner(riotResults.get(i), leagueResults.get(i)));
             else
                 riotSummoners.add(new Summoner(riotResults.get(i), new League()));
