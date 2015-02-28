@@ -317,6 +317,7 @@ public class RiotAPIImpl implements LeagueAPI{
         if(idList == null || idList.isEmpty())
             return null;
 
+        List<Long> idsCopy = new LinkedList<>(idList);
         List<League> leagues = new LinkedList<>();
 
         List<Long> summonerIds = new LinkedList<>(idList);
@@ -345,7 +346,7 @@ public class RiotAPIImpl implements LeagueAPI{
                     new TypeReference<Map<Long, List<LeagueDto>>>(){
                     });
 
-                for(Long summonerId : summonerIds){
+                for(Long summonerId : idsCopy){
                     List<LeagueDto> list = map.get(summonerId);
                     if(list != null)
                         leagues.add(new League(list.get(0)));

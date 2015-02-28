@@ -27,4 +27,8 @@ public class Summoner extends SummonerDto{
         this.league = league;
     }
 
+    @Override
+    public String toString(){
+        return super.toString() + " | " + league.getTier() + " " + league.getDivision();
+    }
 }

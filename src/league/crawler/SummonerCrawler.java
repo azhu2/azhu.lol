@@ -19,6 +19,7 @@ import league.entities.azhu.Summoner;
 public class SummonerCrawler{
     private static final long REQUEST_SIZE = 40;
     private static final long START_ID = 224080;
+    private static final long SUMMONER_SEARCH_COUNT = 100000;
     private static final long SEED_SUMMONER_ID = 49159160;
     private static Logger log = Logger.getLogger(SummonerCrawler.class.getName());
 
@@ -35,10 +36,8 @@ public class SummonerCrawler{
         api.setInifiteRetry(true);
 
         summoners.add(SEED_SUMMONER_ID);
-        while(true){
+        while(summoners.size() < SUMMONER_SEARCH_COUNT){
             try{
-                if(summoners.isEmpty())
-                    return;
                 long summonerId = summoners.remove();
                 
                 Set<GameDto> history = api_dynamic.getMatchHistoryAll(summonerId);
