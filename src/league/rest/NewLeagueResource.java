@@ -116,7 +116,7 @@ public class NewLeagueResource extends LeagueResource{
 
             List<MatchSummary> matchPage = null;
             do{
-                matchPage = api_riot.getRankedMatches(summonerId, start);
+                matchPage = api_riot.getRankedMatches(summonerId, start, APIConstants.MAX_PAGE_SIZE);
                 if(matchPage != null)
                     for(MatchSummary matchSummary : matchPage){
                         long matchId = matchSummary.getMatchId();

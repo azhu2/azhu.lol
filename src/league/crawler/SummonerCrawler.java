@@ -14,13 +14,15 @@ import league.api.NewLeagueAPI;
 import league.api.RiotAPIImpl.RiotPlsException;
 import league.entities.GameDto;
 import league.entities.PlayerDto;
+import league.entities.azhu.RankedMatch;
+import league.entities.azhu.RankedPlayer;
 import league.entities.azhu.Summoner;
 
 public class SummonerCrawler{
     private static final long REQUEST_SIZE = 40;
-    private static final long START_ID = 224080;
-    private static final long SUMMONER_SEARCH_COUNT = 100000;
-    private static final long SEED_SUMMONER_ID = 49159160;
+    private static final long START_ID = 0;
+    private static final long SUMMONER_SEARCH_COUNT = 10000;
+    private static final long SEED_SUMMONER_ID = 31569637;
     private static Logger log = Logger.getLogger(SummonerCrawler.class.getName());
 
     public static void main(String[] args){
@@ -39,35 +41,59 @@ public class SummonerCrawler{
         while(summoners.size() < SUMMONER_SEARCH_COUNT){
             try{
                 long summonerId = summoners.remove();
+
                 
-                Set<GameDto> history = api_dynamic.getMatchHistoryAll(summonerId);
-                
-                if(history == null)
-                    continue;
-                for(GameDto game : history){
-                    long gameId = game.getGameId();
-                    if(!matchesSeen.contains(gameId)){
-                        matchesSeen.add(gameId);
-                        List<PlayerDto> players = game.getFellowPlayers();
-                        List<Long> ids = new LinkedList<>();
-                        
-                        if(players == null)
-                            continue;
-                        for(PlayerDto player : players){
-                            long playerId = player.getSummonerId();
-                            if(!summonersSeen.contains(playerId)){
-                                summonersSeen.add(playerId);
-                                summoners.add(playerId);
-                                ids.add(playerId);
-                                log.info(playerId + " added");
+                List<RankedMatch> rankedHistory = api.getRankedMatchesAll(summonerId);                
+                if(rankedHistory != null){
+                    for(RankedMatch match : rankedHistory){
+                        long gameId = match.getMatchId();
+                        if(!matchesSeen.contains(gameId)){
+                            matchesSeen.add(gameId);
+                            List<RankedPlayer> players = match.getPlayers();
+                            List<Long> ids = new LinkedList<>();
+
+                            if(players == null)
+                                continue;
+                            for(RankedPlayer player : players){
+                                long playerId = player.getSummoner().getId();
+                                if(!summonersSeen.contains(playerId)){
+                                    summonersSeen.add(playerId);
+                                    summoners.add(playerId);
+                                    ids.add(playerId);
+                                    log.info(playerId + " added (" + summonersSeen.size() + ")");
+                                } else
+                                    log.info(playerId + " already seen");
                             }
-                            else
-                                log.info(playerId + " already seen");
+                            api.getSummonersNew(ids);
                         }
-                        api.getSummonersNew(ids);
                     }
                 }
+                
+                Set<GameDto> history = api_dynamic.getMatchHistoryAll(summonerId);
+                if(history != null){
+                    for(GameDto game : history){
+                        long gameId = game.getGameId();
+                        if(!matchesSeen.contains(gameId)){
+                            matchesSeen.add(gameId);
+                            List<PlayerDto> players = game.getFellowPlayers();
+                            List<Long> ids = new LinkedList<>();
 
+                            if(players == null)
+                                continue;
+                            for(PlayerDto player : players){
+                                long playerId = player.getSummonerId();
+                                if(!summonersSeen.contains(playerId)){
+                                    summonersSeen.add(playerId);
+                                    summoners.add(playerId);
+                                    ids.add(playerId);
+                                    log.info(playerId + " added (" + summonersSeen.size() + ")");
+                                } else
+                                    log.info(playerId + " already seen");
+                            }
+                            api.getSummonersNew(ids);
+                        }
+                    }
+                }
             } catch(RiotPlsException e){
                 e.printStackTrace();
             }

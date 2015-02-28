@@ -161,11 +161,11 @@ public class RiotAPIImpl implements LeagueAPI{
         }
     }
 
-    public List<MatchSummary> getRankedMatches(long summonerId, int startIndex) throws RiotPlsException{
+    public List<MatchSummary> getRankedMatches(long summonerId, int startIndex, int page_size) throws RiotPlsException{
         String uri = buildUri(String.format(RANKED_QUERY, summonerId));
         Map<String, String> params = new HashMap<>();
         params.put("beginIndex", startIndex + "");
-        params.put("endIndex", (startIndex + APIConstants.RANKED_PAGE_SIZE) + "");
+        params.put("endIndex", (startIndex + page_size) + "");
         String entity = getEntity(uri, params);
 
         if(entity == null)
@@ -178,6 +178,10 @@ public class RiotAPIImpl implements LeagueAPI{
             log.log(Level.SEVERE, e.getMessage(), e);
             return null;
         }
+    }    
+    
+    public List<MatchSummary> getRankedMatches(long summonerId, int startIndex) throws RiotPlsException{
+        return getRankedMatches(summonerId, startIndex, APIConstants.RANKED_PAGE_SIZE);
     }
 
     /**
