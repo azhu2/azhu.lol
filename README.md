@@ -5,7 +5,7 @@ Teaching myself front-end stuff by making a website for lol match history and st
 Stack:
 <ul>
 <li>AngularJS</li>
-<li>JAX-RS</li>
+<li>Jersey</li>
 <li>Java</li>
 <li>mySQL</li>
 </ul>
