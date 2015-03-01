@@ -85,7 +85,7 @@ public class NewLeagueResource extends LeagueResource{
                 RankedMatch match = api.getRankedMatch(matchId, summonerId);
                 if(match == null){
                     MatchDetail detail = api_dynamic.getMatchDetail(matchId);
-                    match = new RankedMatch(detail, summonerId);
+                    match = new RankedMatch(detail, summonerId, false);
                 }
                 matches.add(match);
                 
@@ -127,7 +127,7 @@ public class NewLeagueResource extends LeagueResource{
                         RankedMatch match = api.getRankedMatch(matchId, summonerId);
                         if(match == null){
                             MatchDetail detail = api_dynamic.getMatchDetail(matchId);
-                            match = new RankedMatch(detail, summonerId);
+                            match = new RankedMatch(detail, summonerId, false);
                             api.cacheRankedMatch(match);
                         }
                         count++;

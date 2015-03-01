@@ -393,11 +393,18 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueAPI{
 
     @Override
     public List<Summoner> getSummonersNew(List<Long> summonerIds) throws RiotPlsException{
+        return getSummonersNew(summonerIds, true);
+    }
+    
+    @Override
+    public List<Summoner> getSummonersNew(List<Long> summonerIds, boolean cache) throws RiotPlsException{
         List<Summoner> dbResults = new LinkedList<>();
         List<Long> idsCopy = new LinkedList<>(summonerIds);
 
         try{
-            List<League> leagues = api_riot.getLeagues(summonerIds);
+            List<League> leagues = null;
+            if(cache)
+                leagues = api_riot.getLeagues(summonerIds);
             ListIterator<Long> itr = summonerIds.listIterator();
             int index = 0;
             while(itr.hasNext()){

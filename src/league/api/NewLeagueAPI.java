@@ -21,4 +21,5 @@ public interface NewLeagueAPI extends LeagueAPI{
     public Summoner searchSummonerNew(String summonerName) throws RiotPlsException;
     public void cacheSummoner(Summoner summoner);
     public void cacheRankedMatches(List<RankedMatch> matches);
+    List<Summoner> getSummonersNew(List<Long> summonerIds, boolean cache) throws RiotPlsException;
 }

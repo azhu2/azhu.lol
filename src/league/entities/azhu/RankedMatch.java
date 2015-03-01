@@ -71,7 +71,7 @@ public class RankedMatch{
     }
 
     private void processPlayers(List<ParticipantIdentity> participantIdentities, List<Participant> participants,
-            long summonerId) throws RiotPlsException{
+            long summonerId, boolean cache) throws RiotPlsException{
         players = new LinkedList<>();
         bluePlayers = new LinkedList<>();
         redPlayers = new LinkedList<>();
@@ -79,7 +79,7 @@ public class RankedMatch{
         List<Long> summonerIds = new LinkedList<>();
         for(ParticipantIdentity id : participantIdentities)
             summonerIds.add(id.getPlayer().getSummonerId());
-        List<Summoner> summoners = api_new.getSummonersNew(summonerIds);
+        List<Summoner> summoners = api_new.getSummonersNew(summonerIds, cache);
         for(int i = 0; i < participantIdentities.size(); i++){
             RankedPlayer player = new RankedPlayer(summoners.get(i), participants.get(i));
             players.add(player);
@@ -109,6 +109,10 @@ public class RankedMatch{
     }
 
     public RankedMatch(MatchDetail detail, long summonerId) throws RiotPlsException{
+        this(detail, summonerId, true);
+    }
+
+    public RankedMatch(MatchDetail detail, long summonerId, boolean cache) throws RiotPlsException{
         this.mapId = detail.getMapId();
         this.matchCreation = detail.getMatchCreation();
         this.matchDuration = detail.getMatchDuration();
@@ -123,7 +127,7 @@ public class RankedMatch{
         this.teams = detail.getTeams();
         this.summonerId = summonerId;
 
-        processPlayers(detail.getParticipantIdentities(), detail.getParticipants(), summonerId);
+        processPlayers(detail.getParticipantIdentities(), detail.getParticipants(), summonerId, cache);
         processBans(detail.getTeams());
     }
 
