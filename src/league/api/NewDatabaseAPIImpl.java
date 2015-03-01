@@ -81,8 +81,9 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueAPI{
         try{
             Statement stmt = db.createStatement();
             String sql;
-            sql = String.format("SELECT COUNT(*) AS rowCount FROM ranked_matches_new WHERE " + "matchId = %d",
-                match.getMatchId());
+            sql = String.format(
+                "SELECT COUNT(*) AS rowCount FROM ranked_matches_new WHERE matchId = %d AND summonerId = %d",
+                match.getMatchId(), match.getQueryPlayer().getSummoner().getId());
 
             Pair<ResultSet, Long> results = runQuery(stmt, sql);
             ResultSet rs = results.getLeft();

@@ -309,4 +309,7 @@ public class RankedMatch{
         return true;
     }
 
+    public RankedPlayer getQueryPlayer(){
+        return players.get(lookupPlayer);
+    }
 }
