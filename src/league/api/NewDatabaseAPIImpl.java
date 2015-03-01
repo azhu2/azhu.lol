@@ -411,7 +411,7 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueAPI{
                 index++;
             }
         } catch(RiotPlsException e){
-            e.printStackTrace();
+            log.warning(e.getMessage());
         }
 
         if(summonerIds.isEmpty())
