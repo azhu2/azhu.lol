@@ -443,7 +443,7 @@ public class RiotAPIImpl implements LeagueAPI{
             switch(status){
                 case APIConstants.HTTP_UNAUTHORIZED:
                     message = "401 Unauthorized - did you forget the API key? | URI: " + uriStr + " in " + time
-                            + " ms.";
+                            + " ms.\n";
                     break;
                 case APIConstants.HTTP_NOT_FOUND:
                     message = "404 Not found | URI: " + uriStr;

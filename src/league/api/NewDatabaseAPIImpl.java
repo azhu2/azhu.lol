@@ -418,7 +418,12 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueAPI{
             return dbResults;
 
         List<SummonerDto> riotResults = api_riot.getSummoners(summonerIds);
-        List<League> leagueResults = api_riot.getLeagues(summonerIds);
+        List<League> leagueResults = null;
+        try{
+            leagueResults = api_riot.getLeagues(summonerIds);
+        } catch(RiotPlsException e){
+            log.warning(e.getMessage());
+        }
         List<Summoner> riotSummoners = new LinkedList<>();
         for(int i = 0; i < riotResults.size(); i++){
             if(leagueResults != null && !leagueResults.isEmpty())

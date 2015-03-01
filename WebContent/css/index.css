@@ -1,5 +1,9 @@
+html,
 body {
 	background: #e9eaed;
+	margin: 0;
+	padding: 0;
+	height: 100%;
 }
 
 #title {
@@ -48,4 +52,32 @@ a {
 
 .rank_challenger {
 	background-color: #DDCC33;
+}
+
+#wrapper {
+	position: relative;
+	min-height: 100%;
+}
+
+#content {
+	padding-bottom: 100px;
+}
+
+#footer {
+	font-size: 0.75em;
+	padding-left: 0.5%;
+	padding-right: 0.5%;
+	padding-bottom: 10px;
+	padding-top: 10px;
+	background-color: #DDDDDD;
+	width: 99%;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	margin-top: 24px;
+	border-top: 1px solid #888888;
+}
+
+#footer #terms {
+	margin-top: 5px;
 }

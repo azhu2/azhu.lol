@@ -14,46 +14,59 @@
 </head>
 <body ng-app="leagueApp">
 
-	<h1 id="title">
-		<a href="index.html">Zedenstein's League Analysis</a>
-	</h1>
-
-	<div id="lookupSummoner" ng-controller="lookupController">
-		<form ng-submit="lookup()">
-			Find summoner <input type="text" ng-model="summonerName">
-			<button>Submit</button>
-		</form>
-
-		<div id="lookupResults" ng-show="showLookupResults">
-			<div id="panels">
-				<div id="panelSelector">
-					<div id="summaryData">
-						<img id="summonerIcon" alt="{{ summoner.id == null ? 'summoner icon' : 'summoner icon ' + summoner.profileIconId }}"
-							ng-src="{{ summoner.id == null ? '' : 'http://ddragon.leagueoflegends.com/cdn/' + version + '/img/profileicon/' + summoner.profileIconId + '.png' }}">
-						<div id="summonerData">
-							<a id="summonerName" ng-href="#{{ summoner.id }}">
-								{{ summoner.id == null ? 'Not Found' : summoner.name }}
-							</a>
-							<div id="summonerLevel">
-								Level {{ summoner.id == null ? '--' : summoner.summonerLevel }}
+	<div id="wrapper">
+		<div id="content">
+			<h1 id="title">
+				<a href="index.html">Zedenstein's League Analysis</a>
+			</h1>
+		
+			<div id="lookupSummoner" ng-controller="lookupController">
+				<form ng-submit="lookup()">
+					Find summoner <input type="text" ng-model="summonerName">
+					<button>Submit</button>
+				</form>
+		
+				<div id="lookupResults" ng-show="showLookupResults">
+					<div id="panels">
+						<div id="panelSelector">
+							<div id="summaryData">
+								<img id="summonerIcon" alt="{{ summoner.id == null ? 'summoner icon' : 'summoner icon ' + summoner.profileIconId }}"
+									ng-src="{{ summoner.id == null ? '' : 'http://ddragon.leagueoflegends.com/cdn/' + version + '/img/profileicon/' + summoner.profileIconId + '.png' }}">
+								<div id="summonerData">
+									<a id="summonerName" ng-href="#{{ summoner.id }}">
+										{{ summoner.id == null ? 'Not Found' : summoner.name }}
+									</a>
+									<div id="summonerLevel">
+										Level {{ summoner.id == null ? '--' : summoner.summonerLevel }}
+									</div>
+									<div id="summonerRank" class="rank rank_{{ summoner.league.tier }}">
+											{{ summoner.league == null ? 'UNRANKED' : summoner.league.tier + ' ' + summoner.league.division }}
+									</div>
+								</div>
 							</div>
-							<div id="summonerRank" class="rank rank_{{ summoner.league.tier }}">
-									{{ summoner.league == null ? 'UNRANKED' : summoner.league.tier + ' ' + summoner.league.division }}
+		
+							<div id="panelOptions">
+								<a ng-href="#{{ summoner.id }}/matches" ng-click="lookupMatches(summoner.id)">Match History</a>
+								<a ng-href="#{{ summoner.id }}/ranked" ng-click="lookupRanked(summoner.id)">Ranked Matches</a>
 							</div>
 						</div>
 					</div>
-
-					<div id="panelOptions">
-						<a ng-href="#{{ summoner.id }}/matches" ng-click="lookupMatches(summoner.id)">Match History</a>
-						<a ng-href="#{{ summoner.id }}/ranked" ng-click="lookupRanked(summoner.id)">Ranked Matches</a>
+		
+					<div id="main" class="panel">
+						<div ng-view></div>
 					</div>
 				</div>
 			</div>
-
-			<div id="main" class="panel">
-				<div ng-view></div>
-			</div>
 		</div>
+		
+		<footer id="footer">
+			<div id="info">
+				© 2014 <a href="http://www.linkedin.com/in/alextzhu">Alexander Zhu</a>
+			</div>
+			<div id="terms">
+				This application isn't endorsed by Riot Games and doesn't reflect the views or opinions of Riot Games or anyone officially involved in producing or managing League of Legends. League of Legends and Riot Games are trademarks or registered trademarks of Riot Games, Inc. League of Legends © Riot Games, Inc.
+			</div>
+		</footer>
 	</div>
 
 	<script src="js/leagueController.js"></script>
