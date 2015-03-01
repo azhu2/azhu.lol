@@ -54,7 +54,7 @@ public class SummaryData{
             wins++;
         else
             losses++;
-        timePlayed += stats.getTimePlayed();
+        timePlayed += match.getMatchDuration();
         kills += stats.getKills();
         deaths += stats.getDeaths();
         assists += stats.getAssists();

@@ -3,6 +3,7 @@ package league.rest;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.ServletException;
@@ -15,12 +16,15 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import league.analysis.RankedAnalysis;
+import league.analysis.SummaryData;
 import league.api.APIConstants;
 import league.api.DynamicLeagueAPIImpl;
 import league.api.NewDatabaseAPIImpl;
 import league.api.NewLeagueAPI;
 import league.api.RiotAPIImpl;
 import league.api.RiotAPIImpl.RiotPlsException;
+import league.entities.ChampionDto;
 import league.entities.GameDto;
 import league.entities.MatchDetail;
 import league.entities.MatchSummary;
@@ -226,5 +230,15 @@ public class NewLeagueResource extends LeagueResource{
         } catch(RiotPlsException e){
             return Response.status(e.getStatus()).entity(e.getMessage()).build();
         }
+    }
+    
+    @GET
+    @Path("/ranked-stats/champions/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getRankedStatsByChampion(@PathParam("id") long summonerId) throws ServletException, IOException{
+        List<RankedMatch> matches = api.getRankedMatchesAll(summonerId);
+        Map<ChampionDto, SummaryData> champData = RankedAnalysis.getChampData(matches);
+        return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(champData)).build();
+        
     }
 }
