@@ -189,6 +189,8 @@ public class NewLeagueResource extends LeagueResource{
     public Response getSummoner(@PathParam("name") String name) throws ServletException, IOException{
         try{
             SummonerDto summ = api_riot.searchSummoner(name);
+            if(summ == null)
+                return null;
             League league = api_riot.getLeague(summ.getId());
             Summoner summoner = new Summoner(summ, league);
             api.cacheSummoner(summoner);
