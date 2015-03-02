@@ -1,5 +1,11 @@
 package league.entities;
 
+import java.util.logging.Logger;
+
+import league.api.DynamicLeagueAPIImpl;
+import league.api.LeagueAPI;
+import league.api.RiotAPIImpl.RiotPlsException;
+
 public class ParticipantStats{
     private long assists;
     private long champLevel;
@@ -15,6 +21,13 @@ public class ParticipantStats{
     private long goldEarned;
     private long goldSpent;
     private long inhibitorKills;
+    private ItemDto itemDto0;
+    private ItemDto itemDto1;
+    private ItemDto itemDto2;
+    private ItemDto itemDto3;
+    private ItemDto itemDto4;
+    private ItemDto itemDto5;
+    private ItemDto itemDto6;
     private long item0;
     private long item1;
     private long item2;
@@ -65,6 +78,9 @@ public class ParticipantStats{
     private long wardsKilled;
     private long wardsPlaced;
     private boolean winner;
+
+    private static LeagueAPI api = DynamicLeagueAPIImpl.getInstance();
+    private static Logger log = Logger.getLogger(ParticipantStats.class.getName());
 
     public long getAssists(){
         return assists;
@@ -176,62 +192,6 @@ public class ParticipantStats{
 
     public void setInhibitorKills(long inhibitorKills){
         this.inhibitorKills = inhibitorKills;
-    }
-
-    public long getItem0(){
-        return item0;
-    }
-
-    public void setItem0(long item0){
-        this.item0 = item0;
-    }
-
-    public long getItem1(){
-        return item1;
-    }
-
-    public void setItem1(long item1){
-        this.item1 = item1;
-    }
-
-    public long getItem2(){
-        return item2;
-    }
-
-    public void setItem2(long item2){
-        this.item2 = item2;
-    }
-
-    public long getItem3(){
-        return item3;
-    }
-
-    public void setItem3(long item3){
-        this.item3 = item3;
-    }
-
-    public long getItem4(){
-        return item4;
-    }
-
-    public void setItem4(long item4){
-        this.item4 = item4;
-    }
-
-    public long getItem5(){
-        return item5;
-    }
-
-    public void setItem5(long item5){
-        this.item5 = item5;
-    }
-
-    public long getItem6(){
-        return item6;
-    }
-
-    public void setItem6(long item6){
-        this.item6 = item6;
     }
 
     public long getKillingSprees(){
@@ -576,5 +536,159 @@ public class ParticipantStats{
 
     public void setWinner(boolean winner){
         this.winner = winner;
+    }
+
+    public ItemDto getItemDto0(){
+        return itemDto0;
+    }
+
+    public void setItemDto0(ItemDto itemDto0){
+        this.itemDto0 = itemDto0;
+    }
+
+    public ItemDto getItemDto1(){
+        return itemDto1;
+    }
+
+    public void setItemDto1(ItemDto itemDto1){
+        this.itemDto1 = itemDto1;
+    }
+
+    public ItemDto getItemDto2(){
+        return itemDto2;
+    }
+
+    public void setItemDto2(ItemDto itemDto2){
+        this.itemDto2 = itemDto2;
+    }
+
+    public ItemDto getItemDto3(){
+        return itemDto3;
+    }
+
+    public void setItemDto3(ItemDto itemDto3){
+        this.itemDto3 = itemDto3;
+    }
+
+    public ItemDto getItemDto4(){
+        return itemDto4;
+    }
+
+    public void setItemDto4(ItemDto itemDto4){
+        this.itemDto4 = itemDto4;
+    }
+
+    public ItemDto getItemDto5(){
+        return itemDto5;
+    }
+
+    public void setItemDto5(ItemDto itemDto5){
+        this.itemDto5 = itemDto5;
+    }
+
+    public ItemDto getItemDto6(){
+        return itemDto6;
+    }
+
+    public void setItemDto6(ItemDto itemDto6){
+        this.itemDto6 = itemDto6;
+    }
+
+    public long getItem0(){
+        return item0;
+    }
+
+    public void setItem0(long item0){
+        this.item0 = item0;
+
+        try{
+            this.itemDto0 = api.getItem(item0);
+        } catch(RiotPlsException e){
+            log.warning(e.getMessage());
+        }
+    }
+
+    public long getItem1(){
+        return item1;
+    }
+
+    public void setItem1(long item1){
+        this.item1 = item1;
+
+        try{
+            this.itemDto1 = api.getItem(item1);
+        } catch(RiotPlsException e){
+            log.warning(e.getMessage());
+        }
+    }
+
+    public long getItem2(){
+        return item2;
+    }
+
+    public void setItem2(long item2){
+        this.item2 = item2;
+
+        try{
+            this.itemDto2 = api.getItem(item2);
+        } catch(RiotPlsException e){
+            log.warning(e.getMessage());
+        }
+    }
+
+    public long getItem3(){
+        return item3;
+    }
+
+    public void setItem3(long item3){
+        this.item3 = item3;
+
+        try{
+            this.itemDto3 = api.getItem(item3);
+        } catch(RiotPlsException e){
+            log.warning(e.getMessage());
+        }
+    }
+
+    public long getItem4(){
+        return item4;
+    }
+
+    public void setItem4(long item4){
+        this.item4 = item4;
+
+        try{
+            this.itemDto4 = api.getItem(item4);
+        } catch(RiotPlsException e){
+            log.warning(e.getMessage());
+        }
+    }
+
+    public long getItem5(){
+        return item5;
+    }
+
+    public void setItem5(long item5){
+        this.item5 = item5;
+
+        try{
+            this.itemDto5 = api.getItem(item5);
+        } catch(RiotPlsException e){
+            log.warning(e.getMessage());
+        }
+    }
+
+    public long getItem6(){
+        return item6;
+    }
+
+    public void setItem6(long item6){
+        this.item6 = item6;
+
+        try{
+            this.itemDto6 = api.getItem(item6);
+        } catch(RiotPlsException e){
+            log.warning(e.getMessage());
+        }
     }
 }
