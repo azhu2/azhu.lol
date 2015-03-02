@@ -1,82 +1,82 @@
 package league.entities;
 
 public class RawStatsDto{
-    private int assists;
-    private int barracksKilled;
-    private int championsKilled;
-    private int combatPlayerScore;
-    private int comsumablesPurchased;
-    private int damageDealtPlayer;
-    private int doubleKills;
-    private int firstBlood;
-    private int gold;
-    private int goldEarned;
-    private int goldSpent;
-    private int item0;
-    private int item1;
-    private int item2;
-    private int item3;
-    private int item4;
-    private int item5;
-    private int item6;
-    private int itemsPurchased;
-    private int killingSprees;
-    private int largestCriticalStrike;
-    private int largestKillingSpree;
-    private int largestMultiKill;
-    private int legendaryItemsCreated;
-    private int level;
-    private int magicDamageDealtPlayer;
-    private int magicDamageDealtToChampions;
-    private int magicDamageTaken;
-    private int minionsDenied;
-    private int minionsKilled;
-    private int neutralMinionsKilled;
-    private int neutralMinionsKilledEnemyJungle;
-    private int neutralMinionsKilledYourJungle;
-    private boolean nexusKilled;
-    private int nodeCapture;
-    private int nodeCaptureAssist;
-    private int nodeNeutralize;
-    private int nodeNeutralizeAssist;
-    private int numDeaths;
-    private int numItemsBought;
-    private int objectivePlayerScore;
-    private int pentakills;
-    private int physicalDamageDealtPlayer;
-    private int physicalDamageDealtToChampions;
-    private int physicalDamageTaken;
-    private int quadrakills;
-    private int sightWardsBought;
-    private int spell1Cast;
-    private int spell2Cast;
-    private int spell3Cast;
-    private int spell4Cast;
-    private int summonSpell1Cast;
-    private int summonSpell2Cast;
-    private int superMonsterKilled;
-    private int team;
-    private int teamObjective;
-    private int timePlayed;
-    private int totalDamageDealt;
-    private int totalDamageDealtToChampions;
-    private int totalDamageTaken;
-    private int totalHeal;
-    private int totalPlayerScore;
-    private int totalScoreRank;
-    private int totalTimeCrowdControlDealt;
-    private int totalUnitsHealed;
-    private int triplekills;
-    private int trueDamageDealtPlayer;
-    private int trueDamageDealtToChampions;
-    private int trueDamageTaken;
-    private int turretsKilled;
-    private int unrealKills;
-    private int victoryPointTotal;
-    private int visionWardsBought;
-    private int wardKilled;
-    private int wardPlaced;
-    private boolean win;
+    protected int assists;
+    protected int barracksKilled;
+    protected int championsKilled;
+    protected int combatPlayerScore;
+    protected int consumablesPurchased;
+    protected int damageDealtPlayer;
+    protected int doubleKills;
+    protected int firstBlood;
+    protected int gold;
+    protected int goldEarned;
+    protected int goldSpent;
+    protected int item0;
+    protected int item1;
+    protected int item2;
+    protected int item3;
+    protected int item4;
+    protected int item5;
+    protected int item6;
+    protected int itemsPurchased;
+    protected int killingSprees;
+    protected int largestCriticalStrike;
+    protected int largestKillingSpree;
+    protected int largestMultiKill;
+    protected int legendaryItemsCreated;
+    protected int level;
+    protected int magicDamageDealtPlayer;
+    protected int magicDamageDealtToChampions;
+    protected int magicDamageTaken;
+    protected int minionsDenied;
+    protected int minionsKilled;
+    protected int neutralMinionsKilled;
+    protected int neutralMinionsKilledEnemyJungle;
+    protected int neutralMinionsKilledYourJungle;
+    protected boolean nexusKilled;
+    protected int nodeCapture;
+    protected int nodeCaptureAssist;
+    protected int nodeNeutralize;
+    protected int nodeNeutralizeAssist;
+    protected int numDeaths;
+    protected int numItemsBought;
+    protected int objectivePlayerScore;
+    protected int pentakills;
+    protected int physicalDamageDealtPlayer;
+    protected int physicalDamageDealtToChampions;
+    protected int physicalDamageTaken;
+    protected int quadrakills;
+    protected int sightWardsBought;
+    protected int spell1Cast;
+    protected int spell2Cast;
+    protected int spell3Cast;
+    protected int spell4Cast;
+    protected int summonSpell1Cast;
+    protected int summonSpell2Cast;
+    protected int superMonsterKilled;
+    protected int team;
+    protected int teamObjective;
+    protected int timePlayed;
+    protected int totalDamageDealt;
+    protected int totalDamageDealtToChampions;
+    protected int totalDamageTaken;
+    protected int totalHeal;
+    protected int totalPlayerScore;
+    protected int totalScoreRank;
+    protected int totalTimeCrowdControlDealt;
+    protected int totalUnitsHealed;
+    protected int triplekills;
+    protected int trueDamageDealtPlayer;
+    protected int trueDamageDealtToChampions;
+    protected int trueDamageTaken;
+    protected int turretsKilled;
+    protected int unrealKills;
+    protected int victoryPointTotal;
+    protected int visionWardsBought;
+    protected int wardKilled;
+    protected int wardPlaced;
+    protected boolean win;
 
     public int getAssists(){
         return assists;
@@ -110,12 +110,12 @@ public class RawStatsDto{
         this.combatPlayerScore = combatPlayerScore;
     }
 
-    public int getComsumablesPurchased(){
-        return comsumablesPurchased;
+    public int getConsumablesPurchased(){
+        return consumablesPurchased;
     }
 
-    public void setComsumablesPurchased(int comsumablesPurchased){
-        this.comsumablesPurchased = comsumablesPurchased;
+    public void setConsumablesPurchased(int consumablesPurchased){
+        this.consumablesPurchased = consumablesPurchased;
     }
 
     public int getDamageDealtPlayer(){

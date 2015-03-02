@@ -6,6 +6,7 @@ import java.util.Set;
 import league.api.RiotAPIImpl.RiotPlsException;
 import league.entities.ChampionDto;
 import league.entities.GameDto;
+import league.entities.ItemDto;
 import league.entities.MatchDetail;
 import league.entities.MatchSummary;
 import league.entities.SummonerDto;
@@ -31,4 +32,5 @@ public interface LeagueAPI{
     public League getLeague(long summonerId) throws RiotPlsException;
     public List<League> getLeagues(List<Long> idList) throws RiotPlsException;
     public void setInifiteRetry(boolean infinite);
+    public ItemDto getItem(long itemId) throws RiotPlsException;
 }

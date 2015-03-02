@@ -42,20 +42,20 @@
 
 				<div class="bottomRow">
 					<div class="items">
-						<img class="item item0" alt="{{ (match.stats.item0 === 0 || match.stats == null) ? 'item' : 'item ' +  match.stats.item0 }}" 
-							ng-src="{{ (match.stats.item0 === 0 || match.stats == null) ? 'img/item_0.png' : 'http://ddragon.leagueoflegends.com/cdn/' + version + '/img/item/' + match.stats.item0 + '.png' }}">
-						<img class="item item1" alt="{{ (match.stats.item1 === 0 || match.stats == null) ? 'item' : 'item ' +  match.stats.item1 }}"
-							ng-src="{{ (match.stats.item1 === 0 || match.stats == null) ? 'img/item_0.png' : 'http://ddragon.leagueoflegends.com/cdn/' + version + '/img/item/' + match.stats.item1 + '.png' }}">
-						<img class="item item2" alt="{{ (match.stats.item2 === 0 || match.stats == null) ? 'item' : 'item ' +  match.stats.item2 }}"
-							ng-src="{{ (match.stats.item2 === 0 || match.stats == null) ? 'img/item_0.png' : 'http://ddragon.leagueoflegends.com/cdn/' + version + '/img/item/' + match.stats.item2 + '.png' }}">
-						<img class="item item3" alt="{{ (match.stats.item3 === 0 || match.stats == null) ? 'item' : 'item ' +  match.stats.item3 }}"
-							ng-src="{{ (match.stats.item3 === 0 || match.stats == null) ? 'img/item_0.png' : 'http://ddragon.leagueoflegends.com/cdn/' + version + '/img/item/' + match.stats.item3 + '.png' }}">
-						<img class="item item4" alt="{{ (match.stats.item4 === 0 || match.stats == null) ? 'item' : 'item ' +  match.stats.item4 }}"
-							ng-src="{{ (match.stats.item4 === 0 || match.stats == null) ? 'img/item_0.png' : 'http://ddragon.leagueoflegends.com/cdn/' + version + '/img/item/' + match.stats.item4 + '.png' }}">
-						<img class="item item5" alt="{{ (match.stats.item5 === 0 || match.stats == null) ? 'item' : 'item ' +  match.stats.item5 }}"
-							ng-src="{{ (match.stats.item5 === 0 || match.stats == null) ? 'img/item_0.png' : 'http://ddragon.leagueoflegends.com/cdn/' + version + '/img/item/' + match.stats.item5 + '.png' }}">
-						<img class="item item6" alt="{{ (match.stats.item6 === 0 || match.stats == null) ? 'item' : 'item ' +  match.stats.item6 }}"
-							ng-src="{{ (match.stats.item6 === 0 || match.stats == null) ? 'img/item_0.png' : 'http://ddragon.leagueoflegends.com/cdn/' + version + '/img/item/' + match.stats.item6 + '.png' }}">
+						<img class="item item0" alt="{{ (match.stats.itemDto0 == null) ? 'item' : 'item ' +  match.stats.itemDto0.id }}" 
+							ng-src="{{ (match.stats.itemDto0 == null) ? 'img/item_0.png' : 'http://ddragon.leagueoflegends.com/cdn/' + version + '/img/item/' + match.stats.itemDto0.image.full }}">
+						<img class="item item1" alt="{{ (match.stats.itemDto1 == null) ? 'item' : 'item ' +  match.stats.itemDto1.id }}" 
+							ng-src="{{ (match.stats.itemDto1 == null) ? 'img/item_0.png' : 'http://ddragon.leagueoflegends.com/cdn/' + version + '/img/item/' + match.stats.itemDto1.image.full }}">
+						<img class="item item2" alt="{{ (match.stats.itemDto2 == null) ? 'item' : 'item ' +  match.stats.itemDto2.id }}" 
+							ng-src="{{ (match.stats.itemDto2 == null) ? 'img/item_0.png' : 'http://ddragon.leagueoflegends.com/cdn/' + version + '/img/item/' + match.stats.itemDto2.image.full }}">
+						<img class="item item3" alt="{{ (match.stats.itemDto3 == null) ? 'item' : 'item ' +  match.stats.itemDto3.id }}" 
+							ng-src="{{ (match.stats.itemDto3 == null) ? 'img/item_0.png' : 'http://ddragon.leagueoflegends.com/cdn/' + version + '/img/item/' + match.stats.itemDto3.image.full }}">
+						<img class="item item4" alt="{{ (match.stats.itemDto4 == null) ? 'item' : 'item ' +  match.stats.itemDto4.id }}" 
+							ng-src="{{ (match.stats.itemDto4 == null) ? 'img/item_0.png' : 'http://ddragon.leagueoflegends.com/cdn/' + version + '/img/item/' + match.stats.itemDto4.image.full }}">
+						<img class="item item5" alt="{{ (match.stats.itemDto5 == null) ? 'item' : 'item ' +  match.stats.itemDto5.id }}" 
+							ng-src="{{ (match.stats.itemDto5 == null) ? 'img/item_0.png' : 'http://ddragon.leagueoflegends.com/cdn/' + version + '/img/item/' + match.stats.itemDto5.image.full }}">
+						<img class="item item6" alt="{{ (match.stats.itemDto6 == null) ? 'item' : 'item ' +  match.stats.itemDto6.id }}" 
+							ng-src="{{ (match.stats.itemDto6 == null) ? 'img/item_0.png' : 'http://ddragon.leagueoflegends.com/cdn/' + version + '/img/item/' + match.stats.itemDto6.image.full }}">
 					</div>
 					
 					<div class="expandMatchButton">

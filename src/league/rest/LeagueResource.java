@@ -20,6 +20,7 @@ import league.api.LeagueAPI;
 import league.api.RiotAPIImpl.RiotPlsException;
 import league.entities.ChampionDto;
 import league.entities.GameDto;
+import league.entities.ItemDto;
 import league.entities.MatchDetail;
 import league.entities.MatchSummary;
 import league.entities.SummonerDto;
@@ -171,8 +172,20 @@ public class LeagueResource{
     @Produces(MediaType.APPLICATION_JSON)
     public Response getChampFromId(@PathParam("id") long id) throws ServletException, IOException{
         try{
-            ChampionDto history = api.getChampFromId(id);
-            return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(history)).build();
+            ChampionDto champion = api.getChampFromId(id);
+            return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(champion)).build();
+        } catch(RiotPlsException e){
+            return Response.status(e.getStatus()).entity(e.getMessage()).build();
+        }
+    }
+   
+    @GET
+    @Path("/item/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getItem(@PathParam("id") long id) throws ServletException, IOException{
+        try{
+            ItemDto item = api.getItem(id);
+            return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(item)).build();
         } catch(RiotPlsException e){
             return Response.status(e.getStatus()).entity(e.getMessage()).build();
         }

@@ -26,7 +26,7 @@ public class Game{
     private int mapId;
     private SummonerSpellDto spell1;
     private SummonerSpellDto spell2;
-    private RawStatsDto stats;
+    private GameStats stats;
     private String subType;
     private int teamId;
     private SummonerDto summoner;
@@ -49,7 +49,7 @@ public class Game{
         ipEarned = game.getIpEarned();
         level = game.getLevel();
         mapId = game.getMapId();
-        stats = game.getStats();
+        stats = new GameStats(game.getStats());
         subType = game.getSubType();
         teamId = game.getTeamId();
         this.summonerId = summonerId;
@@ -88,7 +88,7 @@ public class Game{
 
     public Game(long createDate, List<GamePlayer> blueTeam, List<GamePlayer> redTeam, long gameId, String gameMode,
             String gameType, int ipEarned, int level, int mapId, SummonerSpellDto spell1, SummonerSpellDto spell2,
-            RawStatsDto stats, String subType, int teamId, SummonerDto summoner, int lookupPlayer, long summonerId){
+            GameStats stats, String subType, int teamId, SummonerDto summoner, int lookupPlayer, long summonerId){
         super();
         this.createDate = createDate;
         this.blueTeam = blueTeam;
@@ -107,6 +107,13 @@ public class Game{
         this.summoner = summoner;
         this.lookupPlayer = lookupPlayer;
         this.summonerId = summonerId;
+    }
+
+    public Game(long createDate, List<GamePlayer> blueTeam, List<GamePlayer> redTeam, long gameId, String gameMode,
+            String gameType, int ipEarned, int level, int mapId, SummonerSpellDto spell1, SummonerSpellDto spell2,
+            RawStatsDto stats, String subType, int teamId, SummonerDto summoner, int lookupPlayer, long summonerId){
+        this(createDate, blueTeam, redTeam, gameId, gameMode, gameType, ipEarned, level, mapId, spell1, spell2,
+             new GameStats(stats), subType, teamId, summoner, lookupPlayer, summonerId);
     }
 
     @Override
@@ -230,11 +237,11 @@ public class Game{
         this.spell2 = spell2;
     }
 
-    public RawStatsDto getStats(){
+    public GameStats getStats(){
         return stats;
     }
 
-    public void setStats(RawStatsDto stats){
+    public void setStats(GameStats stats){
         this.stats = stats;
     }
 

@@ -15,6 +15,7 @@ import javax.ws.rs.core.Response;
 
 import league.entities.ChampionDto;
 import league.entities.GameDto;
+import league.entities.ItemDto;
 import league.entities.LeagueDto;
 import league.entities.MatchDetail;
 import league.entities.MatchSummary;
@@ -45,7 +46,8 @@ public class RiotAPIImpl implements LeagueAPI{
     private static final String SUMMONERSPELL_QUERY = "/api/lol/static-data/na/v1.2/summoner-spell/%d";
     private static final String MATCH_QUERY = "/api/lol/na/v2.2/match/%d";
     private static final String LEAGUE_QUERY = "/api/lol/na/v2.5/league/by-summoner/%s/entry";
-
+    private static final String ITEM_QUERY = "/api/lol/static-data/na/v1.2/item/%d";
+    
     private static final int MAX_ATTEMPTS = 15;
     private static final long ATTEMPT_INTERVAL = 1000;      // in ms
     private boolean RETRY_INFINITE = false;
@@ -292,6 +294,26 @@ public class RiotAPIImpl implements LeagueAPI{
             MatchDetail match = mapper.readValue(entity, MatchDetail.class);
             // db.cacheMatchDetail(match);
             return match;
+        } catch(IOException e){
+            log.log(Level.SEVERE, e.getMessage(), e);
+            return null;
+        }
+    }
+    
+    @Override
+    public ItemDto getItem(long itemId) throws RiotPlsException{
+        String uri = buildUri(String.format(ITEM_QUERY, itemId));
+        Map<String, String> params = new HashMap<>();
+        params.put("itemData", "image");
+        String entity = getEntity(uri, params);
+        
+        if(entity == null)
+            return null;
+        
+        try{
+            ItemDto item = mapper.readValue(entity, ItemDto.class);
+            db.cacheItem(item);
+            return item;
         } catch(IOException e){
             log.log(Level.SEVERE, e.getMessage(), e);
             return null;

@@ -19,6 +19,7 @@ import league.api.RiotAPIImpl.RiotPlsException;
 import league.entities.ChampionDto;
 import league.entities.GameDto;
 import league.entities.ImageDto;
+import league.entities.ItemDto;
 import league.entities.MatchDetail;
 import league.entities.MatchSummary;
 import league.entities.Participant;
@@ -406,6 +407,55 @@ public class DatabaseAPIImpl implements LeagueAPI{
             log.log(Level.SEVERE, e.getMessage(), e);
         }
     }
+    @Override
+    public ItemDto getItem(long itemId){
+        try{
+            Statement stmt = db.createStatement();
+            String sql;
+            sql = String.format("SELECT id, name, plaintext, description, image FROM items WHERE id = %d", itemId);
+            Pair<ResultSet, Long> results = runQuery(stmt, sql);
+            ResultSet rs = results.getLeft();
+            long time = results.getRight();
+
+            if(rs.next()){
+                int id = rs.getInt("id");
+                String name = rs.getString("name");
+                String plaintext = rs.getString("plaintext");
+                String description = rs.getString("description");
+                ImageDto image = mapper.readValue(rs.getString("image"), ImageDto.class);
+
+                ItemDto item = new ItemDto(description, id, image, name, plaintext);
+                log.info("Fetched item " + item + " from db in " + time + " ms.");
+                return item;
+            }
+        } catch(SQLException | IOException e){
+            log.log(Level.SEVERE, e.getMessage(), e);
+        }
+
+        return null;
+    }
+    
+    public void cacheItem(ItemDto item){
+        try{
+            long id = item.getId();
+            String plaintext = item.getPlaintext();
+            String description = item.getDescription();
+            String name = item.getName();
+            String image = mapper.writeValueAsString(item.getImage());
+
+            String sql = "INSERT INTO items VALUES (?, ?, ?, ?, ?)";
+            PreparedStatement stmt = db.prepareStatement(sql);
+            stmt.setLong(1, id);
+            stmt.setString(2, plaintext);
+            stmt.setString(3, description);
+            stmt.setString(4, name);
+            stmt.setString(5, image);
+
+            new CacheThread(stmt, item).start();
+        } catch(SQLException | IOException e){
+            log.log(Level.SEVERE, e.getMessage(), e);
+        }
+    }
 
     @Override
     public SummonerSpellDto getSummonerSpellFromId(long spellId){
@@ -618,4 +668,5 @@ public class DatabaseAPIImpl implements LeagueAPI{
     public void setInifiteRetry(boolean infinite){
         // Do nothing
     }
+
 }

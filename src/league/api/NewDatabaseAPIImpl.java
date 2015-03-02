@@ -18,6 +18,7 @@ import league.entities.SummonerSpellDto;
 import league.entities.Team;
 import league.entities.azhu.Game;
 import league.entities.azhu.GamePlayer;
+import league.entities.azhu.GameStats;
 import league.entities.azhu.League;
 import league.entities.azhu.RankedMatch;
 import league.entities.azhu.RankedPlayer;
@@ -219,7 +220,7 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueAPI{
             String sql;
             sql = String.format("SELECT mapId, createDate, gameMode, gameType, subType, "
                     + "lookupPlayer, blueTeam, redTeam, ipEarned, level, stats, spell1, spell2, stats, "
-                    + "teamId, summoner FROM games_new WHERE gameId = %d AND summonerId = %d", gameId, summonerId);
+                    + "teamId, summoner FROM games WHERE gameId = %d AND summonerId = %d", gameId, summonerId);
 
             Pair<ResultSet, Long> results = runQuery(stmt, sql);
             ResultSet rs = results.getLeft();
@@ -241,7 +242,7 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueAPI{
                 int ipEarned = rs.getInt("ipEarned");
                 int level = rs.getInt("level");
                 int teamId = rs.getInt("teamId");
-                RawStatsDto stats = mapper.readValue(rs.getString("stats"), RawStatsDto.class);
+                GameStats stats = mapper.readValue(rs.getString("stats"), GameStats.class);
                 SummonerSpellDto spell1 = mapper.readValue(rs.getString("spell1"), SummonerSpellDto.class);
                 SummonerSpellDto spell2 = mapper.readValue(rs.getString("spell2"), SummonerSpellDto.class);
                 SummonerDto summoner = mapper.readValue(rs.getString("summoner"), SummonerDto.class);
@@ -264,7 +265,7 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueAPI{
             String sql;
             sql = String.format("SELECT gameId, mapId, createDate, gameMode, gameType, subType, "
                     + "lookupPlayer, blueTeam, redTeam, ipEarned, level, stats, spell1, spell2, stats, "
-                    + "teamId, summoner FROM games_new WHERE summonerId = %d", summonerId);
+                    + "teamId, summoner FROM games WHERE summonerId = %d", summonerId);
 
             Pair<ResultSet, Long> results = runQuery(stmt, sql);
             ResultSet rs = results.getLeft();
@@ -288,7 +289,7 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueAPI{
                 int ipEarned = rs.getInt("ipEarned");
                 int level = rs.getInt("level");
                 int teamId = rs.getInt("teamId");
-                RawStatsDto stats = mapper.readValue(rs.getString("stats"), RawStatsDto.class);
+                GameStats stats = mapper.readValue(rs.getString("stats"), GameStats.class);
                 SummonerSpellDto spell1 = mapper.readValue(rs.getString("spell1"), SummonerSpellDto.class);
                 SummonerSpellDto spell2 = mapper.readValue(rs.getString("spell2"), SummonerSpellDto.class);
                 SummonerDto summoner = mapper.readValue(rs.getString("summoner"), SummonerDto.class);
@@ -310,7 +311,7 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueAPI{
         try{
             Statement stmt = db.createStatement();
             String sql;
-            sql = String.format("SELECT COUNT(*) AS rowCount FROM games_new WHERE gameId = %d", game.getGameId());
+            sql = String.format("SELECT COUNT(*) AS rowCount FROM games WHERE gameId = %d", game.getGameId());
 
             ResultSet rs = stmt.executeQuery(sql);
 
@@ -329,7 +330,7 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueAPI{
             if(hasGame(game))
                 return;
 
-            String sql = "INSERT INTO games_new (mapId, createDate, gameMode, gameType, subType, "
+            String sql = "INSERT INTO games (mapId, createDate, gameMode, gameType, subType, "
                     + "lookupPlayer, blueTeam, redTeam, ipEarned, level, stats, spell1, spell2, "
                     + "teamId, summoner, gameId, summonerId) "
                     + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
