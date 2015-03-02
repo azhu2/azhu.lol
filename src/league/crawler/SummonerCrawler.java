@@ -21,7 +21,7 @@ import league.entities.azhu.Summoner;
 public class SummonerCrawler{
     private static final long REQUEST_SIZE = 40;
     private static final long START_ID = 0;
-    private static final long SUMMONER_SEARCH_COUNT = 10000;
+    private static final long SUMMONER_SEARCH_COUNT = 50000;
     private static final long SEED_SUMMONER_ID = 31569637;
     private static Logger log = Logger.getLogger(SummonerCrawler.class.getName());
 

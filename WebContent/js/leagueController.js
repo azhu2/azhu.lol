@@ -45,6 +45,7 @@ leagueApp.controller('routeController',
 leagueApp.controller('lookupController', function($scope, $rootScope, $routeParams,
 	LeagueResource) {
 	$rootScope.version = "5.2.2";
+	var lookupSummoner;
 
 	if ($routeParams.summonerId) {
 		if (!$rootScope.summoner) {
@@ -73,12 +74,14 @@ leagueApp.controller('lookupController', function($scope, $rootScope, $routePara
 	};
 
 	$rootScope.lookupRanked = function(summonerId) {
+		lookupSummoner = summonerId;
 		$rootScope.newRanked = [];
 
 		LeagueResource.lookupRanked(summonerId).query({
 			id : summonerId
 		}, function(data) {
-			$rootScope.newRanked = data;
+			if (summonerId == lookupSummoner)
+				$rootScope.newRanked = data;
 		});
 		$rootScope.showRankedResults = true;
 		$rootScope.showMatchHistory = false;
@@ -86,26 +89,33 @@ leagueApp.controller('lookupController', function($scope, $rootScope, $routePara
 	};
 
 	$rootScope.lookupAllRanked = function(summonerId) {
+		lookupSummoner = summonerId;
+
 		LeagueResource.allRanked(summonerId).query({
 			id : summonerId
 		}, function(data) {
-			$rootScope.newRanked = data;
+			if (summonerId == lookupSummoner)
+				$rootScope.newRanked = data;
 		});
 		$rootScope.showAll = true;
 	};
 
 	$rootScope.lookupMatches = function(summonerId) {
 		$rootScope.newGames = [];
+		lookupSummoner = summonerId;
+
 		LeagueResource.matchHistory(summonerId).query({
 			id : summonerId
 		}, function(data) {
-			for (var i = 0; i < data.length; i++) {
-				if (data[i].teamId == 100)
-					data[i].champion = data[i].blueTeam[data[i].blueTeam.length - 1];
-				else
-					data[i].champion = data[i].redTeam[data[i].redTeam.length - 1];
+			if (summonerId == lookupSummoner) {
+				for (var i = 0; i < data.length; i++) {
+					if (data[i].teamId == 100)
+						data[i].champion = data[i].blueTeam[data[i].blueTeam.length - 1];
+					else
+						data[i].champion = data[i].redTeam[data[i].redTeam.length - 1];
+				}
+				$rootScope.newGames = data;
 			}
-			$rootScope.newGames = data;
 		});
 		$rootScope.showRankedResults = false;
 		$rootScope.showMatchHistory = true;
@@ -113,16 +123,20 @@ leagueApp.controller('lookupController', function($scope, $rootScope, $routePara
 	};
 
 	$rootScope.lookupAllMatches = function(summonerId) {
+		lookupSummoner = summonerId;
+		
 		LeagueResource.matchHistoryAll(summonerId).query({
 			id : summonerId
 		}, function(data) {
-			for (var i = 0; i < data.length; i++) {
-				if (data[i].teamId == 100)
-					data[i].champion = data[i].blueTeam[data[i].blueTeam.length - 1];
-				else
-					data[i].champion = data[i].redTeam[data[i].redTeam.length - 1];
+			if (summonerId == lookupSummoner) {
+				for (var i = 0; i < data.length; i++) {
+					if (data[i].teamId == 100)
+						data[i].champion = data[i].blueTeam[data[i].blueTeam.length - 1];
+					else
+						data[i].champion = data[i].redTeam[data[i].redTeam.length - 1];
+				}
+				$rootScope.newGames = data;
 			}
-			$rootScope.newGames = data;
 		});
 		$rootScope.showRankedResults = false;
 		$rootScope.showMatchHistory = true;
@@ -211,7 +225,7 @@ leagueApp.service('LeagueResource', function($resource) {
 			id : '@id'
 		});
 	};
-	
+
 	this.matchHistoryAll = function() {
 		return $resource('/azhu.lol/rest/new/match-history/:id/all', {
 			id : '@id'
