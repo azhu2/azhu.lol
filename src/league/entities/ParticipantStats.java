@@ -1,86 +1,71 @@
 package league.entities;
 
-import java.util.logging.Logger;
-
-import league.api.DynamicLeagueAPIImpl;
-import league.api.LeagueAPI;
-import league.api.RiotAPIImpl.RiotPlsException;
 
 public class ParticipantStats{
-    private long assists;
-    private long champLevel;
-    private long combatPlayerScore;
-    private long deaths;
-    private long doubleKills;
-    private boolean firstBloodAssist;
-    private boolean firstBloodKill;
-    private boolean firstInhibitorAssist;
-    private boolean firstInhibitorKill;
-    private boolean firstTowerAssist;
-    private boolean firstTowerKill;
-    private long goldEarned;
-    private long goldSpent;
-    private long inhibitorKills;
-    private ItemDto itemDto0;
-    private ItemDto itemDto1;
-    private ItemDto itemDto2;
-    private ItemDto itemDto3;
-    private ItemDto itemDto4;
-    private ItemDto itemDto5;
-    private ItemDto itemDto6;
-    private long item0;
-    private long item1;
-    private long item2;
-    private long item3;
-    private long item4;
-    private long item5;
-    private long item6;
-    private long killingSprees;
-    private long kills;
-    private long largestCriticalStrike;
-    private long largestKillingSpree;
-    private long largestMultiKill;
-    private long magicDamageDealt;
-    private long magicDamageDealtToChampions;
-    private long magicDamageTaken;
-    private long minionsKilled;
-    private long neutralMinionsKilled;
-    private long neutralMinionsKilledEnemyJungle;
-    private long neutralMinionsKilledTeamJungle;
-    private long nodeCapture;
-    private long nodeCaptureAssist;
-    private long nodeNeutralize;
-    private long nodeNeutralizeAssist;
-    private long objectivePlayerScore;
-    private long pentakills;
-    private long physicalDamageDealt;
-    private long physicalDamageDealtToChampions;
-    private long physicalDamageTaken;
-    private long quadrakills;
-    private long sightWardsBoughtInGame;
-    private long teamObjective;
-    private long timePlayed;
-    private long totalDamageDealt;
-    private long totalDamageDealtToChampions;
-    private long totalDamageTaken;
-    private long totalHeal;
-    private long totalPlayerScore;
-    private long totalScoreRank;
-    private long totalTimeCrowdControlDealt;
-    private long totalUnitsHealed;
-    private long towerKills;
-    private long triplekills;
-    private long trueDamageDealt;
-    private long trueDamageDealtToChampions;
-    private long trueDamageTaken;
-    private long unrealKills;
-    private long visionWardsBoughtInGame;
-    private long wardsKilled;
-    private long wardsPlaced;
-    private boolean winner;
-
-    private static LeagueAPI api = DynamicLeagueAPIImpl.getInstance();
-    private static Logger log = Logger.getLogger(ParticipantStats.class.getName());
+    protected long assists;
+    protected long champLevel;
+    protected long combatPlayerScore;
+    protected long deaths;
+    protected long doubleKills;
+    protected boolean firstBloodAssist;
+    protected boolean firstBloodKill;
+    protected boolean firstInhibitorAssist;
+    protected boolean firstInhibitorKill;
+    protected boolean firstTowerAssist;
+    protected boolean firstTowerKill;
+    protected long goldEarned;
+    protected long goldSpent;
+    protected long inhibitorKills;
+    protected long item0;
+    protected long item1;
+    protected long item2;
+    protected long item3;
+    protected long item4;
+    protected long item5;
+    protected long item6;
+    protected long killingSprees;
+    protected long kills;
+    protected long largestCriticalStrike;
+    protected long largestKillingSpree;
+    protected long largestMultiKill;
+    protected long magicDamageDealt;
+    protected long magicDamageDealtToChampions;
+    protected long magicDamageTaken;
+    protected long minionsKilled;
+    protected long neutralMinionsKilled;
+    protected long neutralMinionsKilledEnemyJungle;
+    protected long neutralMinionsKilledTeamJungle;
+    protected long nodeCapture;
+    protected long nodeCaptureAssist;
+    protected long nodeNeutralize;
+    protected long nodeNeutralizeAssist;
+    protected long objectivePlayerScore;
+    protected long pentakills;
+    protected long physicalDamageDealt;
+    protected long physicalDamageDealtToChampions;
+    protected long physicalDamageTaken;
+    protected long quadrakills;
+    protected long sightWardsBoughtInGame;
+    protected long teamObjective;
+    protected long timePlayed;
+    protected long totalDamageDealt;
+    protected long totalDamageDealtToChampions;
+    protected long totalDamageTaken;
+    protected long totalHeal;
+    protected long totalPlayerScore;
+    protected long totalScoreRank;
+    protected long totalTimeCrowdControlDealt;
+    protected long totalUnitsHealed;
+    protected long towerKills;
+    protected long triplekills;
+    protected long trueDamageDealt;
+    protected long trueDamageDealtToChampions;
+    protected long trueDamageTaken;
+    protected long unrealKills;
+    protected long visionWardsBoughtInGame;
+    protected long wardsKilled;
+    protected long wardsPlaced;
+    protected boolean winner;
 
     public long getAssists(){
         return assists;
@@ -538,74 +523,12 @@ public class ParticipantStats{
         this.winner = winner;
     }
 
-    public ItemDto getItemDto0(){
-        return itemDto0;
-    }
-
-    public void setItemDto0(ItemDto itemDto0){
-        this.itemDto0 = itemDto0;
-    }
-
-    public ItemDto getItemDto1(){
-        return itemDto1;
-    }
-
-    public void setItemDto1(ItemDto itemDto1){
-        this.itemDto1 = itemDto1;
-    }
-
-    public ItemDto getItemDto2(){
-        return itemDto2;
-    }
-
-    public void setItemDto2(ItemDto itemDto2){
-        this.itemDto2 = itemDto2;
-    }
-
-    public ItemDto getItemDto3(){
-        return itemDto3;
-    }
-
-    public void setItemDto3(ItemDto itemDto3){
-        this.itemDto3 = itemDto3;
-    }
-
-    public ItemDto getItemDto4(){
-        return itemDto4;
-    }
-
-    public void setItemDto4(ItemDto itemDto4){
-        this.itemDto4 = itemDto4;
-    }
-
-    public ItemDto getItemDto5(){
-        return itemDto5;
-    }
-
-    public void setItemDto5(ItemDto itemDto5){
-        this.itemDto5 = itemDto5;
-    }
-
-    public ItemDto getItemDto6(){
-        return itemDto6;
-    }
-
-    public void setItemDto6(ItemDto itemDto6){
-        this.itemDto6 = itemDto6;
-    }
-
     public long getItem0(){
         return item0;
     }
 
     public void setItem0(long item0){
         this.item0 = item0;
-
-        try{
-            this.itemDto0 = api.getItem(item0);
-        } catch(RiotPlsException e){
-            log.warning(e.getMessage());
-        }
     }
 
     public long getItem1(){
@@ -614,12 +537,6 @@ public class ParticipantStats{
 
     public void setItem1(long item1){
         this.item1 = item1;
-
-        try{
-            this.itemDto1 = api.getItem(item1);
-        } catch(RiotPlsException e){
-            log.warning(e.getMessage());
-        }
     }
 
     public long getItem2(){
@@ -628,12 +545,6 @@ public class ParticipantStats{
 
     public void setItem2(long item2){
         this.item2 = item2;
-
-        try{
-            this.itemDto2 = api.getItem(item2);
-        } catch(RiotPlsException e){
-            log.warning(e.getMessage());
-        }
     }
 
     public long getItem3(){
@@ -642,12 +553,6 @@ public class ParticipantStats{
 
     public void setItem3(long item3){
         this.item3 = item3;
-
-        try{
-            this.itemDto3 = api.getItem(item3);
-        } catch(RiotPlsException e){
-            log.warning(e.getMessage());
-        }
     }
 
     public long getItem4(){
@@ -656,12 +561,6 @@ public class ParticipantStats{
 
     public void setItem4(long item4){
         this.item4 = item4;
-
-        try{
-            this.itemDto4 = api.getItem(item4);
-        } catch(RiotPlsException e){
-            log.warning(e.getMessage());
-        }
     }
 
     public long getItem5(){
@@ -670,12 +569,6 @@ public class ParticipantStats{
 
     public void setItem5(long item5){
         this.item5 = item5;
-
-        try{
-            this.itemDto5 = api.getItem(item5);
-        } catch(RiotPlsException e){
-            log.warning(e.getMessage());
-        }
     }
 
     public long getItem6(){
@@ -684,11 +577,5 @@ public class ParticipantStats{
 
     public void setItem6(long item6){
         this.item6 = item6;
-
-        try{
-            this.itemDto6 = api.getItem(item6);
-        } catch(RiotPlsException e){
-            log.warning(e.getMessage());
-        }
     }
 }
