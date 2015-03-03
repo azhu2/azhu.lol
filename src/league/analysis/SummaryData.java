@@ -1,5 +1,6 @@
 package league.analysis;
 
+import league.entities.ChampionDto;
 import league.entities.ParticipantStats;
 import league.entities.azhu.RankedMatch;
 
@@ -42,6 +43,8 @@ public class SummaryData{
     private long tripleKills = 0;
     private long quadraKills = 0;
     private long pentaKills = 0;
+    
+    private ChampionDto champion;
 
     public SummaryData(){
         
@@ -243,6 +246,14 @@ public class SummaryData{
 
     public long getPentaKills(){
         return pentaKills;
+    }
+
+    public ChampionDto getChampion(){
+        return champion;
+    }
+
+    public void setChampion(ChampionDto champion){
+        this.champion = champion;
     }
 
 }

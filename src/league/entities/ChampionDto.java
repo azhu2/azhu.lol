@@ -24,7 +24,7 @@ public class ChampionDto{
 
     @Override
     public String toString(){
-        return "Champion (" + id + "): " + name;
+        return id + ": Champion " + name;
     }
 
     @Override

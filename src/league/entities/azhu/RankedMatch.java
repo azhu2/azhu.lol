@@ -3,6 +3,7 @@ package league.entities.azhu;
 import java.util.LinkedList;
 import java.util.List;
 
+import league.LeagueConstants;
 import league.api.APIConstants;
 import league.api.DynamicLeagueAPIImpl;
 import league.api.LeagueAPI;
@@ -85,7 +86,7 @@ public class RankedMatch{
             players.add(player);
             if(participantIdentities.get(i).getPlayer().getSummonerId() == summonerId)
                 lookupPlayer = i;
-            if(player.getTeamId() == APIConstants.BLUE_TEAM)
+            if(player.getTeamId() == LeagueConstants.BLUE_TEAM)
                 bluePlayers.add(i);
             else
                 redPlayers.add(i);

@@ -20,7 +20,7 @@ public class AnalysisUtils{
                 matches.add(match);
         return matches;
     }
-    
+
     /**
      * Get a list of all matches for a given champion
      */
@@ -33,7 +33,7 @@ public class AnalysisUtils{
      */
     public static Map<ChampionDto, List<RankedMatch>> getChampMatches(Collection<RankedMatch> matchList){
         Map<ChampionDto, List<RankedMatch>> map = new HashMap<>();
-        
+
         for(RankedMatch match : matchList){
             ChampionDto champ = match.getQueryPlayer().getChampion();
             if(map.keySet().contains(champ))
@@ -44,11 +44,27 @@ public class AnalysisUtils{
                 map.put(champ, list);
             }
         }
-        
+
         return map;
     }
 
-    
+    public static Map<String, List<RankedMatch>> filterByQueueType(Collection<RankedMatch> matchList){
+        Map<String, List<RankedMatch>> filtered = new HashMap<>();
+
+        for(RankedMatch match : matchList){
+            String type = match.getQueueType();
+            if(filtered.keySet().contains(type))
+                filtered.get(type).add(match);
+            else{
+                List<RankedMatch> list = new LinkedList<>();
+                list.add(match);
+                filtered.put(type, list);
+            }
+        }
+
+        return filtered;
+    }
+
     public static SummaryData getSummary(Collection<RankedMatch> matchList){
         SummaryData data = new SummaryData();
         for(RankedMatch match : matchList)

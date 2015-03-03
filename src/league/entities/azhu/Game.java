@@ -3,6 +3,7 @@ package league.entities.azhu;
 import java.util.LinkedList;
 import java.util.List;
 
+import league.LeagueConstants;
 import league.api.APIConstants;
 import league.api.DynamicLeagueAPIImpl;
 import league.api.LeagueAPI;
@@ -76,7 +77,7 @@ public class Game{
             int teamId = p.getTeamId();
             GamePlayer player = new GamePlayer(champion, summoner, teamId);
 
-            if(player.getTeamId() == APIConstants.BLUE_TEAM)
+            if(player.getTeamId() == LeagueConstants.BLUE_TEAM)
                 blueTeam.add(player);
             else
                 redTeam.add(player);
