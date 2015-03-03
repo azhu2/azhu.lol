@@ -1,0 +1,86 @@
+#rankedStats tr {
+	margin: 10px;
+}
+
+#rankedStats table {
+	margin: 10px;
+	font-size: 0.9em;
+}
+
+#rankedStats tr,td {
+	border: none;
+}
+
+#rankedStats td {
+	padding-left: 2px;
+	padding-right: 2px;
+}
+
+#rankedStats td:nth-child(even) {
+	background: #EECCCC;
+}
+
+#rankedStats td:nth-child(odd) {
+	background: #CCCCEE;
+}
+
+#rankedStats .headings {
+	font-weight: bold;
+	text-transform: uppercase;
+	font-size: 0.9em;
+	height: 25px;
+}
+
+#rankedStats .champion {
+	width: 100px;
+	text-align: left;
+}
+
+#rankedStats .champion div {
+	display: inline-block;
+	font-weight: bold;
+}
+
+#rankedStats .champion img {
+	display: inline-block;
+	height: 20px;
+	width: 20px;
+}
+
+#rankedStats .gameLength {
+	width: 100px;
+}
+
+#rankedStats .damageGraph {
+	background: url("../img/damage_background.png");
+	height: 15px;
+	width: 200px;
+	position: relative;
+	float: left;
+	border: 2px;
+	border-radius: 5px;
+	border-style: ridge;
+	border-color: #888888;
+	text-align: center;
+	margin: 1px;
+}
+
+#rankedStats .damageGraph .textOverlay {
+	margin: 0;
+	width: 100%;
+	text-align: center;
+	font-size: 0.7em;
+	margin-top: 3px;
+	margin-left: 2px;
+	font-weight: bold;
+}
+
+#rankedStats .damageGraph .damage {
+	height: 17px;
+	padding: 0;
+	border: 0;
+	margin: 0;
+	opacity: 0.5;
+	float: left;
+	margin-top: -15px;
+}

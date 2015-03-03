@@ -1,9 +1,9 @@
 package league.rest;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.ServletException;
@@ -24,7 +24,6 @@ import league.api.NewDatabaseAPIImpl;
 import league.api.NewLeagueAPI;
 import league.api.RiotAPIImpl;
 import league.api.RiotAPIImpl.RiotPlsException;
-import league.entities.ChampionDto;
 import league.entities.GameDto;
 import league.entities.MatchDetail;
 import league.entities.MatchSummary;
@@ -75,30 +74,35 @@ public class NewLeagueResource extends LeagueResource{
     @Produces(MediaType.APPLICATION_JSON)
     public Response getRankedMatches(@PathParam("id") long summonerId) throws ServletException, IOException{
         try{
-            List<MatchSummary> oldApiResults = api_riot.getRankedMatches(summonerId);
-            if(oldApiResults == null)
-                return Response.status(APIConstants.HTTP_OK).build();
-
-            List<RankedMatch> matches = new LinkedList<>();
-            for(MatchSummary summary : oldApiResults){
-                long matchId = summary.getMatchId();
-                RankedMatch match = api.getRankedMatch(matchId, summonerId);
-                if(match == null){
-                    MatchDetail detail = api_dynamic.getMatchDetail(matchId);
-                    match = new RankedMatch(detail, summonerId, false);
-                }
-                matches.add(match);
-                
-                // Limit page size since apparently doesn't work in api call
-                if(matches.size() >= APIConstants.RANKED_PAGE_SIZE)
-                    break;
-            }
-            api.cacheRankedMatches(matches);
-
+            List<RankedMatch> matches = getRankedMatchesHelper(summonerId);
             return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(matches)).build();
         } catch(RiotPlsException e){
             return Response.status(e.getStatus()).entity(e.getMessage()).build();
         }
+    }
+
+    private List<RankedMatch> getRankedMatchesHelper(long summonerId) throws RiotPlsException{
+        List<MatchSummary> oldApiResults = api_riot.getRankedMatches(summonerId);
+        if(oldApiResults == null)
+            return null;
+
+        List<RankedMatch> matches = new LinkedList<>();
+        for(MatchSummary summary : oldApiResults){
+            long matchId = summary.getMatchId();
+            RankedMatch match = api.getRankedMatch(matchId, summonerId);
+            if(match == null){
+                MatchDetail detail = api_dynamic.getMatchDetail(matchId);
+                match = new RankedMatch(detail, summonerId, false);
+            }
+            matches.add(match);
+
+            // Limit page size since apparently doesn't work in api call
+            if(matches.size() >= APIConstants.RANKED_PAGE_SIZE)
+                break;
+        }
+        api.cacheRankedMatches(matches);
+
+        return matches;
     }
 
     @Override
@@ -233,14 +237,20 @@ public class NewLeagueResource extends LeagueResource{
             return Response.status(e.getStatus()).entity(e.getMessage()).build();
         }
     }
-    
+
     @GET
     @Path("/ranked-stats/champions/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getRankedStatsByChampion(@PathParam("id") long summonerId) throws ServletException, IOException{
         List<RankedMatch> matches = api.getRankedMatchesAll(summonerId);
-        Map<ChampionDto, SummaryData> champData = RankedAnalysis.getChampData(matches);
+        if(matches == null || matches.isEmpty())
+            try{
+                matches = getRankedMatchesHelper(summonerId);
+            } catch(RiotPlsException e){
+                return Response.status(APIConstants.HTTP_OK).entity("No ranked data").build();
+            }
+        Collection<SummaryData> champData = RankedAnalysis.getChampData(matches);
         return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(champData)).build();
-        
+
     }
 }

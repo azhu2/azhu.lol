@@ -12,7 +12,7 @@ import league.entities.ChampionDto;
 import league.entities.azhu.RankedMatch;
 
 public class RankedAnalysis{
-    public static Map<ChampionDto, SummaryData> getChampData(Collection<RankedMatch> matchList){
+    public static Collection<SummaryData> getChampData(Collection<RankedMatch> matchList){
         List<RankedMatch> queueFiltered = AnalysisUtils.filterByQueueType(matchList).get(LeagueConstants.SOLO_QUEUE_5v5);
         Map<ChampionDto, SummaryData> champData = new HashMap<>();
         Map<ChampionDto, List<RankedMatch>> champMatches = AnalysisUtils.getChampMatches(queueFiltered);
@@ -24,13 +24,13 @@ public class RankedAnalysis{
             champData.put(champ, data);
         }
         
-        return champData;
+        return champData.values();
     }
     
     public static void main(String[] args){
         NewLeagueAPI api = NewDatabaseAPIImpl.getInstance();
         List<RankedMatch> matches = api.getRankedMatchesAll(31569637);
-        Map<ChampionDto, SummaryData> data = RankedAnalysis.getChampData(matches);
+        Collection<SummaryData> data = RankedAnalysis.getChampData(matches);
         System.out.println(data);
     }
 }

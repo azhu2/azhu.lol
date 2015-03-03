@@ -1,14 +1,6 @@
 var leagueApp = angular.module('leagueApp', [ 'ngResource', 'ngRoute' ]);
 
 leagueApp.config([ '$routeProvider', function($routeProvider, routeController) {
-	$routeProvider.when('/ranked', {
-		templateUrl : 'templates/ranked.html'
-	});
-
-	$routeProvider.when('/matches', {
-		templateUrl : 'templates/matches.html'
-	});
-
 	$routeProvider.when('/:summonerId', {
 		controller : 'routeController',
 		templateUrl : 'templates/matches.html' // idk why, but this is needed
@@ -22,6 +14,11 @@ leagueApp.config([ '$routeProvider', function($routeProvider, routeController) {
 	$routeProvider.when('/:summonerId/ranked', {
 		controller : 'lookupController',
 		templateUrl : 'templates/ranked.html'
+	});
+
+	$routeProvider.when('/:summonerId/ranked-stats', {
+		controller : 'lookupController',
+		templateUrl : 'templates/ranked-stats.html'
 	});
 } ]);
 
@@ -38,8 +35,7 @@ leagueApp.controller('routeController',
 		});
 
 		$rootScope.showLookupResults = true;
-		$rootScope.showRankedResults = false;
-		$rootScope.showMatchHistory = false;
+		$rootScope.showTab = false;
 	});
 
 leagueApp.controller('lookupController', function($scope, $rootScope, $routeParams,
@@ -69,13 +65,12 @@ leagueApp.controller('lookupController', function($scope, $rootScope, $routePara
 			$rootScope.summoner = {};
 		});
 		$rootScope.showLookupResults = true;
-		$rootScope.showRankedResults = false;
-		$rootScope.showMatchHistory = false;
+		$rootScope.showTab = false;
 	};
 
 	$rootScope.lookupRanked = function(summonerId) {
 		lookupSummoner = summonerId;
-		$rootScope.newRanked = [];
+		clearData();
 
 		LeagueResource.lookupRanked(summonerId).query({
 			id : summonerId
@@ -83,8 +78,7 @@ leagueApp.controller('lookupController', function($scope, $rootScope, $routePara
 			if (summonerId == lookupSummoner)
 				$rootScope.newRanked = data;
 		});
-		$rootScope.showRankedResults = true;
-		$rootScope.showMatchHistory = false;
+		$rootScope.showTab = true;
 		$rootScope.showAll = false;
 	};
 
@@ -97,11 +91,12 @@ leagueApp.controller('lookupController', function($scope, $rootScope, $routePara
 			if (summonerId == lookupSummoner)
 				$rootScope.newRanked = data;
 		});
+		$rootScope.showTab = true;
 		$rootScope.showAll = true;
 	};
 
 	$rootScope.lookupMatches = function(summonerId) {
-		$rootScope.newGames = [];
+		clearData();
 		lookupSummoner = summonerId;
 
 		LeagueResource.matchHistory(summonerId).query({
@@ -117,14 +112,26 @@ leagueApp.controller('lookupController', function($scope, $rootScope, $routePara
 				$rootScope.newGames = data;
 			}
 		});
-		$rootScope.showRankedResults = false;
-		$rootScope.showMatchHistory = true;
+		$rootScope.showTab = true;
 		$rootScope.showAll = false;
+	};
+
+	$rootScope.getRankedStats = function(summonerId) {
+		clearData();
+		lookupSummoner = summonerId;
+
+		LeagueResource.rankedStats(summonerId).query({
+			id : summonerId
+		}, function(data) {
+			if (summonerId == lookupSummoner)
+				$rootScope.rankedStats = data;
+		});
+		$rootScope.showTab = true;
 	};
 
 	$rootScope.lookupAllMatches = function(summonerId) {
 		lookupSummoner = summonerId;
-		
+
 		LeagueResource.matchHistoryAll(summonerId).query({
 			id : summonerId
 		}, function(data) {
@@ -138,8 +145,7 @@ leagueApp.controller('lookupController', function($scope, $rootScope, $routePara
 				$rootScope.newGames = data;
 			}
 		});
-		$rootScope.showRankedResults = false;
-		$rootScope.showMatchHistory = true;
+		$rootScope.showTab = true;
 		$rootScope.showAll = true;
 	};
 
@@ -167,9 +173,6 @@ leagueApp.controller('lookupController', function($scope, $rootScope, $routePara
 			for (var i = 0; i < $rootScope.rankedData.length; i++) {
 				$rootScope.rankedData[i].showExpand = false;
 			}
-
-		$rootScope.matchPlayerBlue = [];
-		$rootScope.matchPlayerRed = [];
 	};
 
 	$rootScope.importAllRanked = function(summonerId) {
@@ -184,6 +187,12 @@ leagueApp.controller('lookupController', function($scope, $rootScope, $routePara
 		});
 	};
 
+	var clearData = function(){
+		$rootScope.newGames = [];
+		$rootScope.newRanked = [];
+		$rootScope.rankedStats = [];
+	};
+	
 	$scope.working = ' (slow)';
 });
 
@@ -228,6 +237,12 @@ leagueApp.service('LeagueResource', function($resource) {
 
 	this.matchHistoryAll = function() {
 		return $resource('/azhu.lol/rest/new/match-history/:id/all', {
+			id : '@id'
+		});
+	};
+
+	this.rankedStats = function() {
+		return $resource('/azhu.lol/rest/new/ranked-stats/champions/:id', {
 			id : '@id'
 		});
 	};
