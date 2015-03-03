@@ -36,7 +36,7 @@
 			<td class="kills">{{ champData.kills / (champData.wins + champData.losses) | number:2 }}</td>
 			<td class="deaths">{{ champData.deaths / (champData.wins + champData.losses) | number:2 }}</td>
 			<td class="assists">{{ champData.assists / (champData.wins + champData.losses) | number:2 }}</td>
-			<td class="kda">{{ (champData.kills + champData.assists) / champData.deaths | number:2 }}</td>
+			<td class="kda">{{ champData.deaths === 0 ? '---' : ((champData.kills + champData.assists) / champData.deaths | number:2) }}</td>
 			<td class="cs">{{ (champData.minionsKilled + champData.neutralMinionsKilled) / (champData.wins + champData.losses) | number:1 }}</td>
 			<td class="cspm">{{ (champData.minionsKilled + champData.neutralMinionsKilled) / (champData.timePlayed) * 60 | number:2 }}</td>
 			<td class="gold">{{ champData.goldEarned / (champData.wins + champData.losses) | number:0 }}</td>

@@ -32,7 +32,7 @@
 }
 
 #rankedStats .champion {
-	width: 100px;
+	width: 120px;
 	text-align: left;
 }
 
@@ -63,16 +63,7 @@
 	border-color: #888888;
 	text-align: center;
 	margin: 1px;
-}
-
-#rankedStats .damageGraph .textOverlay {
-	margin: 0;
-	width: 100%;
-	text-align: center;
-	font-size: 0.7em;
-	margin-top: 3px;
-	margin-left: 2px;
-	font-weight: bold;
+	z-index: 2;
 }
 
 #rankedStats .damageGraph .damage {
@@ -83,4 +74,15 @@
 	opacity: 0.5;
 	float: left;
 	margin-top: -15px;
+	z-index: 1;
+}
+
+#rankedStats .damageGraph .textOverlay {
+	margin: 0;
+	width: 100%;
+	text-align: center;
+	font-size: 0.7em;
+	margin-top: 3px;
+	margin-left: 2px;
+	font-weight: bold;
 }
