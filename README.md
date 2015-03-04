@@ -7,5 +7,5 @@ Stack:
 <li>AngularJS</li>
 <li>Jersey</li>
 <li>Java</li>
-<li>mySQL</li>
+<li>mySQL(migrating to Neo4j)</li>
 </ul>
