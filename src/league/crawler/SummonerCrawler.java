@@ -69,7 +69,7 @@ public class SummonerCrawler{
                     }
                 }
                 
-                Set<GameDto> history = api_dynamic.getMatchHistoryAll(summonerId);
+                Set<GameDto> history = api_dynamic.getMatchHistory(summonerId);
                 if(history != null){
                     for(GameDto game : history){
                         long gameId = game.getGameId();
