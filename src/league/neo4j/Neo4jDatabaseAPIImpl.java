@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import league.api.NewDatabaseAPIImpl;
 import league.api.NewLeagueDBAPI;
 import league.api.RiotAPIImpl.RiotPlsException;
 import league.entities.ChampionDto;
@@ -21,10 +20,8 @@ import league.entities.azhu.Game;
 import league.entities.azhu.League;
 import league.entities.azhu.RankedMatch;
 import league.entities.azhu.Summoner;
-import league.neo4j.entities.Summoner4j;
 
 import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig;
 import org.neo4j.cypher.javacompat.ExecutionEngine;
@@ -210,20 +207,7 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDBAPI{
         try(Transaction tx = db.beginTx()){
             String stmt = String.format("MATCH (n:Summoner) WHERE n.id = %d return n", summonerId);
             ExecutionResult results = engine.execute(stmt);
-            ResourceIterator<Map<String, Object>> itr = results.iterator();
-
-            if(!itr.hasNext()){
-                System.out.println("Summoner " + summonerId+ " not found.");
-                return null;
-            }
-
-            Map<String, Object> found = itr.next();
-            Node node = (Node) found.get("n");
-            Summoner summoner = new Summoner(node);
-            itr.close();
-            
-            League league = getLeague(summoner.getId());
-            summoner.setLeague(league);
+            Summoner summoner = parseSummoner(results);
 
             tx.success();
             return summoner;
@@ -246,26 +230,32 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDBAPI{
         try(Transaction tx = db.beginTx()){
             String stmt = String.format("MATCH (n:Summoner) WHERE n.name =~ '(?i)%s' return n", summonerName);
             ExecutionResult results = engine.execute(stmt);
-            ResourceIterator<Map<String, Object>> itr = results.iterator();
-
-            if(!itr.hasNext()){
-                System.out.println("Summoner " + summonerName + " not found.");
-                return null;
-            }
-
-            Map<String, Object> found = itr.next();
-            Node node = (Node) found.get("n");
-            Summoner summoner = new Summoner(node);
-            itr.close();
+            Summoner summoner = parseSummoner(results);
             
-            League league = getLeague(summoner.getId());
-            summoner.setLeague(league);
-
             tx.success();
             return summoner;
         }
     }
 
+    private Summoner parseSummoner(ExecutionResult results) throws RiotPlsException{
+        ResourceIterator<Map<String, Object>> itr = results.iterator();
+
+        if(!itr.hasNext()){
+            System.out.println("Summoner not found.");
+            return null;
+        }
+
+        Map<String, Object> found = itr.next();
+        Node node = (Node) found.get("n");
+        Summoner summoner = new Summoner(node);
+        itr.close();
+        
+        League league = getLeague(summoner.getId());
+        summoner.setLeague(league);
+        
+        return summoner;
+    }
+    
     @Override
     public void cacheSummoner(Summoner summoner){
         try(Transaction tx = db.beginTx()){
