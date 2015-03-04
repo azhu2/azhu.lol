@@ -2,6 +2,7 @@ package league.neo4j;
 
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -206,20 +207,44 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDBAPI{
 
     @Override
     public Summoner getSummonerNewFromId(long summonerId) throws RiotPlsException{
-        // TODO Auto-generated method stub
-        return null;
+        try(Transaction tx = db.beginTx()){
+            String stmt = String.format("MATCH (n:Summoner) WHERE n.id = %d return n", summonerId);
+            ExecutionResult results = engine.execute(stmt);
+            ResourceIterator<Map<String, Object>> itr = results.iterator();
+
+            if(!itr.hasNext()){
+                System.out.println("Summoner " + summonerId+ " not found.");
+                return null;
+            }
+
+            Map<String, Object> found = itr.next();
+            Node node = (Node) found.get("n");
+            Summoner summoner = new Summoner(node);
+            itr.close();
+            
+            League league = getLeague(summoner.getId());
+            summoner.setLeague(league);
+
+            tx.success();
+            return summoner;
+        }
     }
 
     @Override
     public List<Summoner> getSummonersNew(List<Long> summonerIds) throws RiotPlsException{
-        // TODO Auto-generated method stub
+        List<Summoner> summoners = new LinkedList<>();
+        
+        for(Long id : summonerIds){
+            summoners.add(getSummonerNewFromId(id));
+        }
+        
         return null;
     }
 
     @Override
     public Summoner searchSummonerNew(String summonerName) throws RiotPlsException{
         try(Transaction tx = db.beginTx()){
-            String stmt = String.format("MATCH (n:Summoner) WHERE n.name =~'(?i)%s' return n", summonerName);
+            String stmt = String.format("MATCH (n:Summoner) WHERE n.name =~ '(?i)%s' return n", summonerName);
             ExecutionResult results = engine.execute(stmt);
             ResourceIterator<Map<String, Object>> itr = results.iterator();
 
@@ -277,6 +302,7 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDBAPI{
 //            Summoner summ = NewDatabaseAPIImpl.getInstance().searchSummonerNew("l am bjerg");
 //            n.cacheSummoner(new Summoner4j(summ));
             System.out.println(n.searchSummonerNew("l am bjerg"));
+            System.out.println(n.getSummonerNewFromId(31569637));
         } catch(RiotPlsException e){
             e.printStackTrace();
         }
