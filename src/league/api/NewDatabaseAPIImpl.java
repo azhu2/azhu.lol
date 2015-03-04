@@ -12,7 +12,6 @@ import java.util.logging.Level;
 
 import league.api.RiotAPIImpl.RiotPlsException;
 import league.entities.ChampionDto;
-import league.entities.RawStatsDto;
 import league.entities.SummonerDto;
 import league.entities.SummonerSpellDto;
 import league.entities.Team;
@@ -27,7 +26,7 @@ import league.entities.azhu.Summoner;
 import org.apache.commons.lang3.tuple.Pair;
 import org.codehaus.jackson.type.TypeReference;
 
-public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueAPI{
+public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueDBAPI{
     private static NewDatabaseAPIImpl _instance = new NewDatabaseAPIImpl();
     private static RiotAPIImpl api_riot = RiotAPIImpl.getInstance();
 

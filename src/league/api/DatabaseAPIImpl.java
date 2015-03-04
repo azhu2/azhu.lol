@@ -665,7 +665,7 @@ public class DatabaseAPIImpl implements LeagueAPI{
     }
 
     @Override
-    public void setInifiteRetry(boolean infinite){
+    public void setInfiniteRetry(boolean infinite){
         // Do nothing
     }
 

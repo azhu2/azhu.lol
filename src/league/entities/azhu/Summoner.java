@@ -1,9 +1,11 @@
 package league.entities.azhu;
 
+import org.neo4j.graphdb.Node;
+
 import league.entities.SummonerDto;
 
 public class Summoner extends SummonerDto{
-    private League league;
+    protected League league;
 
     public Summoner(){
         
@@ -17,6 +19,15 @@ public class Summoner extends SummonerDto{
     public Summoner(long id, String name, int profileIconId, long summonerLevel, long revisionDate, League league){
         super(id, name, profileIconId, summonerLevel, revisionDate);
         this.league = league;
+    }
+    
+    public Summoner(Node node){     
+        setId((long) node.getProperty("id"));
+        setName((String) node.getProperty("name"));
+        setProfileIconId((int)(long) node.getProperty("profileIconId"));
+        setSummonerLevel((long) node.getProperty("summonerLevel"));
+        setRevisionDate((long) node.getProperty("revisionDate"));
+//        setLeague((League) node.getProperty("league"));
     }
 
     public League getLeague(){

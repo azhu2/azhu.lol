@@ -35,7 +35,7 @@ public class SummonerCrawler{
         Set<Long> summonersSeen = new HashSet<>();
         NewLeagueAPI api = NewDatabaseAPIImpl.getInstance();
         LeagueAPI api_dynamic = DynamicLeagueAPIImpl.getInstance();
-        api.setInifiteRetry(true);
+        api.setInfiniteRetry(true);
 
         summoners.add(SEED_SUMMONER_ID);
         while(summoners.size() < SUMMONER_SEARCH_COUNT){
@@ -102,7 +102,7 @@ public class SummonerCrawler{
 
     public static void crawlBySummonerId(){
         NewLeagueAPI api = NewDatabaseAPIImpl.getInstance();
-        api.setInifiteRetry(true);
+        api.setInfiniteRetry(true);
         long start = START_ID;
 
         List<Summoner> summoners = null;

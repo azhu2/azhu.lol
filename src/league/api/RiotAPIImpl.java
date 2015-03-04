@@ -395,7 +395,7 @@ public class RiotAPIImpl implements LeagueAPI{
         return getEntity(uri, null);
     }
 
-    public void setInifiteRetry(boolean infinite){
+    public void setInfiniteRetry(boolean infinite){
         RETRY_INFINITE = infinite;
     }
 

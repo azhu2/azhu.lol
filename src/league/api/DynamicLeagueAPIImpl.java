@@ -202,7 +202,7 @@ public class DynamicLeagueAPIImpl implements LeagueAPI{
     }
 
     @Override
-    public void setInifiteRetry(boolean infinite){
-        riotApi.setInifiteRetry(infinite);
+    public void setInfiniteRetry(boolean infinite){
+        riotApi.setInfiniteRetry(infinite);
     }
 }
