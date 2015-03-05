@@ -1,5 +1,7 @@
 package league.entities;
 
+import org.neo4j.graphdb.Node;
+
 /**
  * NOTE: Lots of stuff missing
  */
@@ -23,6 +25,14 @@ public class SummonerSpellDto{
         this.key = key;
         this.summonerLevel = summonerLevel;
         this.image = image;
+    }
+
+    public SummonerSpellDto(Node node){
+        setId((int)(long) node.getProperty("id"));
+        setName((String) node.getProperty("name"));
+        setDescription((String) node.getProperty("description"));
+        setKey((String) node.getProperty("key"));
+        setSummonerLevel((int)(long) node.getProperty("summonerLevel"));
     }
 
     public int getId(){

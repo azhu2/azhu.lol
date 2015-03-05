@@ -25,6 +25,7 @@ import league.entities.azhu.Summoner;
 import league.neo4j.entities.Champion4j;
 import league.neo4j.entities.Item4j;
 import league.neo4j.entities.Summoner4j;
+import league.neo4j.entities.SummonerSpell4j;
 
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -44,7 +45,7 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDBAPI{
     private GraphDatabaseService db;
     private ObjectMapper mapper = new ObjectMapper();
     private ExecutionEngine engine;
-    
+
     private static Neo4jDatabaseAPIImpl _instance = new Neo4jDatabaseAPIImpl();
 
     public static Neo4jDatabaseAPIImpl getInstance(){
@@ -62,10 +63,10 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDBAPI{
         registerShutdownHook(db);
         engine = new ExecutionEngine(db);
         log.info(String.format(new Timestamp(System.currentTimeMillis()) + ": " + "Database %s connected.\n", DB_PATH));
-        
+
         setIndices();
     }
-    
+
     private void setIndices(){
         try(Transaction tx = db.beginTx()){
             String stmt = "CREATE INDEX ON :Summoner(id)";
@@ -89,7 +90,7 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDBAPI{
             String stmt = String.format("MATCH (n:Summoner) WHERE n.id = %d return n", summonerId);
             ExecutionResult results = engine.execute(stmt);
             Summoner summoner = parseSummoner(results);
-    
+
             tx.success();
             return summoner;
         }
@@ -98,11 +99,11 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDBAPI{
     @Override
     public List<Summoner> getSummonersNew(List<Long> summonerIds){
         List<Summoner> summoners = new LinkedList<>();
-    
+
         for(Long id : summonerIds){
             summoners.add(getSummonerNewFromId(id));
         }
-    
+
         return null;
     }
 
@@ -112,7 +113,7 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDBAPI{
             String stmt = String.format("MATCH (n:Summoner) WHERE n.name =~ '(?i)%s' return n", summonerName);
             ExecutionResult results = engine.execute(stmt);
             Summoner summoner = parseSummoner(results);
-    
+
             tx.success();
             return summoner;
         }
@@ -120,18 +121,18 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDBAPI{
 
     private Summoner parseSummoner(ExecutionResult results){
         ResourceIterator<Map<String, Object>> itr = results.iterator();
-    
+
         if(!itr.hasNext()){
             System.out.println("Neo4j: Summoner not found.");
             return null;
         }
-    
+
         Map<String, Object> found = itr.next();
         Node node = (Node) found.get("n");
         Summoner summoner = new Summoner4j(node);
         itr.close();
-    
-        log.info("Neo4j: fetched summoner " + summoner);
+
+        log.info("Neo4j: Fetched summoner " + summoner);
         return summoner;
     }
 
@@ -142,7 +143,7 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDBAPI{
             String objectMap = mapper.writeValueAsString(s);
             String stmt = String.format("CREATE (n:Summoner %s)", objectMap);
             engine.execute(stmt);
-            
+
             log.info("Neo4j: cached summoner " + summoner);
             tx.success();
         } catch(IOException e){
@@ -162,23 +163,23 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDBAPI{
             String stmt = String.format("MATCH (n:Champion) WHERE n.id = %d return n", champId);
             ExecutionResult results = engine.execute(stmt);
             ResourceIterator<Map<String, Object>> itr = results.iterator();
-            
+
             if(!itr.hasNext()){
                 System.out.println("Neo4j: Champion " + champId + " not found.");
                 return null;
             }
-        
+
             Map<String, Object> found = itr.next();
             Node node = (Node) found.get("n");
             ChampionDto champion = new Champion4j(node);
             itr.close();
-        
-            log.info("Neo4j: fetched champion " + champion);            
+
+            log.info("Neo4j: Fetched champion " + champion);
             tx.success();
             return champion;
         }
     }
-    
+
     @Override
     public void cacheChampion(ChampionDto champion){
         try(Transaction tx = db.beginTx()){
@@ -186,7 +187,7 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDBAPI{
             String objectMap = mapper.writeValueAsString(c);
             String stmt = String.format("CREATE (n:Champion %s)", objectMap);
             engine.execute(stmt);
-            
+
             log.info("Neo4j: cached champion " + champion);
             tx.success();
         } catch(IOException e){
@@ -200,18 +201,18 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDBAPI{
             String stmt = String.format("MATCH (n:Item) WHERE n.id = %d return n", itemId);
             ExecutionResult results = engine.execute(stmt);
             ResourceIterator<Map<String, Object>> itr = results.iterator();
-            
+
             if(!itr.hasNext()){
                 System.out.println("Neo4j: Item" + itemId + " not found.");
                 return null;
             }
-        
+
             Map<String, Object> found = itr.next();
             Node node = (Node) found.get("n");
             ItemDto item = new Item4j(node);
             itr.close();
-        
-            log.info("Neo4j: fetched item " + item);            
+
+            log.info("Neo4j: Fetched item " + item);
             tx.success();
             return item;
         }
@@ -224,7 +225,7 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDBAPI{
             String objectMap = mapper.writeValueAsString(i);
             String stmt = String.format("CREATE (n:Item %s)", objectMap);
             engine.execute(stmt);
-            
+
             log.info("Neo4j: cached item " + item);
             tx.success();
         } catch(IOException e){
@@ -234,13 +235,40 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDBAPI{
 
     @Override
     public SummonerSpellDto getSummonerSpellFromId(long spellId){
-        // TODO Auto-generated method stub
-        return null;
+        try(Transaction tx = db.beginTx()){
+            String stmt = String.format("MATCH (n:Summonerspell) WHERE n.id = %d return n", spellId);
+            ExecutionResult results = engine.execute(stmt);
+            ResourceIterator<Map<String, Object>> itr = results.iterator();
+
+            if(!itr.hasNext()){
+                System.out.println("Neo4j: Summoner spell " + spellId + " not found.");
+                return null;
+            }
+
+            Map<String, Object> found = itr.next();
+            Node node = (Node) found.get("n");
+            SummonerSpellDto spell = new SummonerSpell4j(node);
+            itr.close();
+
+            log.info("Neo4j: Fetched summoner spell " + spell);
+            tx.success();
+            return spell;
+        }
     }
 
     @Override
     public void cacheSummonerSpell(SummonerSpellDto spell){
-        // TODO stuff
+        try(Transaction tx = db.beginTx()){
+            SummonerSpellDto i = new SummonerSpell4j(spell);
+            String objectMap = mapper.writeValueAsString(i);
+            String stmt = String.format("CREATE (n:Summonerspell %s)", objectMap);
+            engine.execute(stmt);
+
+            log.info("Neo4j: cached summoner spell " + spell);
+            tx.success();
+        } catch(IOException e){
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -368,24 +396,28 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDBAPI{
     }
 
     public static void main(String[] args){
-            try{
-                Neo4jDatabaseAPIImpl n = Neo4jDatabaseAPIImpl.getInstance();
-    //            Summoner summ = NewDatabaseAPIImpl.getInstance().searchSummonerNew("zedenstein");
-    //            Summoner s = new Summoner4j(summ);
-    //            n.cacheSummoner(summ);
-                System.out.println(n.searchSummonerNew("l am bjerg"));
-                System.out.println(n.getSummonerNewFromId(31569637));
-                System.out.println(n.searchSummonerNew("irascent"));
-                
-//                ChampionDto c = NewDatabaseAPIImpl.getInstance().getChampFromId(1);
-//                n.cacheChampion(c);
-                System.out.println(n.getChampFromId(1));
-                
-//                ItemDto i = NewDatabaseAPIImpl.getInstance().getItemFromId(1055);
-//                n.cacheItem(i);
-                System.out.println(n.getItemFromId(3031));
-            } catch(Exception e){
-                e.printStackTrace();
-            }
+        try{
+            Neo4jDatabaseAPIImpl n = Neo4jDatabaseAPIImpl.getInstance();
+            // Summoner summ = NewDatabaseAPIImpl.getInstance().searchSummonerNew("zedenstein");
+            // Summoner s = new Summoner4j(summ);
+            // n.cacheSummoner(summ);
+            System.out.println(n.searchSummonerNew("l am bjerg"));
+            System.out.println(n.getSummonerNewFromId(31569637));
+            System.out.println(n.searchSummonerNew("irascent"));
+
+            // ChampionDto c = NewDatabaseAPIImpl.getInstance().getChampFromId(1);
+            // n.cacheChampion(c);
+            System.out.println(n.getChampFromId(1));
+
+            // ItemDto i = NewDatabaseAPIImpl.getInstance().getItemFromId(1055);
+            // n.cacheItem(i);
+            System.out.println(n.getItemFromId(3031));
+            
+//            SummonerSpellDto s = NewDatabaseAPIImpl.getInstance().getSummonerSpellFromId(4);
+//            n.cacheSummonerSpell(s);
+            System.out.println(n.getSummonerSpellFromId(4));
+        } catch(Exception e){
+            e.printStackTrace();
         }
+    }
 }
