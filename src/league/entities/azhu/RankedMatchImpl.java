@@ -4,7 +4,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import league.LeagueConstants;
-import league.api.APIConstants;
 import league.api.DynamicLeagueAPIImpl;
 import league.api.LeagueAPI;
 import league.api.NewDatabaseAPIImpl;
@@ -17,17 +16,10 @@ import league.entities.Participant;
 import league.entities.ParticipantIdentity;
 import league.entities.Team;
 
-public class RankedMatch{
-    private int mapId;
-    private long matchCreation;
-    private long matchDuration;
-    private long matchId;
-    private String matchMode;
-    private String matchType;
+public class RankedMatchImpl extends Match{
     private String matchVersion;
-    private List<RankedPlayer> players;
+    private List<RankedPlayer> players;     // TODO replace this
     private String platformId;
-    private String queueType;
     private String region;
     private String season;
     private List<Team> teams;
@@ -41,34 +33,34 @@ public class RankedMatch{
     private static LeagueAPI api = DynamicLeagueAPIImpl.getInstance();
     private static NewLeagueAPI api_new = NewDatabaseAPIImpl.getInstance();
 
-    public RankedMatch(){
+    public RankedMatchImpl(){
 
     }
 
-    public RankedMatch(int mapId, long matchCreation, long matchDuration, long matchId, String matchMode,
+    public RankedMatchImpl(int mapId, long matchCreation, long matchDuration, long matchId, String matchMode,
             String matchType, String matchVersion, List<RankedPlayer> players, String platformId, String queueType,
             String region, String season, List<Team> teams, int lookupPlayer, List<Integer> bluePlayers,
             List<Integer> redPlayers, List<ChampionDto> blueBans, List<ChampionDto> redBans, long summonerId){
         super();
-        this.mapId = mapId;
-        this.matchCreation = matchCreation;
-        this.matchDuration = matchDuration;
-        this.matchId = matchId;
-        this.matchMode = matchMode;
-        this.matchType = matchType;
-        this.matchVersion = matchVersion;
-        this.players = players;
-        this.platformId = platformId;
-        this.queueType = queueType;
-        this.region = region;
-        this.season = season;
-        this.teams = teams;
-        this.lookupPlayer = lookupPlayer;
-        this.bluePlayers = bluePlayers;
-        this.redPlayers = redPlayers;
-        this.blueBans = blueBans;
-        this.redBans = redBans;
-        this.summonerId = summonerId;
+        setMapId(mapId);
+        setMatchCreation(matchCreation);
+        setMatchDuration(matchDuration);
+        setId(matchId);
+        setMatchMode(matchMode);
+        setMatchType(matchType);
+        setMatchVersion(matchVersion);
+        setPlayers(players);
+        setPlatformId(platformId);
+        setQueueType(queueType);
+        setRegion(region);
+        setSeason(season);
+        setTeams(teams);
+        setLookupPlayer(lookupPlayer);
+        setBluePlayers(bluePlayers);
+        setRedPlayers(redPlayers);
+        setBlueBans(blueBans);
+        setRedBans(redBans);
+        setSummonerId(summonerId);
     }
 
     private void processPlayers(List<ParticipantIdentity> participantIdentities, List<Participant> participants,
@@ -109,75 +101,27 @@ public class RankedMatch{
         }
     }
 
-    public RankedMatch(MatchDetail detail, long summonerId) throws RiotPlsException{
+    public RankedMatchImpl(MatchDetail detail, long summonerId) throws RiotPlsException{
         this(detail, summonerId, true);
     }
 
-    public RankedMatch(MatchDetail detail, long summonerId, boolean cache) throws RiotPlsException{
-        this.mapId = detail.getMapId();
-        this.matchCreation = detail.getMatchCreation();
-        this.matchDuration = detail.getMatchDuration();
-        this.matchId = detail.getMatchId();
-        this.matchMode = detail.getMatchMode();
-        this.matchType = detail.getMatchType();
-        this.matchVersion = detail.getMatchVersion();
-        this.platformId = detail.getPlatformId();
-        this.queueType = detail.getQueueType();
-        this.region = detail.getRegion();
-        this.season = detail.getSeason();
-        this.teams = detail.getTeams();
-        this.summonerId = summonerId;
+    public RankedMatchImpl(MatchDetail detail, long summonerId, boolean cache) throws RiotPlsException{
+        setMapId(detail.getMapId());
+        setMatchCreation(detail.getMatchCreation());
+        setMatchDuration(detail.getMatchDuration());
+        setId(detail.getMatchId());
+        setMatchMode(detail.getMatchMode());
+        setMatchType(detail.getMatchType());
+        setMatchVersion(detail.getMatchVersion());
+        setPlatformId(detail.getPlatformId());
+        setQueueType(detail.getQueueType());
+        setRegion(detail.getRegion());
+        setSeason(detail.getSeason());
+        setTeams(detail.getTeams());
+        setSummonerId(summonerId);
 
         processPlayers(detail.getParticipantIdentities(), detail.getParticipants(), summonerId, cache);
         processBans(detail.getTeams());
-    }
-
-    public int getMapId(){
-        return mapId;
-    }
-
-    public void setMapId(int mapId){
-        this.mapId = mapId;
-    }
-
-    public long getMatchCreation(){
-        return matchCreation;
-    }
-
-    public void setMatchCreation(long matchCreation){
-        this.matchCreation = matchCreation;
-    }
-
-    public long getMatchDuration(){
-        return matchDuration;
-    }
-
-    public void setMatchDuration(long matchDuration){
-        this.matchDuration = matchDuration;
-    }
-
-    public long getMatchId(){
-        return matchId;
-    }
-
-    public void setMatchId(long matchId){
-        this.matchId = matchId;
-    }
-
-    public String getMatchMode(){
-        return matchMode;
-    }
-
-    public void setMatchMode(String matchMode){
-        this.matchMode = matchMode;
-    }
-
-    public String getMatchType(){
-        return matchType;
-    }
-
-    public void setMatchType(String matchType){
-        this.matchType = matchType;
     }
 
     public String getMatchVersion(){
@@ -202,14 +146,6 @@ public class RankedMatch{
 
     public void setPlatformId(String platformId){
         this.platformId = platformId;
-    }
-
-    public String getQueueType(){
-        return queueType;
-    }
-
-    public void setQueueType(String queueType){
-        this.queueType = queueType;
     }
 
     public String getRegion(){
@@ -238,7 +174,7 @@ public class RankedMatch{
 
     @Override
     public String toString(){
-        return "RankedMatch " + matchId;
+        return "RankedMatch " + getId();
     }
 
     public int getLookupPlayer(){
@@ -293,7 +229,7 @@ public class RankedMatch{
     public int hashCode(){
         final int prime = 31;
         int result = 1;
-        result = prime * result + (int) (matchId ^ (matchId >>> 32));
+        result = prime * result + (int) (getId() ^ (getId() >>> 32));
         result = prime * result + (int) (summonerId ^ (summonerId >>> 32));
         return result;
     }
@@ -306,8 +242,8 @@ public class RankedMatch{
             return false;
         if(getClass() != obj.getClass())
             return false;
-        RankedMatch other = (RankedMatch) obj;
-        if(matchId != other.matchId)
+        RankedMatchImpl other = (RankedMatchImpl) obj;
+        if(getId() != other.getId())
             return false;
         if(summonerId != other.summonerId)
             return false;

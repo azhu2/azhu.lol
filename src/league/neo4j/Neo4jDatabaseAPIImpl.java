@@ -18,9 +18,9 @@ import league.entities.MatchDetail;
 import league.entities.MatchSummary;
 import league.entities.SummonerDto;
 import league.entities.SummonerSpellDto;
-import league.entities.azhu.Game;
+import league.entities.azhu.GeneralMatchImpl;
 import league.entities.azhu.League;
-import league.entities.azhu.RankedMatch;
+import league.entities.azhu.RankedMatchImpl;
 import league.entities.azhu.Summoner;
 import league.neo4j.entities.Champion4j;
 import league.neo4j.entities.Item4j;
@@ -296,54 +296,54 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDBAPI{
     }
 
     @Override
-    public void cacheRankedMatch(RankedMatch match){
+    public void cacheRankedMatch(RankedMatchImpl match){
         // TODO Auto-generated method stub
     }
 
     @Override
-    public RankedMatch getRankedMatch(long matchId, long summonerId){
+    public RankedMatchImpl getRankedMatch(long matchId, long summonerId){
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public boolean hasRankedMatch(RankedMatch match){
+    public boolean hasRankedMatch(RankedMatchImpl match){
         // TODO Auto-generated method stub
         return false;
     }
 
     @Override
-    public Game getGame(long matchId, long summonerId){
+    public GeneralMatchImpl getGame(long matchId, long summonerId){
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public void cacheGame(Game match){
+    public void cacheGame(GeneralMatchImpl match){
         // TODO Auto-generated method stub
 
     }
 
     @Override
-    public boolean hasGame(Game game){
+    public boolean hasGame(GeneralMatchImpl game){
         // TODO Auto-generated method stub
         return false;
     }
 
     @Override
-    public List<RankedMatch> getRankedMatchesAll(long summonerId){
+    public List<RankedMatchImpl> getRankedMatchesAll(long summonerId){
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public List<Game> getGamesAll(long summonerId){
+    public List<GeneralMatchImpl> getGamesAll(long summonerId){
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public void cacheRankedMatches(List<RankedMatch> matches){
+    public void cacheRankedMatches(List<RankedMatchImpl> matches){
         // TODO Auto-generated method stub
 
     }

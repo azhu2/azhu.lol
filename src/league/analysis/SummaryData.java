@@ -2,7 +2,7 @@ package league.analysis;
 
 import league.entities.ChampionDto;
 import league.entities.ParticipantStats;
-import league.entities.azhu.RankedMatch;
+import league.entities.azhu.RankedMatchImpl;
 
 public class SummaryData{
     private int numGames = 0;
@@ -50,7 +50,7 @@ public class SummaryData{
         
     }
     
-    public void addMatch(RankedMatch match){
+    public void addMatch(RankedMatchImpl match){
         ParticipantStats stats = match.getQueryPlayer().getStats();
         numGames++;
         if(stats.isWinner())

@@ -3,18 +3,18 @@ package league.api;
 import java.util.List;
 
 import league.api.RiotAPIImpl.RiotPlsException;
-import league.entities.azhu.Game;
-import league.entities.azhu.RankedMatch;
+import league.entities.azhu.GeneralMatchImpl;
+import league.entities.azhu.RankedMatchImpl;
 import league.entities.azhu.Summoner;
 
 public interface NewLeagueAPI extends LeagueAPI{
-    public void cacheRankedMatch(RankedMatch match);
-    public RankedMatch getRankedMatch(long matchId, long summonerId);
-    public boolean hasRankedMatch(RankedMatch match);
-    public Game getGame(long matchId, long summonerId);
-    boolean hasGame(Game game);
-    public List<RankedMatch> getRankedMatchesAll(long summonerId);
-    public List<Game> getGamesAll(long summonerId);
+    public void cacheRankedMatch(RankedMatchImpl match);
+    public RankedMatchImpl getRankedMatch(long matchId, long summonerId);
+    public boolean hasRankedMatch(RankedMatchImpl match);
+    public GeneralMatchImpl getGame(long matchId, long summonerId);
+    boolean hasGame(GeneralMatchImpl game);
+    public List<RankedMatchImpl> getRankedMatchesAll(long summonerId);
+    public List<GeneralMatchImpl> getGamesAll(long summonerId);
     public Summoner getSummonerNewFromId(long summonerId) throws RiotPlsException;
     public List<Summoner> getSummonersNew(List<Long> summonerIds) throws RiotPlsException;
     public Summoner searchSummonerNew(String summonerName) throws RiotPlsException;

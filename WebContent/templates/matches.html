@@ -2,11 +2,11 @@
 	<h2>Match History</h2>
 	<ul id="matches-list">
 		<li	ng-repeat="match in newGames | orderBy:'createDate':true track by $index ">
-			<div class="match id_{{ match.gameId }}" ng-class="(match.stats.win == 1) ? 'win' : 'loss'">
+			<div class="match id_{{ match.id }}" ng-class="(match.stats.win == 1) ? 'win' : 'loss'">
 
 				<div class="topRow">
-					<div class="queue box">{{ match.subType | subTypeFilter }}</div>
-					<div class="time box">{{ match.createDate | date:'MM/dd/yy h:mm a' }}</div>
+					<div class="queue box">{{ match.queueType | subTypeFilter }}</div>
+					<div class="time box">{{ match.matchCreation | date:'MM/dd/yy h:mm a' }}</div>
 					<div class="game-win box" ng-show="match.stats.win">Win</div>
 					<div class="game-win box" ng-hide="match.stats.win">Loss</div>
 				</div>

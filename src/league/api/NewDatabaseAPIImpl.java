@@ -15,11 +15,11 @@ import league.entities.ChampionDto;
 import league.entities.SummonerDto;
 import league.entities.SummonerSpellDto;
 import league.entities.Team;
-import league.entities.azhu.Game;
+import league.entities.azhu.GeneralMatchImpl;
 import league.entities.azhu.GamePlayer;
 import league.entities.azhu.GameStats;
 import league.entities.azhu.League;
-import league.entities.azhu.RankedMatch;
+import league.entities.azhu.RankedMatchImpl;
 import league.entities.azhu.RankedPlayer;
 import league.entities.azhu.Summoner;
 
@@ -39,7 +39,7 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueDBAP
     }
 
     @Override
-    public void cacheRankedMatch(RankedMatch match){
+    public void cacheRankedMatch(RankedMatchImpl match){
         try{
             if(hasRankedMatch(match))
                 return;
@@ -53,7 +53,7 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueDBAP
             stmt.setInt(1, match.getMapId());
             stmt.setLong(2, match.getMatchCreation());
             stmt.setLong(3, match.getMatchDuration());
-            stmt.setLong(4, match.getMatchId());
+            stmt.setLong(4, match.getId());
             stmt.setString(5, match.getMatchMode());
             stmt.setString(6, match.getMatchType());
             stmt.setString(7, match.getMatchVersion());
@@ -77,13 +77,13 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueDBAP
     }
 
     @Override
-    public boolean hasRankedMatch(RankedMatch match){
+    public boolean hasRankedMatch(RankedMatchImpl match){
         try{
             Statement stmt = db.createStatement();
             String sql;
             sql = String.format(
                 "SELECT COUNT(*) AS rowCount FROM ranked_matches_new WHERE matchId = %d AND summonerId = %d",
-                match.getMatchId(), match.getQueryPlayer().getSummoner().getId());
+                match.getId(), match.getQueryPlayer().getSummoner().getId());
 
             Pair<ResultSet, Long> results = runQuery(stmt, sql);
             ResultSet rs = results.getLeft();
@@ -98,7 +98,7 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueDBAP
     }
 
     @Override
-    public RankedMatch getRankedMatch(long matchId, long summonerId){
+    public RankedMatchImpl getRankedMatch(long matchId, long summonerId){
         try{
             Statement stmt = db.createStatement();
             String sql;
@@ -141,7 +141,7 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueDBAP
                     new TypeReference<List<RankedPlayer>>(){
                     });
 
-                RankedMatch match = new RankedMatch(mapId, matchCreation, matchDuration, matchId, matchMode, matchType,
+                RankedMatchImpl match = new RankedMatchImpl(mapId, matchCreation, matchDuration, matchId, matchMode, matchType,
                         matchVersion, players, platformId, queueType, region, season, teams, lookupPlayer, bluePlayers,
                         redPlayers, blueBans, redBans, summonerId);
                 log.info("Fetched (new) ranked match " + match + " from db in " + time + " ms.");
@@ -154,7 +154,7 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueDBAP
     }
 
     @Override
-    public List<RankedMatch> getRankedMatchesAll(long summonerId){
+    public List<RankedMatchImpl> getRankedMatchesAll(long summonerId){
         try{
             Statement stmt = db.createStatement();
             String sql;
@@ -167,7 +167,7 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueDBAP
             ResultSet rs = results.getLeft();
             long time = results.getRight();
 
-            List<RankedMatch> matches = new LinkedList<>();
+            List<RankedMatchImpl> matches = new LinkedList<>();
             while(rs.next()){
                 long matchId = rs.getLong("matchId");
                 int mapId = rs.getInt("mapId");
@@ -199,7 +199,7 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueDBAP
                     new TypeReference<List<RankedPlayer>>(){
                     });
 
-                RankedMatch match = new RankedMatch(mapId, matchCreation, matchDuration, matchId, matchMode, matchType,
+                RankedMatchImpl match = new RankedMatchImpl(mapId, matchCreation, matchDuration, matchId, matchMode, matchType,
                         matchVersion, players, platformId, queueType, region, season, teams, lookupPlayer, bluePlayers,
                         redPlayers, blueBans, redBans, summonerId);
                 log.info("Fetched (new) ranked match " + match + " from db in " + time + " ms.");
@@ -213,7 +213,7 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueDBAP
     }
 
     @Override
-    public Game getGame(long gameId, long summonerId){
+    public GeneralMatchImpl getGame(long gameId, long summonerId){
         try{
             Statement stmt = db.createStatement();
             String sql;
@@ -246,7 +246,7 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueDBAP
                 SummonerSpellDto spell2 = mapper.readValue(rs.getString("spell2"), SummonerSpellDto.class);
                 SummonerDto summoner = mapper.readValue(rs.getString("summoner"), SummonerDto.class);
 
-                Game game = new Game(createDate, blueTeam, redTeam, gameId, gameMode, gameType, ipEarned, level, mapId,
+                GeneralMatchImpl game = new GeneralMatchImpl(createDate, blueTeam, redTeam, gameId, gameMode, gameType, ipEarned, level, mapId,
                         spell1, spell2, stats, subType, teamId, summoner, lookupPlayer, summonerId);
                 log.info("Fetched (new) game " + game + " from db in " + time + " ms.");
                 return game;
@@ -258,7 +258,7 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueDBAP
     }
 
     @Override
-    public List<Game> getGamesAll(long summonerId){
+    public List<GeneralMatchImpl> getGamesAll(long summonerId){
         try{
             Statement stmt = db.createStatement();
             String sql;
@@ -270,7 +270,7 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueDBAP
             ResultSet rs = results.getLeft();
             long time = results.getRight();
 
-            List<Game> games = new LinkedList<>();
+            List<GeneralMatchImpl> games = new LinkedList<>();
             while(rs.next()){
                 long gameId = rs.getLong("gameId");
                 int mapId = rs.getInt("mapId");
@@ -293,7 +293,7 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueDBAP
                 SummonerSpellDto spell2 = mapper.readValue(rs.getString("spell2"), SummonerSpellDto.class);
                 SummonerDto summoner = mapper.readValue(rs.getString("summoner"), SummonerDto.class);
 
-                Game game = new Game(createDate, blueTeam, redTeam, gameId, gameMode, gameType, ipEarned, level, mapId,
+                GeneralMatchImpl game = new GeneralMatchImpl(createDate, blueTeam, redTeam, gameId, gameMode, gameType, ipEarned, level, mapId,
                         spell1, spell2, stats, subType, teamId, summoner, lookupPlayer, summonerId);
                 log.info("Fetched (new) game " + game + " from db in " + time + " ms.");
                 games.add(game);
@@ -306,11 +306,11 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueDBAP
     }
 
     @Override
-    public boolean hasGame(Game game){
+    public boolean hasGame(GeneralMatchImpl game){
         try{
             Statement stmt = db.createStatement();
             String sql;
-            sql = String.format("SELECT COUNT(*) AS rowCount FROM games WHERE gameId = %d", game.getGameId());
+            sql = String.format("SELECT COUNT(*) AS rowCount FROM games WHERE gameId = %d", game.getId());
 
             ResultSet rs = stmt.executeQuery(sql);
 
@@ -324,7 +324,7 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueDBAP
     }
 
     @Override
-    public void cacheGame(Game game){
+    public void cacheGame(GeneralMatchImpl game){
         try{
             if(hasGame(game))
                 return;
@@ -335,10 +335,10 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueDBAP
                     + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement stmt = db.prepareStatement(sql);
             stmt.setInt(1, game.getMapId());
-            stmt.setLong(2, game.getCreateDate());
-            stmt.setString(3, game.getGameMode());
-            stmt.setString(4, game.getGameType());
-            stmt.setString(5, game.getSubType());
+            stmt.setLong(2, game.getMatchCreation());
+            stmt.setString(3, game.getMatchMode());
+            stmt.setString(4, game.getMatchType());
+            stmt.setString(5, game.getQueueType());
             stmt.setInt(6, game.getLookupPlayer());
             stmt.setString(7, mapper.writeValueAsString(game.getBlueTeam()));
             stmt.setString(8, mapper.writeValueAsString(game.getRedTeam()));
@@ -349,7 +349,7 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueDBAP
             stmt.setString(13, mapper.writeValueAsString(game.getSpell2()));
             stmt.setInt(14, game.getTeamId());
             stmt.setString(15, mapper.writeValueAsString(game.getSummoner()));
-            stmt.setLong(16, game.getGameId());
+            stmt.setLong(16, game.getId());
             stmt.setLong(17, game.getSummonerId());
 
             new CacheThread(stmt, game).start();
@@ -395,7 +395,7 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueDBAP
     public List<Summoner> getSummonersNew(List<Long> summonerIds) throws RiotPlsException{
         return getSummonersNew(summonerIds, true);
     }
-    
+
     @Override
     public List<Summoner> getSummonersNew(List<Long> summonerIds, boolean cache) throws RiotPlsException{
         List<Summoner> dbResults = new LinkedList<>();
@@ -517,8 +517,8 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueDBAP
     }
 
     @Override
-    public void cacheRankedMatches(List<RankedMatch> matches){
-        for(RankedMatch match : matches)
+    public void cacheRankedMatches(List<RankedMatchImpl> matches){
+        for(RankedMatchImpl match : matches)
             cacheRankedMatch(match);
     }
 }

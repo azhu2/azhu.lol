@@ -29,9 +29,9 @@ import league.entities.GameDto;
 import league.entities.MatchDetail;
 import league.entities.MatchSummary;
 import league.entities.SummonerDto;
-import league.entities.azhu.Game;
+import league.entities.azhu.GeneralMatchImpl;
 import league.entities.azhu.League;
-import league.entities.azhu.RankedMatch;
+import league.entities.azhu.RankedMatchImpl;
 import league.entities.azhu.Summoner;
 
 /**
@@ -55,12 +55,12 @@ public class NewLeagueResource extends LeagueResource{
     public Response getMatchDetail(@PathParam("id") long matchId, @QueryParam("summonerId") long summonerId)
             throws ServletException, IOException{
         try{
-            RankedMatch match = api.getRankedMatch(matchId, summonerId);
+            RankedMatchImpl match = api.getRankedMatch(matchId, summonerId);
             if(match != null)
                 return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(match)).build();
 
             MatchDetail detail = api_dynamic.getMatchDetail(matchId);
-            match = new RankedMatch(detail, summonerId);
+            match = new RankedMatchImpl(detail, summonerId);
             api.cacheRankedMatch(match);
 
             return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(match)).build();
@@ -75,25 +75,25 @@ public class NewLeagueResource extends LeagueResource{
     @Produces(MediaType.APPLICATION_JSON)
     public Response getRankedMatches(@PathParam("id") long summonerId) throws ServletException, IOException{
         try{
-            List<RankedMatch> matches = getRankedMatchesHelper(summonerId);
+            List<RankedMatchImpl> matches = getRankedMatchesHelper(summonerId);
             return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(matches)).build();
         } catch(RiotPlsException e){
             return Response.status(e.getStatus()).entity(e.getMessage()).build();
         }
     }
 
-    private List<RankedMatch> getRankedMatchesHelper(long summonerId) throws RiotPlsException{
+    private List<RankedMatchImpl> getRankedMatchesHelper(long summonerId) throws RiotPlsException{
         List<MatchSummary> oldApiResults = api_riot.getRankedMatches(summonerId);
         if(oldApiResults == null)
             return null;
 
-        List<RankedMatch> matches = new LinkedList<>();
+        List<RankedMatchImpl> matches = new LinkedList<>();
         for(MatchSummary summary : oldApiResults){
             long matchId = summary.getMatchId();
-            RankedMatch match = api.getRankedMatch(matchId, summonerId);
+            RankedMatchImpl match = api.getRankedMatch(matchId, summonerId);
             if(match == null){
                 MatchDetail detail = api_dynamic.getMatchDetail(matchId);
-                match = new RankedMatch(detail, summonerId, false);
+                match = new RankedMatchImpl(detail, summonerId, false);
             }
             matches.add(match);
 
@@ -111,7 +111,7 @@ public class NewLeagueResource extends LeagueResource{
     @Path("/ranked-matches/{id}/all")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllRankedMatches(@PathParam("id") long summonerId) throws ServletException, IOException{
-        List<RankedMatch> matches = api.getRankedMatchesAll(summonerId);
+        List<RankedMatchImpl> matches = api.getRankedMatchesAll(summonerId);
         return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(matches)).build();
     }
 
@@ -129,10 +129,10 @@ public class NewLeagueResource extends LeagueResource{
                 if(matchPage != null)
                     for(MatchSummary matchSummary : matchPage){
                         long matchId = matchSummary.getMatchId();
-                        RankedMatch match = api.getRankedMatch(matchId, summonerId);
+                        RankedMatchImpl match = api.getRankedMatch(matchId, summonerId);
                         if(match == null){
                             MatchDetail detail = api_dynamic.getMatchDetail(matchId);
-                            match = new RankedMatch(detail, summonerId, false);
+                            match = new RankedMatchImpl(detail, summonerId, false);
                             api.cacheRankedMatch(match);
                         }
                         count++;
@@ -159,12 +159,12 @@ public class NewLeagueResource extends LeagueResource{
     public Response getMatchHistory(@PathParam("id") long summonerId) throws ServletException, IOException{
         try{
             Set<GameDto> oldApiResults = api_riot.getMatchHistory(summonerId);
-            List<Game> matches = new LinkedList<>();
+            List<GeneralMatchImpl> matches = new LinkedList<>();
             for(GameDto gameData : oldApiResults){
                 long matchId = gameData.getGameId();
-                Game match = api.getGame(matchId, summonerId);
+                GeneralMatchImpl match = api.getGame(matchId, summonerId);
                 if(match == null){
-                    match = new Game(gameData, summonerId);
+                    match = new GeneralMatchImpl(gameData, summonerId);
                     api.cacheGame(match);
                 }
                 matches.add(match);
@@ -181,7 +181,7 @@ public class NewLeagueResource extends LeagueResource{
     @Path("/match-history/{id}/all")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getMatchHistoryAll(@PathParam("id") long summonerId) throws ServletException, IOException{
-        List<Game> matches = api.getGamesAll(summonerId);
+        List<GeneralMatchImpl> matches = api.getGamesAll(summonerId);
         return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(matches)).build();
     }
 
@@ -243,7 +243,7 @@ public class NewLeagueResource extends LeagueResource{
     @Path("/ranked-stats/champions/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getRankedStatsByChampion(@PathParam("id") long summonerId) throws ServletException, IOException{
-        List<RankedMatch> matches = api.getRankedMatchesAll(summonerId);
+        List<RankedMatchImpl> matches = api.getRankedMatchesAll(summonerId);
         if(matches == null || matches.isEmpty())
             try{
                 matches = getRankedMatchesHelper(summonerId);

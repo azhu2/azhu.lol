@@ -4,7 +4,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import league.LeagueConstants;
-import league.api.APIConstants;
 import league.api.DynamicLeagueAPIImpl;
 import league.api.LeagueAPI;
 import league.api.RiotAPIImpl.RiotPlsException;
@@ -15,20 +14,14 @@ import league.entities.RawStatsDto;
 import league.entities.SummonerDto;
 import league.entities.SummonerSpellDto;
 
-public class Game{
-    private long createDate;
+public class GeneralMatchImpl extends Match{
     private List<GamePlayer> blueTeam;
     private List<GamePlayer> redTeam;
-    private long gameId;
-    private String gameMode;
-    private String gameType;
     private int ipEarned;
     private int level;
-    private int mapId;
     private SummonerSpellDto spell1;
     private SummonerSpellDto spell2;
     private GameStats stats;
-    private String subType;
     private int teamId;
     private SummonerDto summoner;
     private long summonerId;        // Redundant, just used for table index
@@ -38,22 +31,22 @@ public class Game{
 
     private LeagueAPI api = DynamicLeagueAPIImpl.getInstance();
 
-    public Game(){
+    public GeneralMatchImpl(){
 
     }
 
-    public Game(GameDto game, long summonerId) throws RiotPlsException{
-        createDate = game.getCreateDate();
-        gameId = game.getGameId();
-        gameMode = game.getGameMode();
-        gameType = game.getGameType();
-        ipEarned = game.getIpEarned();
-        level = game.getLevel();
-        mapId = game.getMapId();
-        stats = new GameStats(game.getStats());
-        subType = game.getSubType();
-        teamId = game.getTeamId();
-        this.summonerId = summonerId;
+    public GeneralMatchImpl(GameDto game, long summonerId) throws RiotPlsException{
+        setMatchCreation(game.getCreateDate());
+        setId(game.getGameId());
+        setMatchMode(game.getGameMode());
+        setMatchType(game.getGameType());
+        setIpEarned(game.getIpEarned());
+        setLevel(game.getLevel());
+        setMapId(game.getMapId());
+        setStats(new GameStats(game.getStats()));
+        setQueueType(game.getSubType());
+        setTeamId(game.getTeamId());
+        setSummonerId(summonerId);
 
         blueTeam = new LinkedList<>();
         redTeam = new LinkedList<>();
@@ -87,30 +80,30 @@ public class Game{
         lookupPlayer = blueTeam.size();
     }
 
-    public Game(long createDate, List<GamePlayer> blueTeam, List<GamePlayer> redTeam, long gameId, String gameMode,
+    public GeneralMatchImpl(long createDate, List<GamePlayer> blueTeam, List<GamePlayer> redTeam, long gameId, String gameMode,
             String gameType, int ipEarned, int level, int mapId, SummonerSpellDto spell1, SummonerSpellDto spell2,
             GameStats stats, String subType, int teamId, SummonerDto summoner, int lookupPlayer, long summonerId){
         super();
-        this.createDate = createDate;
-        this.blueTeam = blueTeam;
-        this.redTeam = redTeam;
-        this.gameId = gameId;
-        this.gameMode = gameMode;
-        this.gameType = gameType;
-        this.ipEarned = ipEarned;
-        this.level = level;
-        this.mapId = mapId;
-        this.spell1 = spell1;
-        this.spell2 = spell2;
-        this.stats = stats;
-        this.subType = subType;
-        this.teamId = teamId;
-        this.summoner = summoner;
-        this.lookupPlayer = lookupPlayer;
-        this.summonerId = summonerId;
+        setMatchCreation(createDate);
+        setBlueTeam(blueTeam);
+        setRedTeam(redTeam);
+        setId(gameId);
+        setMatchMode(gameMode);
+        setMatchType(gameType);
+        setIpEarned(ipEarned);
+        setLevel(level);
+        setMapId(mapId);
+        setSpell1(spell1);
+        setSpell2(spell2);
+        setStats(stats);
+        setQueueType(subType);
+        setTeamId(teamId);
+        setSummoner(summoner);
+        setLookupPlayer(lookupPlayer);
+        setSummonerId(summonerId);
     }
 
-    public Game(long createDate, List<GamePlayer> blueTeam, List<GamePlayer> redTeam, long gameId, String gameMode,
+    public GeneralMatchImpl(long createDate, List<GamePlayer> blueTeam, List<GamePlayer> redTeam, long gameId, String gameMode,
             String gameType, int ipEarned, int level, int mapId, SummonerSpellDto spell1, SummonerSpellDto spell2,
             RawStatsDto stats, String subType, int teamId, SummonerDto summoner, int lookupPlayer, long summonerId){
         this(createDate, blueTeam, redTeam, gameId, gameMode, gameType, ipEarned, level, mapId, spell1, spell2,
@@ -119,14 +112,14 @@ public class Game{
 
     @Override
     public String toString(){
-        return "Game " + gameId;
+        return "Game " + getId();
     }
 
     @Override
     public int hashCode(){
         final int prime = 31;
         int result = 1;
-        result = prime * result + (int) (gameId ^ (gameId >>> 32));
+        result = prime * result + (int) (getId() ^ (getId() >>> 32));
         result = prime * result + ((summoner == null) ? 0 : summoner.hashCode());
         return result;
     }
@@ -139,8 +132,8 @@ public class Game{
             return false;
         if(getClass() != obj.getClass())
             return false;
-        Game other = (Game) obj;
-        if(gameId != other.gameId)
+        GeneralMatchImpl other = (GeneralMatchImpl) obj;
+        if(getId() != other.getId())
             return false;
         if(summoner == null){
             if(other.summoner != null)
@@ -148,14 +141,6 @@ public class Game{
         } else if(!summoner.equals(other.summoner))
             return false;
         return true;
-    }
-
-    public long getCreateDate(){
-        return createDate;
-    }
-
-    public void setCreateDate(long createDate){
-        this.createDate = createDate;
     }
 
     public List<GamePlayer> getBlueTeam(){
@@ -174,30 +159,6 @@ public class Game{
         this.redTeam = redTeam;
     }
 
-    public long getGameId(){
-        return gameId;
-    }
-
-    public void setGameId(long gameId){
-        this.gameId = gameId;
-    }
-
-    public String getGameMode(){
-        return gameMode;
-    }
-
-    public void setGameMode(String gameMode){
-        this.gameMode = gameMode;
-    }
-
-    public String getGameType(){
-        return gameType;
-    }
-
-    public void setGameType(String gameType){
-        this.gameType = gameType;
-    }
-
     public int getIpEarned(){
         return ipEarned;
     }
@@ -212,14 +173,6 @@ public class Game{
 
     public void setLevel(int level){
         this.level = level;
-    }
-
-    public int getMapId(){
-        return mapId;
-    }
-
-    public void setMapId(int mapId){
-        this.mapId = mapId;
     }
 
     public SummonerSpellDto getSpell1(){
@@ -244,14 +197,6 @@ public class Game{
 
     public void setStats(GameStats stats){
         this.stats = stats;
-    }
-
-    public String getSubType(){
-        return subType;
-    }
-
-    public void setSubType(String subType){
-        this.subType = subType;
     }
 
     public int getTeamId(){

@@ -2,7 +2,7 @@
 	<h2>Ranked Matches</h2>
 	<ul id="ranked-history">
 		<li ng-repeat="match in newRanked | orderBy:'matchCreation':true track by $index ">
-			<div class="match id_{{match.matchId}}" ng-class="match.players[match.lookupPlayer].stats.winner ? 'win' : 'loss'">
+			<div class="match id_{{match.id}}" ng-class="match.players[match.lookupPlayer].stats.winner ? 'win' : 'loss'">
 				<div class="topRow">
 					<div class="queue box">{{ match.queueType | queueFilter }}</div>
 					<div class="time box">{{ match.matchCreation | date:'MM/dd/yy h:mm a' }}</div>
