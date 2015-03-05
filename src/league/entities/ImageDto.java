@@ -7,6 +7,10 @@ public class ImageDto{
     private String group;
     private String sprite;
 
+    public ImageDto(){
+        
+    }
+    
     public int getW(){
         return w;
     }

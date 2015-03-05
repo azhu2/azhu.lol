@@ -32,7 +32,8 @@ public class Summoner4j extends Summoner{
     public void setLeagueString(String leagueString){
         this.leagueString = leagueString;
     }
-    
+
+    @Override
     public void setLeague(League league){
         super.setLeague(league);
         leagueString = league != null ? league.toString() : "unranked";

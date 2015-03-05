@@ -22,6 +22,7 @@ import league.entities.azhu.Game;
 import league.entities.azhu.League;
 import league.entities.azhu.RankedMatch;
 import league.entities.azhu.Summoner;
+import league.neo4j.entities.Champion4j;
 import league.neo4j.entities.Summoner4j;
 
 import org.codehaus.jackson.JsonGenerator;
@@ -60,6 +61,16 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDBAPI{
         registerShutdownHook(db);
         engine = new ExecutionEngine(db);
         log.info(String.format(new Timestamp(System.currentTimeMillis()) + ": " + "Database %s connected.\n", DB_PATH));
+        
+        setIndices();
+    }
+    
+    private void setIndices(){
+        try(Transaction tx = db.beginTx()){
+            String stmt = "CREATE INDEX ON :Summoner(id)";
+            engine.execute(stmt);
+            tx.success();
+        }
     }
 
     private static void registerShutdownHook(final GraphDatabaseService graphDb){
@@ -72,79 +83,142 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDBAPI{
     }
 
     @Override
-    public ChampionDto getChampFromId(long champId) throws RiotPlsException{
+    public Summoner getSummonerNewFromId(long summonerId){
+        try(Transaction tx = db.beginTx()){
+            String stmt = String.format("MATCH (n:Summoner) WHERE n.id = %d return n", summonerId);
+            ExecutionResult results = engine.execute(stmt);
+            Summoner summoner = parseSummoner(results);
+    
+            tx.success();
+            return summoner;
+        }
+    }
+
+    @Override
+    public List<Summoner> getSummonersNew(List<Long> summonerIds){
+        List<Summoner> summoners = new LinkedList<>();
+    
+        for(Long id : summonerIds){
+            summoners.add(getSummonerNewFromId(id));
+        }
+    
+        return null;
+    }
+
+    @Override
+    public Summoner searchSummonerNew(String summonerName){
+        try(Transaction tx = db.beginTx()){
+            String stmt = String.format("MATCH (n:Summoner) WHERE n.name =~ '(?i)%s' return n", summonerName);
+            ExecutionResult results = engine.execute(stmt);
+            Summoner summoner = parseSummoner(results);
+    
+            tx.success();
+            return summoner;
+        }
+    }
+
+    private Summoner parseSummoner(ExecutionResult results){
+        ResourceIterator<Map<String, Object>> itr = results.iterator();
+    
+        if(!itr.hasNext()){
+            System.out.println("Summoner not found.");
+            return null;
+        }
+    
+        Map<String, Object> found = itr.next();
+        Node node = (Node) found.get("n");
+        Summoner summoner = new Summoner4j(node);
+        itr.close();
+    
+        log.info("Neo4j: fetched summoner " + summoner);
+        return summoner;
+    }
+
+    @Override
+    public void cacheSummoner(Summoner summoner){
+        try(Transaction tx = db.beginTx()){
+            Summoner s = new Summoner4j(summoner);
+            String objectMap = mapper.writeValueAsString(s);
+            String stmt = String.format("CREATE (n:Summoner %s)", objectMap);
+            engine.execute(stmt);
+            
+            log.info("Neo4j: cached summoner " + summoner);
+            tx.success();
+        } catch(IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public List<Summoner> getSummonersNew(List<Long> summonerIds, boolean cache){
+        // This okay?
+        return getSummonersNew(summonerIds);
+    }
+
+    @Override
+    public ChampionDto getChampFromId(long champId){
+        try(Transaction tx = db.beginTx()){
+            String stmt = String.format("MATCH (n:Champion) WHERE n.id = %d return n", champId);
+            ExecutionResult results = engine.execute(stmt);
+            ResourceIterator<Map<String, Object>> itr = results.iterator();
+            
+            if(!itr.hasNext()){
+                System.out.println("Summoner not found.");
+                return null;
+            }
+        
+            Map<String, Object> found = itr.next();
+            Node node = (Node) found.get("n");
+            ChampionDto champion = new Champion4j(node);
+            itr.close();
+        
+            log.info("Neo4j: fetched champion " + champion);            
+            tx.success();
+            return champion;
+        }
+    }
+    
+    @Override
+    public void cacheChampion(ChampionDto champion){
+        try(Transaction tx = db.beginTx()){
+            ChampionDto c = new Champion4j(champion);
+            String objectMap = mapper.writeValueAsString(c);
+            String stmt = String.format("CREATE (n:Champion %s)", objectMap);
+            engine.execute(stmt);
+            
+            log.info("Neo4j: cached champion " + champion);
+            tx.success();
+        } catch(IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public MatchDetail getMatchDetail(long matchId){
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public MatchDetail getMatchDetail(long matchId) throws RiotPlsException{
+    public SummonerSpellDto getSummonerSpellFromId(long spellId){
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    @Deprecated
-    public Set<GameDto> getMatchHistory(long summonerId) throws RiotPlsException{
-        return null;
-    }
-
-    @Override
-    @Deprecated
-    public Set<GameDto> getMatchHistoryAll(long summonerId) throws RiotPlsException{
-        return null;
-    }
-
-    @Override
-    @Deprecated
-    public List<MatchSummary> getRankedMatches(long summonerId) throws RiotPlsException{
-        return null;
-    }
-
-    @Override
-    @Deprecated
-    public SummonerDto getSummonerFromId(long summonerId) throws RiotPlsException{
-        return null;
-    }
-
-    @Override
-    @Deprecated
-    public List<SummonerDto> getSummoners(List<Long> summonerIds) throws RiotPlsException{
-        return null;
-    }
-
-    @Override
-    @Deprecated
-    public SummonerDto searchSummoner(String summonerName) throws RiotPlsException{
-        return null;
-    }
-
-    @Override
-    public SummonerSpellDto getSummonerSpellFromId(long spellId) throws RiotPlsException{
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    @Deprecated
-    public List<MatchSummary> getAllRankedMatches(long summonerId) throws RiotPlsException{
-        return null;
-    }
-
-    @Override
-    public int cacheAllRankedMatches(long summonerId) throws RiotPlsException{
+    public int cacheAllRankedMatches(long summonerId){
         // TODO Auto-generated method stub
         return 0;
     }
 
     @Override
-    public League getLeague(long summonerId) throws RiotPlsException{
+    public League getLeague(long summonerId){
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public List<League> getLeagues(List<Long> idList) throws RiotPlsException{
+    public List<League> getLeagues(List<Long> idList){
         // TODO Auto-generated method stub
         return null;
     }
@@ -155,7 +229,7 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDBAPI{
     }
 
     @Override
-    public ItemDto getItem(long itemId) throws RiotPlsException{
+    public ItemDto getItem(long itemId){
         // TODO Auto-generated method stub
         return null;
     }
@@ -209,93 +283,68 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDBAPI{
     }
 
     @Override
-    public Summoner getSummonerNewFromId(long summonerId) throws RiotPlsException{
-        try(Transaction tx = db.beginTx()){
-            String stmt = String.format("MATCH (n:Summoner) WHERE n.id = %d return n", summonerId);
-            ExecutionResult results = engine.execute(stmt);
-            Summoner summoner = parseSummoner(results);
-
-            tx.success();
-            return summoner;
-        }
-    }
-
-    @Override
-    public List<Summoner> getSummonersNew(List<Long> summonerIds) throws RiotPlsException{
-        List<Summoner> summoners = new LinkedList<>();
-
-        for(Long id : summonerIds){
-            summoners.add(getSummonerNewFromId(id));
-        }
-
-        return null;
-    }
-
-    @Override
-    public Summoner searchSummonerNew(String summonerName) throws RiotPlsException{
-        try(Transaction tx = db.beginTx()){
-            String stmt = String.format("MATCH (n:Summoner) WHERE n.name =~ '(?i)%s' return n", summonerName);
-            ExecutionResult results = engine.execute(stmt);
-            Summoner summoner = parseSummoner(results);
-
-            tx.success();
-            return summoner;
-        }
-    }
-
-    private Summoner parseSummoner(ExecutionResult results) throws RiotPlsException{
-        ResourceIterator<Map<String, Object>> itr = results.iterator();
-
-        if(!itr.hasNext()){
-            System.out.println("Summoner not found.");
-            return null;
-        }
-
-        Map<String, Object> found = itr.next();
-        Node node = (Node) found.get("n");
-        Summoner summoner = new Summoner4j(node);
-        itr.close();
-
-        log.info("Neo4j: fetched summoner " + summoner);
-        return summoner;
-    }
-
-    @Override
-    public void cacheSummoner(Summoner summoner){
-        try(Transaction tx = db.beginTx()){
-            String objectMap = mapper.writeValueAsString(summoner);
-            String stmt = String.format("CREATE (n:Summoner %s)", objectMap);
-            engine.execute(stmt);
-            
-            log.info("Neo4j: cached summoner " + summoner);
-            tx.success();
-        } catch(IOException e){
-            e.printStackTrace();
-        }
-    }
-
-    @Override
     public void cacheRankedMatches(List<RankedMatch> matches){
         // TODO Auto-generated method stub
 
     }
 
     @Override
-    public List<Summoner> getSummonersNew(List<Long> summonerIds, boolean cache) throws RiotPlsException{
-        // This okay?
-        return getSummonersNew(summonerIds);
+    @Deprecated
+    public Set<GameDto> getMatchHistory(long summonerId){
+        return null;
+    }
+
+    @Override
+    @Deprecated
+    public Set<GameDto> getMatchHistoryAll(long summonerId){
+        return null;
+    }
+
+    @Override
+    @Deprecated
+    public List<MatchSummary> getRankedMatches(long summonerId){
+        return null;
+    }
+
+    @Override
+    @Deprecated
+    public SummonerDto getSummonerFromId(long summonerId){
+        return null;
+    }
+
+    @Override
+    @Deprecated
+    public List<SummonerDto> getSummoners(List<Long> summonerIds){
+        return null;
+    }
+
+    @Override
+    @Deprecated
+    public SummonerDto searchSummoner(String summonerName){
+        return null;
+    }
+
+    @Override
+    @Deprecated
+    public List<MatchSummary> getAllRankedMatches(long summonerId){
+        return null;
     }
 
     public static void main(String[] args){
-        try{
-            Neo4jDatabaseAPIImpl n = Neo4jDatabaseAPIImpl.getInstance();
-//            Summoner summ = NewDatabaseAPIImpl.getInstance().searchSummonerNew("zedenstein");
-//            Summoner s = new Summoner4j(summ);
-//            n.cacheSummoner(s);
-            System.out.println(n.searchSummonerNew("l am bjerg"));
-            System.out.println(n.getSummonerNewFromId(31569637));
-        } catch(RiotPlsException e){
-            e.printStackTrace();
+            try{
+                Neo4jDatabaseAPIImpl n = Neo4jDatabaseAPIImpl.getInstance();
+    //            Summoner summ = NewDatabaseAPIImpl.getInstance().searchSummonerNew("zedenstein");
+    //            Summoner s = new Summoner4j(summ);
+    //            n.cacheSummoner(summ);
+                System.out.println(n.searchSummonerNew("l am bjerg"));
+                System.out.println(n.getSummonerNewFromId(31569637));
+                System.out.println(n.searchSummonerNew("irascent"));
+                
+//                ChampionDto c = NewDatabaseAPIImpl.getInstance().getChampFromId(1);
+//                n.cacheChampion(c);
+                System.out.println(n.getChampFromId(1));
+            } catch(Exception e){
+                e.printStackTrace();
+            }
         }
-    }
 }

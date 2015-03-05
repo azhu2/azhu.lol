@@ -1,5 +1,7 @@
 package league.entities;
 
+import org.neo4j.graphdb.Node;
+
 import league.entities.ImageDto;
 
 public class ChampionDto{
@@ -20,6 +22,13 @@ public class ChampionDto{
         this.name = name;
         this.title = title;
         this.key = key;
+    }
+
+    public ChampionDto(Node node){
+        setId((int)(long) node.getProperty("id"));
+        setName((String) node.getProperty("name"));
+        setTitle((String) node.getProperty("title"));
+        setKey((String) node.getProperty("key"));
     }
 
     @Override
