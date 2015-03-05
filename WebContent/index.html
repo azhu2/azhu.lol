@@ -46,7 +46,7 @@
 								</div>
 							</div>
 		
-							<div id="panelOptions">
+							<div id="panelOptions" ng-show="showTabs">
 								<a ng-href="#{{ summoner.id }}/matches" ng-click="lookupMatches(summoner.id)">Match History</a>
 								<a ng-href="#{{ summoner.id }}/ranked" ng-click="lookupRanked(summoner.id)">Ranked Matches</a>
 								<a ng-href="#{{ summoner.id }}/ranked-stats" ng-click="getRankedStats(summoner.id)">Ranked Stats</a>

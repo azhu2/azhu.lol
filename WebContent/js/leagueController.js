@@ -25,11 +25,13 @@ leagueApp.config([ '$routeProvider', function($routeProvider, routeController) {
 leagueApp.controller('routeController',
 	function($rootScope, $routeParams, LeagueResource) {
 		$rootScope.version = "5.2.2";
+		$rootScope.showTabs = false;
 
 		LeagueResource.summonerFromId().get({
 			id : $routeParams.summonerId
 		}, function(data) {
 			$rootScope.summoner = data;
+			$rootScope.showTabs = true;
 		}, function(error) {
 			$rootScope.summoner = {};
 		});
@@ -49,6 +51,7 @@ leagueApp.controller('lookupController', function($scope, $rootScope, $routePara
 				id : $routeParams.summonerId
 			}, function(data) {
 				$rootScope.summoner = data;
+				$rootScope.showTabs = true;
 			}, function(error) {
 				$rootScope.summoner = {};
 			});
@@ -57,10 +60,13 @@ leagueApp.controller('lookupController', function($scope, $rootScope, $routePara
 	}
 
 	$rootScope.lookup = function() {
+		$rootScope.showTabs = false;
+		
 		LeagueResource.lookupSummoner().get({
 			name : $scope.summonerName
 		}, function(data) {
 			$rootScope.summoner = data;
+			$rootScope.showTabs = true;
 		}, function(error) {
 			$rootScope.summoner = {};
 		});
