@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import league.api.NewDatabaseAPIImpl;
 import league.api.NewLeagueDBAPI;
@@ -36,9 +37,12 @@ import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 
 public class Neo4jDatabaseAPIImpl implements NewLeagueDBAPI{
     private static final String DB_PATH = "lol.db";
+
+    private static Logger log = Logger.getLogger(Neo4jDatabaseAPIImpl.class.getName());
     private GraphDatabaseService db;
     private ObjectMapper mapper = new ObjectMapper();
     private ExecutionEngine engine;
+    
     private static Neo4jDatabaseAPIImpl _instance = new Neo4jDatabaseAPIImpl();
 
     public static Neo4jDatabaseAPIImpl getInstance(){
@@ -55,7 +59,7 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDBAPI{
         db = new GraphDatabaseFactory().newEmbeddedDatabase(DB_PATH);
         registerShutdownHook(db);
         engine = new ExecutionEngine(db);
-        System.out.printf(new Timestamp(System.currentTimeMillis()) + ": " + "Database %s created.\n", DB_PATH);
+        log.info(String.format(new Timestamp(System.currentTimeMillis()) + ": " + "Database %s connected.\n", DB_PATH));
     }
 
     private static void registerShutdownHook(final GraphDatabaseService graphDb){
@@ -252,6 +256,7 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDBAPI{
         Summoner summoner = new Summoner4j(node);
         itr.close();
 
+        log.info("Neo4j: fetched summoner " + summoner);
         return summoner;
     }
 
@@ -261,6 +266,8 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDBAPI{
             String objectMap = mapper.writeValueAsString(summoner);
             String stmt = String.format("CREATE (n:Summoner %s)", objectMap);
             engine.execute(stmt);
+            
+            log.info("Neo4j: cached summoner " + summoner);
             tx.success();
         } catch(IOException e){
             e.printStackTrace();
@@ -275,8 +282,8 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDBAPI{
 
     @Override
     public List<Summoner> getSummonersNew(List<Long> summonerIds, boolean cache) throws RiotPlsException{
-        // TODO Auto-generated method stub
-        return null;
+        // This okay?
+        return getSummonersNew(summonerIds);
     }
 
     public static void main(String[] args){
