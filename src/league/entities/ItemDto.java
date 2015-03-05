@@ -3,8 +3,12 @@ package league.entities;
 import java.util.List;
 import java.util.Map;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.neo4j.graphdb.Node;
 
+@JsonIgnoreProperties(value = {"colloq", "consumeOnFull", "consumed", "depth", "effect", "from", "group",
+        "hideFromAll", "inStore", "info", "maps", "requiredChampion", "sanitizedDescription", "specialRecipe",
+        "stacks", "tags"})
 public class ItemDto{
     private String colloq;
     private boolean consumeOnFull;
@@ -42,10 +46,10 @@ public class ItemDto{
         this.name = name;
         this.plaintext = plaintext;
     }
-    
+
     public ItemDto(Node node){
         setDescription((String) node.getProperty("description"));
-        setId((int)(long) node.getProperty("id"));
+        setId((int) (long) node.getProperty("id"));
         setName((String) node.getProperty("name"));
         setPlaintext((String) node.getProperty("plaintext"));
     }

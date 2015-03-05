@@ -10,9 +10,7 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.neo4j.graphdb.Node;
 
-@JsonIgnoreProperties(value = {"colloq", "consumeOnFull", "consumed", "depth", "effect", "from", "group",
-        "hideFromAll", "image", "inStore", "info", "maps", "requiredChampion", "sanitizedDescription", "specialRecipe",
-        "stacks", "tags"})
+@JsonIgnoreProperties(value = {"image"})
 public class Item4j extends ItemDto{
     private String imageString;
     private static Logger log = Logger.getLogger(Item4j.class.getName());

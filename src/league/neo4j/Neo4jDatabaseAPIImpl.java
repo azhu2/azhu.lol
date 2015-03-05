@@ -381,7 +381,7 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDBAPI{
 //                n.cacheChampion(c);
                 System.out.println(n.getChampFromId(1));
                 
-//                ItemDto i = NewDatabaseAPIImpl.getInstance().getItemFromId(3031);
+//                ItemDto i = NewDatabaseAPIImpl.getInstance().getItemFromId(1055);
 //                n.cacheItem(i);
                 System.out.println(n.getItemFromId(3031));
             } catch(Exception e){
