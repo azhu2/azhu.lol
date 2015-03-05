@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import league.api.NewDatabaseAPIImpl;
 import league.api.NewLeagueDBAPI;
 import league.api.RiotAPIImpl.RiotPlsException;
 import league.entities.ChampionDto;
@@ -20,6 +21,7 @@ import league.entities.azhu.Game;
 import league.entities.azhu.League;
 import league.entities.azhu.RankedMatch;
 import league.entities.azhu.Summoner;
+import league.neo4j.entities.Summoner4j;
 
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -217,11 +219,11 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDBAPI{
     @Override
     public List<Summoner> getSummonersNew(List<Long> summonerIds) throws RiotPlsException{
         List<Summoner> summoners = new LinkedList<>();
-        
+
         for(Long id : summonerIds){
             summoners.add(getSummonerNewFromId(id));
         }
-        
+
         return null;
     }
 
@@ -231,7 +233,7 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDBAPI{
             String stmt = String.format("MATCH (n:Summoner) WHERE n.name =~ '(?i)%s' return n", summonerName);
             ExecutionResult results = engine.execute(stmt);
             Summoner summoner = parseSummoner(results);
-            
+
             tx.success();
             return summoner;
         }
@@ -247,15 +249,12 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDBAPI{
 
         Map<String, Object> found = itr.next();
         Node node = (Node) found.get("n");
-        Summoner summoner = new Summoner(node);
+        Summoner summoner = new Summoner4j(node);
         itr.close();
-        
-        League league = getLeague(summoner.getId());
-        summoner.setLeague(league);
-        
+
         return summoner;
     }
-    
+
     @Override
     public void cacheSummoner(Summoner summoner){
         try(Transaction tx = db.beginTx()){
@@ -263,15 +262,9 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDBAPI{
             String stmt = String.format("CREATE (n:Summoner %s)", objectMap);
             engine.execute(stmt);
             tx.success();
-            
-            cacheLeague(summoner.getLeague());
         } catch(IOException e){
             e.printStackTrace();
         }
-    }
-    
-    private void cacheLeague(League league){
-        // TODO: Implement
     }
 
     @Override
@@ -289,8 +282,9 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDBAPI{
     public static void main(String[] args){
         try{
             Neo4jDatabaseAPIImpl n = Neo4jDatabaseAPIImpl.getInstance();
-//            Summoner summ = NewDatabaseAPIImpl.getInstance().searchSummonerNew("l am bjerg");
-//            n.cacheSummoner(new Summoner4j(summ));
+//            Summoner summ = NewDatabaseAPIImpl.getInstance().searchSummonerNew("zedenstein");
+//            Summoner s = new Summoner4j(summ);
+//            n.cacheSummoner(s);
             System.out.println(n.searchSummonerNew("l am bjerg"));
             System.out.println(n.getSummonerNewFromId(31569637));
         } catch(RiotPlsException e){

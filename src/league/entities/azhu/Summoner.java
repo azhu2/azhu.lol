@@ -40,6 +40,6 @@ public class Summoner extends SummonerDto{
 
     @Override
     public String toString(){
-        return super.toString() + " | " + (league != null ? league.getTier() + " " + league.getDivision() : "unranked");
+        return super.toString() + " | " + (league != null ? league.getTier() + " " + league.getDivision() + "(" + league.getLeaguePoints() + ")": "unranked");
     }
 }

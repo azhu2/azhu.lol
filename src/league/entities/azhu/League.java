@@ -11,7 +11,7 @@ import league.entities.MiniSeriesDto;
 public class League{
     private String name = "";
     private String queue = "";
-    private String tier = "";
+    private String tier = "unranked";
     private String division = "";
     private boolean isFreshBlood;
     private boolean isHotStreak;
@@ -74,12 +74,22 @@ public class League{
         this.miniSeries = miniSeries;
         this.wins = wins;
     }
+    
+    public League(String asString){
+        String[] parts = asString.split(" ");
+        if(parts.length > 0)
+            tier = parts[0];
+        if(parts.length > 1)
+            division = parts[1];
+        if(parts.length > 2)
+            leaguePoints = Integer.parseInt(parts[2]);
+    }
 
     @Override
     public String toString(){
-        return "League " + name + " (" + tier + " " + division + ")";
+        return tier + " " + division + " " + leaguePoints;
     }
-
+    
     public String getName(){
         return name;
     }
