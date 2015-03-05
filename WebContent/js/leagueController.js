@@ -1,3 +1,5 @@
+var version = "5.4.1";
+
 var leagueApp = angular.module('leagueApp', [ 'ngResource', 'ngRoute' ]);
 
 leagueApp.config([ '$routeProvider', function($routeProvider, routeController) {
@@ -24,7 +26,7 @@ leagueApp.config([ '$routeProvider', function($routeProvider, routeController) {
 
 leagueApp.controller('routeController',
 	function($rootScope, $routeParams, LeagueResource) {
-		$rootScope.version = "5.2.2";
+		$rootScope.version = version;
 		$rootScope.showTabs = false;
 
 		LeagueResource.summonerFromId().get({
@@ -42,7 +44,7 @@ leagueApp.controller('routeController',
 
 leagueApp.controller('lookupController', function($scope, $rootScope, $routeParams,
 	LeagueResource) {
-	$rootScope.version = "5.2.2";
+	$rootScope.version = version;
 	var lookupSummoner;
 
 	if ($routeParams.summonerId) {
