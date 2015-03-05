@@ -23,6 +23,7 @@ import league.entities.azhu.League;
 import league.entities.azhu.RankedMatch;
 import league.entities.azhu.Summoner;
 import league.neo4j.entities.Champion4j;
+import league.neo4j.entities.Item4j;
 import league.neo4j.entities.Summoner4j;
 
 import org.codehaus.jackson.JsonGenerator;
@@ -121,7 +122,7 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDBAPI{
         ResourceIterator<Map<String, Object>> itr = results.iterator();
     
         if(!itr.hasNext()){
-            System.out.println("Summoner not found.");
+            System.out.println("Neo4j: Summoner not found.");
             return null;
         }
     
@@ -163,7 +164,7 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDBAPI{
             ResourceIterator<Map<String, Object>> itr = results.iterator();
             
             if(!itr.hasNext()){
-                System.out.println("Summoner not found.");
+                System.out.println("Neo4j: Champion " + champId + " not found.");
                 return null;
             }
         
@@ -194,13 +195,56 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDBAPI{
     }
 
     @Override
-    public MatchDetail getMatchDetail(long matchId){
+    public ItemDto getItemFromId(long itemId){
+        try(Transaction tx = db.beginTx()){
+            String stmt = String.format("MATCH (n:Item) WHERE n.id = %d return n", itemId);
+            ExecutionResult results = engine.execute(stmt);
+            ResourceIterator<Map<String, Object>> itr = results.iterator();
+            
+            if(!itr.hasNext()){
+                System.out.println("Neo4j: Item" + itemId + " not found.");
+                return null;
+            }
+        
+            Map<String, Object> found = itr.next();
+            Node node = (Node) found.get("n");
+            ItemDto item = new Item4j(node);
+            itr.close();
+        
+            log.info("Neo4j: fetched item " + item);            
+            tx.success();
+            return item;
+        }
+    }
+
+    @Override
+    public void cacheItem(ItemDto item){
+        try(Transaction tx = db.beginTx()){
+            ItemDto i = new Item4j(item);
+            String objectMap = mapper.writeValueAsString(i);
+            String stmt = String.format("CREATE (n:Item %s)", objectMap);
+            engine.execute(stmt);
+            
+            log.info("Neo4j: cached item " + item);
+            tx.success();
+        } catch(IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public SummonerSpellDto getSummonerSpellFromId(long spellId){
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public SummonerSpellDto getSummonerSpellFromId(long spellId){
+    public void cacheSummonerSpell(SummonerSpellDto spell){
+        // TODO stuff
+    }
+
+    @Override
+    public MatchDetail getMatchDetail(long matchId){
         // TODO Auto-generated method stub
         return null;
     }
@@ -224,20 +268,8 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDBAPI{
     }
 
     @Override
-    public void setInfiniteRetry(boolean infinite){
-        // Nothing to do here
-    }
-
-    @Override
-    public ItemDto getItem(long itemId){
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
     public void cacheRankedMatch(RankedMatch match){
         // TODO Auto-generated method stub
-
     }
 
     @Override
@@ -286,6 +318,11 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDBAPI{
     public void cacheRankedMatches(List<RankedMatch> matches){
         // TODO Auto-generated method stub
 
+    }
+
+    @Override
+    public void setInfiniteRetry(boolean infinite){
+        // Nothing to do here
     }
 
     @Override
@@ -343,6 +380,10 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDBAPI{
 //                ChampionDto c = NewDatabaseAPIImpl.getInstance().getChampFromId(1);
 //                n.cacheChampion(c);
                 System.out.println(n.getChampFromId(1));
+                
+//                ItemDto i = NewDatabaseAPIImpl.getInstance().getItemFromId(3031);
+//                n.cacheItem(i);
+                System.out.println(n.getItemFromId(3031));
             } catch(Exception e){
                 e.printStackTrace();
             }

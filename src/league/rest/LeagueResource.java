@@ -184,7 +184,7 @@ public class LeagueResource{
     @Produces(MediaType.APPLICATION_JSON)
     public Response getItem(@PathParam("id") long id) throws ServletException, IOException{
         try{
-            ItemDto item = api.getItem(id);
+            ItemDto item = api.getItemFromId(id);
             return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(item)).build();
         } catch(RiotPlsException e){
             return Response.status(e.getStatus()).entity(e.getMessage()).build();

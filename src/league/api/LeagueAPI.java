@@ -32,5 +32,5 @@ public interface LeagueAPI{
     public League getLeague(long summonerId) throws RiotPlsException;
     public List<League> getLeagues(List<Long> idList) throws RiotPlsException;
     public void setInfiniteRetry(boolean infinite);
-    public ItemDto getItem(long itemId) throws RiotPlsException;
+    public ItemDto getItemFromId(long itemId) throws RiotPlsException;
 }

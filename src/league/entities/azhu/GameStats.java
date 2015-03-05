@@ -26,37 +26,37 @@ public class GameStats extends RawStatsDto{
 
     public GameStats(RawStatsDto stats){
         try{
-            itemDto0 = api.getItem(stats.getItem0());
+            itemDto0 = api.getItemFromId(stats.getItem0());
         } catch(RiotPlsException e){
             log.warning(e.getMessage());
         }
         try{
-            itemDto1 = api.getItem(stats.getItem1());
+            itemDto1 = api.getItemFromId(stats.getItem1());
         } catch(RiotPlsException e){
             log.warning(e.getMessage());
         }
         try{
-            itemDto2 = api.getItem(stats.getItem2());
+            itemDto2 = api.getItemFromId(stats.getItem2());
         } catch(RiotPlsException e){
             log.warning(e.getMessage());
         }
         try{
-            itemDto3 = api.getItem(stats.getItem3());
+            itemDto3 = api.getItemFromId(stats.getItem3());
         } catch(RiotPlsException e){
             log.warning(e.getMessage());
         }
         try{
-            itemDto4 = api.getItem(stats.getItem4());
+            itemDto4 = api.getItemFromId(stats.getItem4());
         } catch(RiotPlsException e){
             log.warning(e.getMessage());
         }
         try{
-            itemDto5 = api.getItem(stats.getItem5());
+            itemDto5 = api.getItemFromId(stats.getItem5());
         } catch(RiotPlsException e){
             log.warning(e.getMessage());
         }
         try{
-            itemDto6 = api.getItem(stats.getItem6());
+            itemDto6 = api.getItemFromId(stats.getItem6());
         } catch(RiotPlsException e){
             log.warning(e.getMessage());
         }

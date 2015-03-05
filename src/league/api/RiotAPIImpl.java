@@ -301,7 +301,7 @@ public class RiotAPIImpl implements LeagueAPI{
     }
     
     @Override
-    public ItemDto getItem(long itemId) throws RiotPlsException{
+    public ItemDto getItemFromId(long itemId) throws RiotPlsException{
         String uri = buildUri(String.format(ITEM_QUERY, itemId));
         Map<String, String> params = new HashMap<>();
         params.put("itemData", "image");

@@ -39,9 +39,9 @@ public class DynamicLeagueAPIImpl implements LeagueAPI{
     }
     
     @Override
-    public ItemDto getItem(long itemId) throws RiotPlsException{
-        ItemDto result = dbApi.getItem(itemId);
-        return result == null ? riotApi.getItem(itemId) : result;
+    public ItemDto getItemFromId(long itemId) throws RiotPlsException{
+        ItemDto result = dbApi.getItemFromId(itemId);
+        return result == null ? riotApi.getItemFromId(itemId) : result;
     }
 
     @Override

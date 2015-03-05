@@ -408,7 +408,7 @@ public class DatabaseAPIImpl implements LeagueAPI{
         }
     }
     @Override
-    public ItemDto getItem(long itemId){
+    public ItemDto getItemFromId(long itemId){
         try{
             Statement stmt = db.createStatement();
             String sql;
