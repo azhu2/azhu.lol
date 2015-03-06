@@ -309,7 +309,7 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDatabaseAPI{
             log.warning(e.getMessage());
         }
 
-        // Cache players
+        // Cache and link players
         for(MatchPlayer player : rankedMatch.getPlayers()){
             MatchPlayer rankedPlayer = new RankedPlayer4j((RankedPlayerImpl) player);
             
@@ -327,7 +327,7 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDatabaseAPI{
             }
         }
 
-        // Lookup ban champions
+        // Link banned champions
         for(ChampionDto ban : rankedMatch.getBlueBans()){
             try(Transaction tx = db.beginTx()){
                 String stmt = String.format("MATCH (match:RankedMatch) WHERE match.id = %d "
