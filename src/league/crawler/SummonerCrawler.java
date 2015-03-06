@@ -14,6 +14,7 @@ import league.api.NewLeagueAPI;
 import league.api.RiotAPIImpl.RiotPlsException;
 import league.entities.GameDto;
 import league.entities.PlayerDto;
+import league.entities.azhu.Match;
 import league.entities.azhu.RankedMatchImpl;
 import league.entities.azhu.RankedPlayerImpl;
 import league.entities.azhu.Summoner;
@@ -43,9 +44,10 @@ public class SummonerCrawler{
                 long summonerId = summoners.remove();
 
                 
-                List<RankedMatchImpl> rankedHistory = api.getRankedMatchesAll(summonerId);                
+                List<Match> rankedHistory = api.getRankedMatchesAll(summonerId);                
                 if(rankedHistory != null){
-                    for(RankedMatchImpl match : rankedHistory){
+                    for(Match game : rankedHistory){
+                        RankedMatchImpl match = (RankedMatchImpl) game;
                         long gameId = match.getId();
                         if(!matchesSeen.contains(gameId)){
                             matchesSeen.add(gameId);

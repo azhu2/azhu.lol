@@ -16,9 +16,9 @@ import league.entities.SummonerDto;
 import league.entities.SummonerSpellDto;
 import league.entities.Team;
 import league.entities.azhu.GeneralMatchImpl;
-import league.entities.azhu.GeneralPlayerImpl;
 import league.entities.azhu.GeneralStatsImpl;
 import league.entities.azhu.League;
+import league.entities.azhu.Match;
 import league.entities.azhu.MatchPlayer;
 import league.entities.azhu.RankedMatchImpl;
 import league.entities.azhu.RankedPlayerImpl;
@@ -40,51 +40,56 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueData
     }
 
     @Override
-    public void cacheRankedMatch(RankedMatchImpl match){
+    public void cacheRankedMatch(Match match){
         try{
-            if(hasRankedMatch(match))
+            if(hasRankedMatch(match) || !(match instanceof RankedMatchImpl))
                 return;
 
+            RankedMatchImpl rankedMatch = (RankedMatchImpl) match;
             String sql = "INSERT INTO ranked_matches_new"
                     + "(mapId, matchCreation, matchDuration, matchId, matchMode, matchType, "
                     + "matchVersion, platformId, queueType, region, season, teams, "
                     + "lookupPlayer, bluePlayers, redPlayers, blueBans, redBans, players, summonerId)"
                     + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement stmt = db.prepareStatement(sql);
-            stmt.setInt(1, match.getMapId());
-            stmt.setLong(2, match.getMatchCreation());
-            stmt.setLong(3, match.getMatchDuration());
-            stmt.setLong(4, match.getId());
-            stmt.setString(5, match.getMatchMode());
-            stmt.setString(6, match.getMatchType());
-            stmt.setString(7, match.getMatchVersion());
-            stmt.setString(8, match.getPlatformId());
-            stmt.setString(9, match.getQueueType());
-            stmt.setString(10, match.getRegion());
-            stmt.setString(11, match.getSeason());
-            stmt.setString(12, mapper.writeValueAsString(match.getTeams()));
-            stmt.setInt(13, match.getLookupPlayer());
-            stmt.setString(14, mapper.writeValueAsString(match.getBluePlayers()));
-            stmt.setString(15, mapper.writeValueAsString(match.getRedPlayers()));
-            stmt.setString(16, mapper.writeValueAsString(match.getBlueBans()));
-            stmt.setString(17, mapper.writeValueAsString(match.getRedBans()));
-            stmt.setString(18, mapper.writeValueAsString(match.getPlayers()));
-            stmt.setLong(19, match.getSummonerId());
+            stmt.setInt(1, rankedMatch.getMapId());
+            stmt.setLong(2, rankedMatch.getMatchCreation());
+            stmt.setLong(3, rankedMatch.getMatchDuration());
+            stmt.setLong(4, rankedMatch.getId());
+            stmt.setString(5, rankedMatch.getMatchMode());
+            stmt.setString(6, rankedMatch.getMatchType());
+            stmt.setString(7, rankedMatch.getMatchVersion());
+            stmt.setString(8, rankedMatch.getPlatformId());
+            stmt.setString(9, rankedMatch.getQueueType());
+            stmt.setString(10, rankedMatch.getRegion());
+            stmt.setString(11, rankedMatch.getSeason());
+            stmt.setString(12, mapper.writeValueAsString(rankedMatch.getTeams()));
+            stmt.setInt(13, rankedMatch.getLookupPlayer());
+            stmt.setString(14, mapper.writeValueAsString(rankedMatch.getBluePlayers()));
+            stmt.setString(15, mapper.writeValueAsString(rankedMatch.getRedPlayers()));
+            stmt.setString(16, mapper.writeValueAsString(rankedMatch.getBlueBans()));
+            stmt.setString(17, mapper.writeValueAsString(rankedMatch.getRedBans()));
+            stmt.setString(18, mapper.writeValueAsString(rankedMatch.getPlayers()));
+            stmt.setLong(19, rankedMatch.getSummonerId());
 
-            new CacheThread(stmt, match).start();
+            new CacheThread(stmt, rankedMatch).start();
         } catch(IOException | SQLException e){
             log.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 
     @Override
-    public boolean hasRankedMatch(RankedMatchImpl match){
+    public boolean hasRankedMatch(Match match){
         try{
+            if(!(match instanceof RankedMatchImpl))
+                return false;
+            RankedMatchImpl rankedMatch = (RankedMatchImpl) match;
+            
             Statement stmt = db.createStatement();
             String sql;
             sql = String.format(
                 "SELECT COUNT(*) AS rowCount FROM ranked_matches_new WHERE matchId = %d AND summonerId = %d",
-                match.getId(), match.getQueryPlayer().getSummoner().getId());
+                rankedMatch.getId(), rankedMatch.getQueryPlayer().getSummoner().getId());
 
             Pair<ResultSet, Long> results = runQuery(stmt, sql);
             ResultSet rs = results.getLeft();
@@ -99,7 +104,7 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueData
     }
 
     @Override
-    public RankedMatchImpl getRankedMatch(long matchId, long summonerId){
+    public Match getRankedMatch(long matchId, long summonerId){
         try{
             Statement stmt = db.createStatement();
             String sql;
@@ -155,7 +160,7 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueData
     }
 
     @Override
-    public List<RankedMatchImpl> getRankedMatchesAll(long summonerId){
+    public List<Match> getRankedMatchesAll(long summonerId){
         try{
             Statement stmt = db.createStatement();
             String sql;
@@ -168,7 +173,7 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueData
             ResultSet rs = results.getLeft();
             long time = results.getRight();
 
-            List<RankedMatchImpl> matches = new LinkedList<>();
+            List<Match> matches = new LinkedList<>();
             while(rs.next()){
                 long matchId = rs.getLong("matchId");
                 int mapId = rs.getInt("mapId");
@@ -214,7 +219,7 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueData
     }
 
     @Override
-    public GeneralMatchImpl getGame(long gameId, long summonerId){
+    public Match getGame(long gameId, long summonerId){
         try{
             Statement stmt = db.createStatement();
             String sql;
@@ -259,7 +264,7 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueData
     }
 
     @Override
-    public List<GeneralMatchImpl> getGamesAll(long summonerId){
+    public List<Match> getGamesAll(long summonerId){
         try{
             Statement stmt = db.createStatement();
             String sql;
@@ -271,7 +276,7 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueData
             ResultSet rs = results.getLeft();
             long time = results.getRight();
 
-            List<GeneralMatchImpl> games = new LinkedList<>();
+            List<Match> games = new LinkedList<>();
             while(rs.next()){
                 long gameId = rs.getLong("gameId");
                 int mapId = rs.getInt("mapId");
@@ -307,7 +312,7 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueData
     }
 
     @Override
-    public boolean hasGame(GeneralMatchImpl game){
+    public boolean hasGame(Match game){
         try{
             Statement stmt = db.createStatement();
             String sql;
@@ -325,10 +330,11 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueData
     }
 
     @Override
-    public void cacheGame(GeneralMatchImpl game){
+    public void cacheGame(Match match){
         try{
-            if(hasGame(game))
-                return;
+            if(hasGame(match) || !(match instanceof RankedMatchImpl))
+                return;            
+            GeneralMatchImpl game = (GeneralMatchImpl) match;
 
             String sql = "INSERT INTO games (mapId, createDate, gameMode, gameType, subType, "
                     + "lookupPlayer, blueTeam, redTeam, ipEarned, level, stats, spell1, spell2, "
@@ -518,8 +524,8 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueData
     }
 
     @Override
-    public void cacheRankedMatches(List<RankedMatchImpl> matches){
-        for(RankedMatchImpl match : matches)
+    public void cacheRankedMatches(List<Match> matches){
+        for(Match match : matches)
             cacheRankedMatch(match);
     }
 }

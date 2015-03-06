@@ -1,11 +1,21 @@
 package league.entities.azhu;
 
+import org.neo4j.graphdb.Node;
+
 import league.entities.ChampionDto;
 
 public class MatchPlayer{
     private ChampionDto champion;
     private Summoner summoner;
     private int teamId;
+
+    public MatchPlayer(){
+
+    }
+
+    public MatchPlayer(Node node){
+        setTeamId((int) (long) node.getProperty("teamId"));
+    }
 
     public ChampionDto getChampion(){
         return champion;

@@ -9,16 +9,16 @@ import league.LeagueConstants;
 import league.api.NewDatabaseAPIImpl;
 import league.api.NewLeagueAPI;
 import league.entities.ChampionDto;
-import league.entities.azhu.RankedMatchImpl;
+import league.entities.azhu.Match;
 
 public class RankedAnalysis{
-    public static Collection<SummaryData> getChampData(Collection<RankedMatchImpl> matchList){
-        List<RankedMatchImpl> queueFiltered = AnalysisUtils.filterByQueueType(matchList).get(LeagueConstants.SOLO_QUEUE_5v5);
+    public static Collection<SummaryData> getChampData(Collection<Match> matchList){
+        List<Match> queueFiltered = AnalysisUtils.filterByQueueType(matchList).get(LeagueConstants.SOLO_QUEUE_5v5);
         Map<ChampionDto, SummaryData> champData = new HashMap<>();
-        Map<ChampionDto, List<RankedMatchImpl>> champMatches = AnalysisUtils.getChampMatches(queueFiltered);
+        Map<ChampionDto, List<Match>> champMatches = AnalysisUtils.getChampMatches(queueFiltered);
         
         for(ChampionDto champ : champMatches.keySet()){
-            List<RankedMatchImpl> matches = champMatches.get(champ);
+            List<Match> matches = champMatches.get(champ);
             SummaryData data = AnalysisUtils.getSummary(matches);
             data.setChampion(champ);
             champData.put(champ, data);
@@ -29,7 +29,7 @@ public class RankedAnalysis{
     
     public static void main(String[] args){
         NewLeagueAPI api = NewDatabaseAPIImpl.getInstance();
-        List<RankedMatchImpl> matches = api.getRankedMatchesAll(31569637);
+        List<Match> matches = api.getRankedMatchesAll(31569637);
         Collection<SummaryData> data = RankedAnalysis.getChampData(matches);
         System.out.println(data);
     }
