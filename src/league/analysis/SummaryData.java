@@ -3,7 +3,9 @@ package league.analysis;
 import league.entities.ChampionDto;
 import league.entities.ParticipantStats;
 import league.entities.azhu.Match;
+import league.entities.azhu.MatchPlayer;
 import league.entities.azhu.RankedMatchImpl;
+import league.entities.azhu.RankedPlayerImpl;
 
 public class SummaryData{
     private int numGames = 0;
@@ -53,8 +55,8 @@ public class SummaryData{
     
     public void addMatch(Match match){
         RankedMatchImpl rankedMatch = (RankedMatchImpl) match;
-        
-        ParticipantStats stats = rankedMatch.getQueryPlayer().getStats();
+        RankedPlayerImpl player = (RankedPlayerImpl) rankedMatch.getQueryPlayer();
+        ParticipantStats stats = player.getStats();
         numGames++;
         if(stats.isWinner())
             wins++;

@@ -143,7 +143,7 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueData
                 List<ChampionDto> redBans = mapper.readValue(rs.getString("redBans"),
                     new TypeReference<List<ChampionDto>>(){
                     });
-                List<RankedPlayerImpl> players = mapper.readValue(rs.getString("players"),
+                List<MatchPlayer> players = mapper.readValue(rs.getString("players"),
                     new TypeReference<List<RankedPlayerImpl>>(){
                     });
 
@@ -201,7 +201,7 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueData
                 List<ChampionDto> redBans = mapper.readValue(rs.getString("redBans"),
                     new TypeReference<List<ChampionDto>>(){
                     });
-                List<RankedPlayerImpl> players = mapper.readValue(rs.getString("players"),
+                List<MatchPlayer> players = mapper.readValue(rs.getString("players"),
                     new TypeReference<List<RankedPlayerImpl>>(){
                     });
 

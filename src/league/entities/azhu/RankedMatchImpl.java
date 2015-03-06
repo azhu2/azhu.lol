@@ -18,7 +18,7 @@ import league.entities.Team;
 
 public class RankedMatchImpl extends Match{
     private String matchVersion;
-    private List<RankedPlayerImpl> players;     // TODO replace this - meh it's okay with blue/redTeam
+    private List<MatchPlayer> players;     // TODO replace this - meh it's okay with blue/redTeam
     private String platformId;
     private String region;
     private String season;
@@ -38,7 +38,7 @@ public class RankedMatchImpl extends Match{
     }
 
     public RankedMatchImpl(int mapId, long matchCreation, long matchDuration, long matchId, String matchMode,
-            String matchType, String matchVersion, List<RankedPlayerImpl> players, String platformId, String queueType,
+            String matchType, String matchVersion, List<MatchPlayer> players, String platformId, String queueType,
             String region, String season, List<Team> teams, int lookupPlayer, List<Integer> bluePlayers,
             List<Integer> redPlayers, List<ChampionDto> blueBans, List<ChampionDto> redBans, long summonerId){
         super();
@@ -132,11 +132,7 @@ public class RankedMatchImpl extends Match{
         this.matchVersion = matchVersion;
     }
 
-    public List<RankedPlayerImpl> getPlayers(){
-        return players;
-    }
-
-    public void setPlayers(List<RankedPlayerImpl> players){
+    public void setPlayers(List<MatchPlayer> players){
         this.players = players;
     }
 
@@ -250,7 +246,7 @@ public class RankedMatchImpl extends Match{
         return true;
     }
 
-    public RankedPlayerImpl getQueryPlayer(){
+    public MatchPlayer getQueryPlayer(){
         return players.get(lookupPlayer);
     }
 
@@ -272,5 +268,10 @@ public class RankedMatchImpl extends Match{
             team.add(players.get(i));
 
         return team;
+    }
+    
+    @Override
+    public List<MatchPlayer> getPlayers(){
+        return players;
     }
 }

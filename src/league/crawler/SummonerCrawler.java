@@ -15,6 +15,7 @@ import league.api.RiotAPIImpl.RiotPlsException;
 import league.entities.GameDto;
 import league.entities.PlayerDto;
 import league.entities.azhu.Match;
+import league.entities.azhu.MatchPlayer;
 import league.entities.azhu.RankedMatchImpl;
 import league.entities.azhu.RankedPlayerImpl;
 import league.entities.azhu.Summoner;
@@ -51,12 +52,12 @@ public class SummonerCrawler{
                         long gameId = match.getId();
                         if(!matchesSeen.contains(gameId)){
                             matchesSeen.add(gameId);
-                            List<RankedPlayerImpl> players = match.getPlayers();
+                            List<MatchPlayer> players = match.getPlayers();
                             List<Long> ids = new LinkedList<>();
 
                             if(players == null)
                                 continue;
-                            for(RankedPlayerImpl player : players){
+                            for(MatchPlayer player : players){
                                 long playerId = player.getSummoner().getId();
                                 if(!summonersSeen.contains(playerId)){
                                     summonersSeen.add(playerId);

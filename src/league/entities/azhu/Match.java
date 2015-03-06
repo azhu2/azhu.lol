@@ -109,4 +109,13 @@ public class Match{
     public void addToRedTeam(MatchPlayer player){
         redTeam.add(player);
     }
+    
+    public List<MatchPlayer> getPlayers(){
+        List<MatchPlayer> players = new LinkedList<>();
+        for(MatchPlayer player : blueTeam)
+            players.add(player);
+        for(MatchPlayer player : redTeam)
+            players.add(player);
+        return players;
+    }
 }
