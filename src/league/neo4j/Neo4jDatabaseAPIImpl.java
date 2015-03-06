@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import league.api.NewDatabaseAPIImpl;
 import league.api.NewLeagueDatabaseAPI;
 import league.entities.ChampionDto;
 import league.entities.GameDto;
@@ -18,9 +19,14 @@ import league.entities.SummonerDto;
 import league.entities.SummonerSpellDto;
 import league.entities.azhu.League;
 import league.entities.azhu.Match;
+import league.entities.azhu.MatchPlayer;
+import league.entities.azhu.RankedMatchImpl;
+import league.entities.azhu.RankedPlayerImpl;
 import league.entities.azhu.Summoner;
 import league.neo4j.entities.Champion4j;
 import league.neo4j.entities.Item4j;
+import league.neo4j.entities.RankedMatch4j;
+import league.neo4j.entities.RankedPlayer4j;
 import league.neo4j.entities.Summoner4j;
 import league.neo4j.entities.SummonerSpell4j;
 
@@ -147,7 +153,7 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDatabaseAPI{
             log.info("Neo4j: cached summoner " + summoner);
             tx.success();
         } catch(IOException e){
-            e.printStackTrace();
+            log.warning(e.getMessage());
         }
     }
 
@@ -185,7 +191,7 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDatabaseAPI{
             log.info("Neo4j: cached champion " + champion);
             tx.success();
         } catch(IOException e){
-            e.printStackTrace();
+            log.warning(e.getMessage());
         }
     }
 
@@ -217,7 +223,7 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDatabaseAPI{
             log.info("Neo4j: cached item " + item);
             tx.success();
         } catch(IOException e){
-            e.printStackTrace();
+            log.warning(e.getMessage());
         }
     }
 
@@ -249,7 +255,7 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDatabaseAPI{
             log.info("Neo4j: cached summoner spell " + spell);
             tx.success();
         } catch(IOException e){
-            e.printStackTrace();
+            log.warning(e.getMessage());
         }
     }
 
@@ -285,21 +291,65 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDatabaseAPI{
 
     @Override
     public void cacheRankedMatch(Match match){
-        // TODO Implement this
         if(hasRankedMatch(match)){
             log.info("Neo4j: Match " + match + " already cached.");
             return;
         }
-        
+        RankedMatch4j rankedMatch = new RankedMatch4j((RankedMatchImpl) match);
+
         // Cache match itself
-        
+        try(Transaction tx = db.beginTx()){
+            String objectMap = mapper.writeValueAsString(rankedMatch);
+            String stmt = String.format("CREATE (n:RankedMatch %s)", objectMap);
+            engine.execute(stmt);
+
+            log.info("Neo4j: cached ranked match " + match);
+            tx.success();
+        } catch(IOException e){
+            log.warning(e.getMessage());
+        }
+
         // Cache players
-        
-        // Create player relationships
-        
+        for(MatchPlayer player : rankedMatch.getPlayers()){
+            MatchPlayer rankedPlayer = new RankedPlayer4j((RankedPlayerImpl) player);
+            
+            try(Transaction tx = db.beginTx()){
+                String objectMap = mapper.writeValueAsString(rankedPlayer);
+                String stmt = String.format("MATCH (match:RankedMatch) WHERE match.id = %d "
+                        + "CREATE (player:RankedPlayer %s) "
+                        + "CREATE (player)-[:PLAYED_IN]->(match);", match.getId(), objectMap);
+                engine.execute(stmt);
+
+                log.info("Neo4j: cached ranked player " + player);
+                tx.success();
+            } catch(IOException e){
+                log.warning(e.getMessage());
+            }
+        }
+
         // Lookup ban champions
-        
-        // Create ban relationships
+        for(ChampionDto ban : rankedMatch.getBlueBans()){
+            try(Transaction tx = db.beginTx()){
+                String stmt = String.format("MATCH (match:RankedMatch) WHERE match.id = %d "
+                        + "MATCH (ban:Champion) WHERE ban.id=%d "
+                        + "CREATE (ban)-[:BANNED_BLUE]->(match);", match.getId(), ban.getId());
+                engine.execute(stmt);
+
+                log.info("Neo4j: cached banned champion " + ban);
+                tx.success();
+            }
+        }
+        for(ChampionDto ban : rankedMatch.getRedBans()){
+            try(Transaction tx = db.beginTx()){
+                String stmt = String.format("MATCH (match:RankedMatch) WHERE match.id = %d "
+                        + "MATCH (ban:Champion) WHERE ban.id=%d "
+                        + "CREATE (ban)-[:BANNED_RED]->(match);", match.getId(), ban.getId());
+                engine.execute(stmt);
+
+                log.info("Neo4j: cached banned champion " + ban);
+                tx.success();
+            }
+        }
     }
 
     @Override
@@ -411,6 +461,9 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDatabaseAPI{
             // SummonerSpellDto s = NewDatabaseAPIImpl.getInstance().getSummonerSpellFromId(4);
             // n.cacheSummonerSpell(s);
             System.out.println(n.getSummonerSpellFromId(4));
+            
+//            Match m = NewDatabaseAPIImpl.getInstance().getRankedMatch(1719644023, 31569637);
+//            n.cacheRankedMatch(m);
         } catch(Exception e){
             e.printStackTrace();
         }

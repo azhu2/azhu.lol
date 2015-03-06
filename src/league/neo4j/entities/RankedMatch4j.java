@@ -15,8 +15,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 import org.neo4j.graphdb.Node;
 
-@JsonIgnoreProperties(value = {"blueTeam", "redTeam", "blueBans", "redBans", "teams", "blueTeamIds", "redTeamIds",
-        "blueBanIds", "redBanIds"})
+@JsonIgnoreProperties(value = {"blueTeam", "redTeam", "blueBans", "redBans", "teams", "players"})
 public class RankedMatch4j extends Match{
     private String matchVersion;
     private String platformId;
