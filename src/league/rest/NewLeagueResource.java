@@ -21,7 +21,6 @@ import league.analysis.SummaryData;
 import league.api.APIConstants;
 import league.api.DynamicLeagueAPIImpl;
 import league.api.NewDatabaseAPIImpl;
-import league.api.NewLeagueAPI;
 import league.api.NewLeagueDBAPI;
 import league.api.RiotAPIImpl;
 import league.api.RiotAPIImpl.RiotPlsException;
@@ -160,15 +159,16 @@ public class NewLeagueResource extends LeagueResource{
         try{
             Set<GameDto> oldApiResults = api_riot.getMatchHistory(summonerId);
             List<GeneralMatchImpl> matches = new LinkedList<>();
-            for(GameDto gameData : oldApiResults){
-                long matchId = gameData.getGameId();
-                GeneralMatchImpl match = api.getGame(matchId, summonerId);
-                if(match == null){
-                    match = new GeneralMatchImpl(gameData, summonerId);
-                    api.cacheGame(match);
+            if(oldApiResults != null)
+                for(GameDto gameData : oldApiResults){
+                    long matchId = gameData.getGameId();
+                    GeneralMatchImpl match = api.getGame(matchId, summonerId);
+                    if(match == null){
+                        match = new GeneralMatchImpl(gameData, summonerId);
+                        api.cacheGame(match);
+                    }
+                    matches.add(match);
                 }
-                matches.add(match);
-            }
 
             return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(matches)).build();
         } catch(RiotPlsException e){
