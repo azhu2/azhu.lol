@@ -12,9 +12,7 @@ import league.entities.ParticipantStats;
 import league.entities.Rune;
 import league.entities.SummonerSpellDto;
 
-public class RankedPlayer{
-    private Summoner summoner;
-    private ChampionDto champion;
+public class RankedPlayerImpl extends MatchPlayer{
     private String highestAchievedSeasonTier;
     private List<Mastery> masteries;
     private int participantId;
@@ -22,17 +20,16 @@ public class RankedPlayer{
     private SummonerSpellDto spell1;
     private SummonerSpellDto spell2;
     private ParticipantStats stats;
-    private int teamId;
 
     private static LeagueAPI api = DynamicLeagueAPIImpl.getInstance();
 
-    public RankedPlayer(){
+    public RankedPlayerImpl(){
 
     }
 
-    public RankedPlayer(Summoner summoner, Participant participant) throws RiotPlsException{
-        this.summoner = summoner;
-        champion = api.getChampFromId(participant.getChampionId());
+    public RankedPlayerImpl(Summoner summoner, Participant participant) throws RiotPlsException{
+        setSummoner(summoner);
+        setChampion(api.getChampFromId(participant.getChampionId()));
         highestAchievedSeasonTier = participant.getHighestAchievedSeasonTier();
         masteries = participant.getMasteries();
         participantId = participant.getParticipantId();
@@ -40,20 +37,20 @@ public class RankedPlayer{
         spell1 = api.getSummonerSpellFromId(participant.getSpell1Id());
         spell2 = api.getSummonerSpellFromId(participant.getSpell2Id());
         stats = participant.getStats();
-        teamId = participant.getTeamId();
+        setTeamId(participant.getTeamId());
     }
 
     @Override
     public String toString(){
-        return "RankedPlayer [summoner=" + summoner + ", champion=" + champion + "]";
+        return "RankedPlayer [summoner=" + getSummoner() + ", champion=" + getChampion() + "]";
     }
 
-    public RankedPlayer(Summoner summoner, ChampionDto champion, String highestAchievedSeasonTier,
+    public RankedPlayerImpl(Summoner summoner, ChampionDto champion, String highestAchievedSeasonTier,
             List<Mastery> masteries, int participantId, List<Rune> runes, SummonerSpellDto spell1,
             SummonerSpellDto spell2, ParticipantStats stats, int teamId){
         super();
-        this.summoner = summoner;
-        this.champion = champion;
+        setSummoner(summoner);
+        setChampion(champion);
         this.highestAchievedSeasonTier = highestAchievedSeasonTier;
         this.masteries = masteries;
         this.participantId = participantId;
@@ -61,23 +58,7 @@ public class RankedPlayer{
         this.spell1 = spell1;
         this.spell2 = spell2;
         this.stats = stats;
-        this.teamId = teamId;
-    }
-
-    public Summoner getSummoner(){
-        return summoner;
-    }
-
-    public void setSummoner(Summoner summoner){
-        this.summoner = summoner;
-    }
-
-    public ChampionDto getChampion(){
-        return champion;
-    }
-
-    public void setChampion(ChampionDto champion){
-        this.champion = champion;
+        setTeamId(teamId);
     }
 
     public String getHighestAchievedSeasonTier(){
@@ -136,20 +117,12 @@ public class RankedPlayer{
         this.stats = stats;
     }
 
-    public int getTeamId(){
-        return teamId;
-    }
-
-    public void setTeamId(int teamId){
-        this.teamId = teamId;
-    }
-
     public static LeagueAPI getApi(){
         return api;
     }
 
     public static void setApi(LeagueAPI api){
-        RankedPlayer.api = api;
+        RankedPlayerImpl.api = api;
     }
 
 }

@@ -8,7 +8,7 @@ import league.api.RiotAPIImpl.RiotPlsException;
 import league.entities.ItemDto;
 import league.entities.RawStatsDto;
 
-public class GameStats extends RawStatsDto{
+public class GeneralStatsImpl extends RawStatsDto{
     private ItemDto itemDto0;
     private ItemDto itemDto1;
     private ItemDto itemDto2;
@@ -17,14 +17,14 @@ public class GameStats extends RawStatsDto{
     private ItemDto itemDto5;
     private ItemDto itemDto6;
 
-    private static Logger log = Logger.getLogger(GameStats.class.getName());
+    private static Logger log = Logger.getLogger(GeneralStatsImpl.class.getName());
     private static LeagueAPI api = DynamicLeagueAPIImpl.getInstance();
 
-    public GameStats(){
+    public GeneralStatsImpl(){
 
     }
 
-    public GameStats(RawStatsDto stats){
+    public GeneralStatsImpl(RawStatsDto stats){
         try{
             itemDto0 = api.getItemFromId(stats.getItem0());
         } catch(RiotPlsException e){

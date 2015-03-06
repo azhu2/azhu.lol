@@ -18,7 +18,7 @@ import league.entities.Team;
 
 public class RankedMatchImpl extends Match{
     private String matchVersion;
-    private List<RankedPlayer> players;     // TODO replace this
+    private List<RankedPlayerImpl> players;     // TODO replace this
     private String platformId;
     private String region;
     private String season;
@@ -38,7 +38,7 @@ public class RankedMatchImpl extends Match{
     }
 
     public RankedMatchImpl(int mapId, long matchCreation, long matchDuration, long matchId, String matchMode,
-            String matchType, String matchVersion, List<RankedPlayer> players, String platformId, String queueType,
+            String matchType, String matchVersion, List<RankedPlayerImpl> players, String platformId, String queueType,
             String region, String season, List<Team> teams, int lookupPlayer, List<Integer> bluePlayers,
             List<Integer> redPlayers, List<ChampionDto> blueBans, List<ChampionDto> redBans, long summonerId){
         super();
@@ -74,7 +74,7 @@ public class RankedMatchImpl extends Match{
             summonerIds.add(id.getPlayer().getSummonerId());
         List<Summoner> summoners = api_new.getSummonersNew(summonerIds, cache);
         for(int i = 0; i < participantIdentities.size(); i++){
-            RankedPlayer player = new RankedPlayer(summoners.get(i), participants.get(i));
+            RankedPlayerImpl player = new RankedPlayerImpl(summoners.get(i), participants.get(i));
             players.add(player);
             if(participantIdentities.get(i).getPlayer().getSummonerId() == summonerId)
                 lookupPlayer = i;
@@ -132,11 +132,11 @@ public class RankedMatchImpl extends Match{
         this.matchVersion = matchVersion;
     }
 
-    public List<RankedPlayer> getPlayers(){
+    public List<RankedPlayerImpl> getPlayers(){
         return players;
     }
 
-    public void setPlayers(List<RankedPlayer> players){
+    public void setPlayers(List<RankedPlayerImpl> players){
         this.players = players;
     }
 
@@ -250,7 +250,7 @@ public class RankedMatchImpl extends Match{
         return true;
     }
 
-    public RankedPlayer getQueryPlayer(){
+    public RankedPlayerImpl getQueryPlayer(){
         return players.get(lookupPlayer);
     }
 }

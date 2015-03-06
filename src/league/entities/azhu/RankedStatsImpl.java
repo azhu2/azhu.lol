@@ -8,7 +8,7 @@ import league.api.RiotAPIImpl.RiotPlsException;
 import league.entities.ItemDto;
 import league.entities.ParticipantStats;
 
-public class RankedStats extends ParticipantStats{
+public class RankedStatsImpl extends ParticipantStats{
     private static LeagueAPI api = DynamicLeagueAPIImpl.getInstance();
     private static Logger log = Logger.getLogger(ParticipantStats.class.getName());
 
@@ -20,11 +20,11 @@ public class RankedStats extends ParticipantStats{
     private ItemDto itemDto5;
     private ItemDto itemDto6;
 
-    public RankedStats(){
+    public RankedStatsImpl(){
 
     }
 
-    public RankedStats(ParticipantStats stats){
+    public RankedStatsImpl(ParticipantStats stats){
         try{
             itemDto0 = api.getItemFromId(stats.getItem0());
         } catch(RiotPlsException e){
