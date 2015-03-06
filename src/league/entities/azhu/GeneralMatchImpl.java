@@ -15,8 +15,6 @@ import league.entities.SummonerDto;
 import league.entities.SummonerSpellDto;
 
 public class GeneralMatchImpl extends Match{
-    private List<MatchPlayer> blueTeam;
-    private List<MatchPlayer> redTeam;
     private int ipEarned;
     private int level;
     private SummonerSpellDto spell1;
@@ -48,9 +46,6 @@ public class GeneralMatchImpl extends Match{
         setTeamId(game.getTeamId());
         setSummonerId(summonerId);
 
-        blueTeam = new LinkedList<>();
-        redTeam = new LinkedList<>();
-
         spell1 = api.getSummonerSpellFromId(game.getSpell1());
         spell2 = api.getSummonerSpellFromId(game.getSpell2());
 
@@ -71,13 +66,13 @@ public class GeneralMatchImpl extends Match{
             GeneralPlayerImpl player = new GeneralPlayerImpl(champion, summoner, teamId);
 
             if(player.getTeamId() == LeagueConstants.BLUE_TEAM)
-                blueTeam.add(player);
+                addToBlueTeam(player);
             else
-                redTeam.add(player);
+                addToRedTeam(player);
         }
 
         // Last one is lookup player... this is so bad lol
-        lookupPlayer = blueTeam.size();
+        lookupPlayer = getBlueTeam().size();
     }
 
     public GeneralMatchImpl(long createDate, List<MatchPlayer> blueTeam, List<MatchPlayer> redTeam, long gameId,

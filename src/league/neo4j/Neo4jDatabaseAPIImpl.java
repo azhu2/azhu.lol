@@ -285,7 +285,11 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDatabaseAPI{
 
     @Override
     public void cacheRankedMatch(Match match){
-        // TODO Auto-generated method stub
+        // TODO Implement this
+        if(hasRankedMatch(match)){
+            log.info("Neo4j: Match " + match + " already cached.");
+            return;
+        }
         
         // Cache match itself
         
@@ -293,6 +297,9 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDatabaseAPI{
         
         // Create player relationships
         
+        // Lookup ban champions
+        
+        // Create ban relationships
     }
 
     @Override
