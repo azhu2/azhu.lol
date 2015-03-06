@@ -30,10 +30,6 @@ public class RankedMatch4j extends Match{
     private List<ChampionDto> blueBans;
     private List<ChampionDto> redBans;
 
-    private long[] blueTeamIds = new long[LeagueConstants.MAX_TEAM_SIZE];
-    private long[] redTeamIds = new long[LeagueConstants.MAX_TEAM_SIZE];
-    private int[] blueBanIds = new int[LeagueConstants.BAN_COUNT];
-    private int[] redBanIds = new int[LeagueConstants.BAN_COUNT];
     private String teamsString;
 
     private static Logger log = Logger.getLogger(RankedMatch4j.class.getName());
@@ -68,10 +64,6 @@ public class RankedMatch4j extends Match{
         setPlatformId((String) node.getProperty("platformId"));
         setRegion((String) node.getProperty("region"));
         setSeason((String) node.getProperty("season"));
-        setBlueTeamIds((long[]) node.getProperty("blueTeamIds"));
-        setRedTeamIds((long[]) node.getProperty("redTeamIds"));
-        setBlueBanIds((int[]) node.getProperty("blueBanIds"));
-        setRedBanIds((int[]) node.getProperty("redBanIds"));
         try{
             setTeams(mapper.readValue((String) node.getProperty("teamsString"), new TypeReference<List<Team>>(){
             }));
@@ -80,50 +72,24 @@ public class RankedMatch4j extends Match{
         }
     }
 
-    /**
-     * Use the provided APIs to populate teams and bans
-     * (APIs can be the same but want to preserve multiple interfaces...)
-     */
-    public void processLinks(LeagueAPI api, Neo4jLeagueDatabaseAPI api_neo4j){
-        try{
-            for(Long playerId : blueTeamIds)
-                addToBlueTeam(api_neo4j.getMatchPlayer(getId(), playerId));
-            for(Long playerId : redTeamIds)
-                addToRedTeam(api_neo4j.getMatchPlayer(getId(), playerId));
-            
-            for(Integer champId : blueBanIds)
-                blueBans.add(api.getChampFromId(champId));
-            for(Integer champId : redBanIds)
-                redBans.add(api.getChampFromId(champId));
-        } catch(RiotPlsException e){
-            log.warning(e.getMessage());
-        }
-    }
-
     @Override
     public void setBlueTeam(List<MatchPlayer> team){
         super.setBlueTeam(team);
-        for(int i = 0; i < team.size(); i++)
-            blueTeamIds[i] = team.get(i).getSummoner().getId();
     }
 
     @Override
     public void setRedTeam(List<MatchPlayer> team){
         super.setRedTeam(team);
-        for(int i = 0; i < team.size(); i++)
-            redTeamIds[i] = team.get(i).getSummoner().getId();
     }
 
     @Override
     public void addToBlueTeam(MatchPlayer player){
         super.addToBlueTeam(player);
-        blueTeamIds[getBlueTeam().size() - 1] = player.getSummoner().getId();
     }
 
     @Override
     public void addToRedTeam(MatchPlayer player){
         super.addToRedTeam(player);
-        redTeamIds[getRedTeam().size() - 1] = player.getSummoner().getId();
     }
 
     public String getMatchVersion(){
@@ -177,8 +143,6 @@ public class RankedMatch4j extends Match{
 
     public void setBlueBans(List<ChampionDto> bans){
         this.blueBans = bans;
-        for(int i = 0; i < bans.size(); i++)
-            blueBanIds[i] = bans.get(i).getId();
     }
 
     public List<ChampionDto> getRedBans(){
@@ -187,40 +151,6 @@ public class RankedMatch4j extends Match{
 
     public void setRedBans(List<ChampionDto> bans){
         this.redBans = bans;
-        for(int i = 0; i < bans.size(); i++)
-            redBanIds[i] = bans.get(i).getId();
-    }
-
-    public long[] getBlueTeamIds(){
-        return blueTeamIds;
-    }
-
-    public void setBlueTeamIds(long[] blueTeamIds){
-        this.blueTeamIds = blueTeamIds;
-    }
-
-    public long[] getRedTeamIds(){
-        return redTeamIds;
-    }
-
-    public void setRedTeamIds(long[] redTeamIds){
-        this.redTeamIds = redTeamIds;
-    }
-
-    public int[] getBlueBanIds(){
-        return blueBanIds;
-    }
-
-    public void setBlueBanIds(int[] blueBanIds){
-        this.blueBanIds = blueBanIds;
-    }
-
-    public int[] getRedBanIds(){
-        return redBanIds;
-    }
-
-    public void setRedBanIds(int[] redBanIds){
-        this.redBanIds = redBanIds;
     }
 
     public String getTeamsString(){
