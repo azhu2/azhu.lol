@@ -1,7 +1,7 @@
 <div id="matches" ng-show="showTab">
 	<h2>Match History</h2>
 	<ul id="matches-list">
-		<li	ng-repeat="match in newGames | orderBy:'createDate':true track by $index ">
+		<li	ng-repeat="match in newGames | orderBy:'matchCreation':true track by $index ">
 			<div class="match id_{{ match.id }}" ng-class="(match.stats.win == 1) ? 'win' : 'loss'">
 
 				<div class="topRow">
