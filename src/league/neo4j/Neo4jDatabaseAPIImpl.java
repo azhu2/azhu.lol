@@ -18,7 +18,6 @@ import league.entities.SummonerDto;
 import league.entities.SummonerSpellDto;
 import league.entities.azhu.GeneralMatchImpl;
 import league.entities.azhu.League;
-import league.entities.azhu.MatchPlayer;
 import league.entities.azhu.RankedMatchImpl;
 import league.entities.azhu.Summoner;
 import league.neo4j.entities.Champion4j;
@@ -37,7 +36,7 @@ import org.neo4j.graphdb.ResourceIterator;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 
-public class Neo4jDatabaseAPIImpl implements NewLeagueDatabaseAPI, Neo4jLeagueDatabaseAPI{
+public class Neo4jDatabaseAPIImpl implements NewLeagueDatabaseAPI{
     private static final String DB_PATH = "lol.db";
 
     private static Logger log = Logger.getLogger(Neo4jDatabaseAPIImpl.class.getName());
@@ -345,17 +344,6 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDatabaseAPI, Neo4jLeagueDa
     public void cacheRankedMatches(List<RankedMatchImpl> matches){
         // TODO Auto-generated method stub
 
-    }
-
-    @Override
-    public MatchPlayer getMatchPlayer(long matchId, long summonerId){
-        // TODO implement
-        return null;
-    }
-    
-    @Override
-    public void cacheMatchPlayer(MatchPlayer player){
-        // TODO implement
     }
     
     @Override
