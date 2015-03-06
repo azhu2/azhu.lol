@@ -145,22 +145,6 @@ public class GeneralMatchImpl extends Match{
         return true;
     }
 
-    public List<MatchPlayer> getBlueTeam(){
-        return blueTeam;
-    }
-
-    public void setBlueTeam(List<MatchPlayer> blueTeam){
-        this.blueTeam = blueTeam;
-    }
-
-    public List<MatchPlayer> getRedTeam(){
-        return redTeam;
-    }
-
-    public void setRedTeam(List<MatchPlayer> redTeam){
-        this.redTeam = redTeam;
-    }
-
     public int getIpEarned(){
         return ipEarned;
     }

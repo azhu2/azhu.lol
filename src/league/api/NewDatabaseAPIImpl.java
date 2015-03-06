@@ -27,7 +27,7 @@ import league.entities.azhu.Summoner;
 import org.apache.commons.lang3.tuple.Pair;
 import org.codehaus.jackson.type.TypeReference;
 
-public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueDBAPI{
+public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueDatabaseAPI{
     private static NewDatabaseAPIImpl _instance = new NewDatabaseAPIImpl();
     private static RiotAPIImpl api_riot = RiotAPIImpl.getInstance();
 

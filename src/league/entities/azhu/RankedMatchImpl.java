@@ -18,7 +18,7 @@ import league.entities.Team;
 
 public class RankedMatchImpl extends Match{
     private String matchVersion;
-    private List<RankedPlayerImpl> players;     // TODO replace this
+    private List<RankedPlayerImpl> players;     // TODO replace this - meh it's okay with blue/redTeam
     private String platformId;
     private String region;
     private String season;

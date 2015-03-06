@@ -21,7 +21,7 @@ import league.analysis.SummaryData;
 import league.api.APIConstants;
 import league.api.DynamicLeagueAPIImpl;
 import league.api.NewDatabaseAPIImpl;
-import league.api.NewLeagueDBAPI;
+import league.api.NewLeagueDatabaseAPI;
 import league.api.RiotAPIImpl;
 import league.api.RiotAPIImpl.RiotPlsException;
 import league.entities.GameDto;
@@ -40,7 +40,7 @@ import league.entities.azhu.Summoner;
  */
 @Path("/new/")
 public class NewLeagueResource extends LeagueResource{
-    private static NewLeagueDBAPI api = NewDatabaseAPIImpl.getInstance();
+    private static NewLeagueDatabaseAPI api = NewDatabaseAPIImpl.getInstance();
     private static RiotAPIImpl api_riot = RiotAPIImpl.getInstance();
     private static DynamicLeagueAPIImpl api_dynamic = DynamicLeagueAPIImpl.getInstance();
 

@@ -8,9 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import league.api.NewDatabaseAPIImpl;
-import league.api.NewLeagueDBAPI;
-import league.api.RiotAPIImpl.RiotPlsException;
+import league.api.NewLeagueDatabaseAPI;
 import league.entities.ChampionDto;
 import league.entities.GameDto;
 import league.entities.ItemDto;
@@ -20,6 +18,7 @@ import league.entities.SummonerDto;
 import league.entities.SummonerSpellDto;
 import league.entities.azhu.GeneralMatchImpl;
 import league.entities.azhu.League;
+import league.entities.azhu.MatchPlayer;
 import league.entities.azhu.RankedMatchImpl;
 import league.entities.azhu.Summoner;
 import league.neo4j.entities.Champion4j;
@@ -38,7 +37,7 @@ import org.neo4j.graphdb.ResourceIterator;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 
-public class Neo4jDatabaseAPIImpl implements NewLeagueDBAPI{
+public class Neo4jDatabaseAPIImpl implements NewLeagueDatabaseAPI, Neo4jLeagueDatabaseAPI{
     private static final String DB_PATH = "lol.db";
 
     private static Logger log = Logger.getLogger(Neo4jDatabaseAPIImpl.class.getName());
@@ -348,6 +347,17 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDBAPI{
 
     }
 
+    @Override
+    public MatchPlayer getMatchPlayer(long matchId, long summonerId){
+        // TODO implement
+        return null;
+    }
+    
+    @Override
+    public void cacheMatchPlayer(MatchPlayer player){
+        // TODO implement
+    }
+    
     @Override
     public void setInfiniteRetry(boolean infinite){
         // Nothing to do here

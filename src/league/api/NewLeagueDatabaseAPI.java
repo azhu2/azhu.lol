@@ -9,7 +9,7 @@ import league.entities.azhu.GeneralMatchImpl;
 import league.entities.azhu.RankedMatchImpl;
 import league.entities.azhu.Summoner;
 
-public interface NewLeagueDBAPI extends NewLeagueAPI{
+public interface NewLeagueDatabaseAPI extends NewLeagueAPI{
     public void cacheSummoner(Summoner summoner);
     public void cacheRankedMatches(List<RankedMatchImpl> matches);
     public void cacheGame(GeneralMatchImpl match);
