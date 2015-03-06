@@ -19,6 +19,7 @@ import league.entities.azhu.GeneralMatchImpl;
 import league.entities.azhu.GeneralPlayerImpl;
 import league.entities.azhu.GeneralStatsImpl;
 import league.entities.azhu.League;
+import league.entities.azhu.MatchPlayer;
 import league.entities.azhu.RankedMatchImpl;
 import league.entities.azhu.RankedPlayerImpl;
 import league.entities.azhu.Summoner;
@@ -232,11 +233,11 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueDBAP
                 String gameType = rs.getString("gameType");
                 String subType = rs.getString("subType");
                 int lookupPlayer = rs.getInt("lookupPlayer");
-                List<GeneralPlayerImpl> blueTeam = mapper.readValue(rs.getString("blueTeam"),
-                    new TypeReference<List<GeneralPlayerImpl>>(){
+                List<MatchPlayer> blueTeam = mapper.readValue(rs.getString("blueTeam"),
+                    new TypeReference<List<MatchPlayer>>(){
                     });
-                List<GeneralPlayerImpl> redTeam = mapper.readValue(rs.getString("redTeam"),
-                    new TypeReference<List<GeneralPlayerImpl>>(){
+                List<MatchPlayer> redTeam = mapper.readValue(rs.getString("redTeam"),
+                    new TypeReference<List<MatchPlayer>>(){
                     });
                 int ipEarned = rs.getInt("ipEarned");
                 int level = rs.getInt("level");
@@ -279,11 +280,11 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueDBAP
                 String gameType = rs.getString("gameType");
                 String subType = rs.getString("subType");
                 int lookupPlayer = rs.getInt("lookupPlayer");
-                List<GeneralPlayerImpl> blueTeam = mapper.readValue(rs.getString("blueTeam"),
-                    new TypeReference<List<GeneralPlayerImpl>>(){
+                List<MatchPlayer> blueTeam = mapper.readValue(rs.getString("blueTeam"),
+                    new TypeReference<List<MatchPlayer>>(){
                     });
-                List<GeneralPlayerImpl> redTeam = mapper.readValue(rs.getString("redTeam"),
-                    new TypeReference<List<GeneralPlayerImpl>>(){
+                List<MatchPlayer> redTeam = mapper.readValue(rs.getString("redTeam"),
+                    new TypeReference<List<MatchPlayer>>(){
                     });
                 int ipEarned = rs.getInt("ipEarned");
                 int level = rs.getInt("level");

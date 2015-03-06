@@ -253,4 +253,24 @@ public class RankedMatchImpl extends Match{
     public RankedPlayerImpl getQueryPlayer(){
         return players.get(lookupPlayer);
     }
+
+    @Override
+    public List<MatchPlayer> getBlueTeam(){
+        List<MatchPlayer> team = new LinkedList<>();
+
+        for(Integer i : bluePlayers)
+            team.add(players.get(i));
+
+        return team;
+    }
+
+    @Override
+    public List<MatchPlayer> getRedTeam(){
+        List<MatchPlayer> team = new LinkedList<>();
+
+        for(Integer i : redPlayers)
+            team.add(players.get(i));
+
+        return team;
+    }
 }

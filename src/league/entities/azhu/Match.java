@@ -1,5 +1,7 @@
 package league.entities.azhu;
 
+import java.util.List;
+
 public abstract class Match{
     private long id;
     private int mapId;
@@ -9,6 +11,9 @@ public abstract class Match{
     private String matchType;
     private String queueType;
 
+    public abstract List<MatchPlayer> getBlueTeam();
+    public abstract List<MatchPlayer> getRedTeam();
+    
     public long getId(){
         return id;
     }

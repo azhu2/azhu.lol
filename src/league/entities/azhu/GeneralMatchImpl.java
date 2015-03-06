@@ -15,8 +15,8 @@ import league.entities.SummonerDto;
 import league.entities.SummonerSpellDto;
 
 public class GeneralMatchImpl extends Match{
-    private List<GeneralPlayerImpl> blueTeam;
-    private List<GeneralPlayerImpl> redTeam;
+    private List<MatchPlayer> blueTeam;
+    private List<MatchPlayer> redTeam;
     private int ipEarned;
     private int level;
     private SummonerSpellDto spell1;
@@ -80,9 +80,10 @@ public class GeneralMatchImpl extends Match{
         lookupPlayer = blueTeam.size();
     }
 
-    public GeneralMatchImpl(long createDate, List<GeneralPlayerImpl> blueTeam, List<GeneralPlayerImpl> redTeam, long gameId, String gameMode,
-            String gameType, int ipEarned, int level, int mapId, SummonerSpellDto spell1, SummonerSpellDto spell2,
-            GeneralStatsImpl stats, String subType, int teamId, SummonerDto summoner, int lookupPlayer, long summonerId){
+    public GeneralMatchImpl(long createDate, List<MatchPlayer> blueTeam, List<MatchPlayer> redTeam, long gameId,
+            String gameMode, String gameType, int ipEarned, int level, int mapId, SummonerSpellDto spell1,
+            SummonerSpellDto spell2, GeneralStatsImpl stats, String subType, int teamId, SummonerDto summoner,
+            int lookupPlayer, long summonerId){
         super();
         setMatchCreation(createDate);
         setBlueTeam(blueTeam);
@@ -103,9 +104,10 @@ public class GeneralMatchImpl extends Match{
         setSummonerId(summonerId);
     }
 
-    public GeneralMatchImpl(long createDate, List<GeneralPlayerImpl> blueTeam, List<GeneralPlayerImpl> redTeam, long gameId, String gameMode,
-            String gameType, int ipEarned, int level, int mapId, SummonerSpellDto spell1, SummonerSpellDto spell2,
-            RawStatsDto stats, String subType, int teamId, SummonerDto summoner, int lookupPlayer, long summonerId){
+    public GeneralMatchImpl(long createDate, List<MatchPlayer> blueTeam, List<MatchPlayer> redTeam, long gameId,
+            String gameMode, String gameType, int ipEarned, int level, int mapId, SummonerSpellDto spell1,
+            SummonerSpellDto spell2, RawStatsDto stats, String subType, int teamId, SummonerDto summoner,
+            int lookupPlayer, long summonerId){
         this(createDate, blueTeam, redTeam, gameId, gameMode, gameType, ipEarned, level, mapId, spell1, spell2,
              new GeneralStatsImpl(stats), subType, teamId, summoner, lookupPlayer, summonerId);
     }
@@ -143,19 +145,19 @@ public class GeneralMatchImpl extends Match{
         return true;
     }
 
-    public List<GeneralPlayerImpl> getBlueTeam(){
+    public List<MatchPlayer> getBlueTeam(){
         return blueTeam;
     }
 
-    public void setBlueTeam(List<GeneralPlayerImpl> blueTeam){
+    public void setBlueTeam(List<MatchPlayer> blueTeam){
         this.blueTeam = blueTeam;
     }
 
-    public List<GeneralPlayerImpl> getRedTeam(){
+    public List<MatchPlayer> getRedTeam(){
         return redTeam;
     }
 
-    public void setRedTeam(List<GeneralPlayerImpl> redTeam){
+    public void setRedTeam(List<MatchPlayer> redTeam){
         this.redTeam = redTeam;
     }
 
