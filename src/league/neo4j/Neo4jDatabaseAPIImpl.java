@@ -340,7 +340,7 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDatabaseAPI{
                                  + "CREATE (item3)-[:ITEM3]->(player) "
                                  + "CREATE (item4)-[:ITEM4]->(player) "
                                  + "CREATE (item5)-[:ITEM5]->(player) "
-                                 + "CREATE (item6)-[:ITEM6]->(player) ";
+                                 + "CREATE (item6)-[:ITEM6]->(player);";
                 String stmt = String.format(statement, match.getId(), rankedPlayer.getChampion().getId(),
                     rankedPlayer.getSummoner().getId(), rankedPlayer.getSpell1().getId(),
                     rankedPlayer.getSpell2().getId(), rankedPlayer.getItems().get(0).getId(),

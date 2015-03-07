@@ -5,10 +5,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.neo4j.graphdb.Node;
-
 import league.entities.ItemDto;
 import league.entities.Mastery;
 import league.entities.ParticipantStats;
@@ -17,6 +13,10 @@ import league.entities.SummonerSpellDto;
 import league.entities.azhu.MatchPlayer;
 import league.entities.azhu.RankedPlayerImpl;
 import league.entities.azhu.RankedStatsImpl;
+
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.neo4j.graphdb.Node;
 
 @JsonIgnoreProperties(value = {"champion", "summoner", "masteries", "runes", "stats", "spell1", "spell2", "items"})
 public class RankedPlayer4j extends MatchPlayer{
@@ -59,12 +59,7 @@ public class RankedPlayer4j extends MatchPlayer{
         items.add(stats.getItemDto4());
         items.add(stats.getItemDto5());
         items.add(stats.getItemDto6());
-        
-        for(int i = 0; i < items.size(); i++){
-            ItemDto item = items.get(i);
-            if(item == null)
-                items.set(i, new ItemDto("", 0, null, "", ""));
-        }
+        processItems();
     }
     
     public RankedPlayer4j(Node node){
@@ -76,6 +71,17 @@ public class RankedPlayer4j extends MatchPlayer{
         }
     }
 
+    /**
+     * Replace null items with a dummy ItemDto object
+     */
+    private void processItems(){
+        for(int i = 0; i < items.size(); i++){
+            ItemDto item = items.get(i);
+            if(item == null)
+                items.set(i, new ItemDto("", 0, null, "", ""));
+        }
+    }
+    
     public String getHighestAchievedSeasonTier(){
         return highestAchievedSeasonTier;
     }
@@ -143,6 +149,7 @@ public class RankedPlayer4j extends MatchPlayer{
 
     public void setItems(List<ItemDto> items){
         this.items = items;
+        processItems();
     }
 
     public String getStatsString(){
