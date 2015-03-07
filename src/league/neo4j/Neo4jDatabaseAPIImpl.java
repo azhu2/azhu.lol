@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import league.LeagueConstants;
 import league.api.NewDatabaseAPIImpl;
 import league.api.NewLeagueDatabaseAPI;
 import league.entities.ChampionDto;
@@ -72,7 +73,27 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDatabaseAPI{
 
     private void setIndices(){
         try(Transaction tx = db.beginTx()){
-            String stmt = "CREATE INDEX ON :Summoner(id)";
+            String stmt = "CREATE INDEX ON :Summoner(id);";
+            engine.execute(stmt);
+            tx.success();
+        }
+        try(Transaction tx = db.beginTx()){
+            String stmt = "CREATE INDEX ON :Champion(id);";
+            engine.execute(stmt);
+            tx.success();
+        }
+        try(Transaction tx = db.beginTx()){
+            String stmt = "CREATE INDEX ON :Item(id);";
+            engine.execute(stmt);
+            tx.success();
+        }
+        try(Transaction tx = db.beginTx()){
+            String stmt = "CREATE INDEX ON :Summonerspell(id);";
+            engine.execute(stmt);
+            tx.success();
+        }
+        try(Transaction tx = db.beginTx()){
+            String stmt = "CREATE INDEX ON :RankedMatch(id);";
             engine.execute(stmt);
             tx.success();
         }
@@ -103,7 +124,7 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDatabaseAPI{
     @Override
     public Summoner getSummonerNewFromId(long summonerId){
         try(Transaction tx = db.beginTx()){
-            String stmt = String.format("MATCH (n:Summoner) WHERE n.id = %d return n", summonerId);
+            String stmt = String.format("MATCH (n:Summoner) WHERE n.id = %d RETURN n;", summonerId);
             Node node = getNode(stmt);
 
             if(node == null){
@@ -128,7 +149,7 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDatabaseAPI{
     @Override
     public Summoner searchSummonerNew(String summonerName){
         try(Transaction tx = db.beginTx()){
-            String stmt = String.format("MATCH (n:Summoner) WHERE n.name =~ '(?i)%s' return n", summonerName);
+            String stmt = String.format("MATCH (n:Summoner) WHERE n.name =~ '(?i)%s' RETURN n;", summonerName);
             Node node = getNode(stmt);
 
             if(node == null){
@@ -147,7 +168,8 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDatabaseAPI{
         try(Transaction tx = db.beginTx()){
             Summoner s = new Summoner4j(summoner);
             String objectMap = mapper.writeValueAsString(s);
-            String stmt = String.format("CREATE (n:Summoner %s)", objectMap);
+            String stmt = String.format("MERGE (n:Summoner { id:%d }) ON CREATE SET n=%s ON MATCH SET n=%s;",
+                summoner.getId(), objectMap, objectMap);
             engine.execute(stmt);
 
             log.info("Neo4j: cached summoner " + summoner);
@@ -166,7 +188,7 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDatabaseAPI{
     @Override
     public ChampionDto getChampFromId(long champId){
         try(Transaction tx = db.beginTx()){
-            String stmt = String.format("MATCH (n:Champion) WHERE n.id = %d return n", champId);
+            String stmt = String.format("MATCH (n:Champion) WHERE n.id = %d RETURN n;", champId);
             Node node = getNode(stmt);
 
             if(node == null){
@@ -185,7 +207,8 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDatabaseAPI{
         try(Transaction tx = db.beginTx()){
             ChampionDto c = new Champion4j(champion);
             String objectMap = mapper.writeValueAsString(c);
-            String stmt = String.format("CREATE (n:Champion %s)", objectMap);
+            String stmt = String.format("MERGE (n:Champion { id:%d }) ON CREATE SET n=%s ON MATCH SET n=%s;",
+                champion.getId(), objectMap, objectMap);
             engine.execute(stmt);
 
             log.info("Neo4j: cached champion " + champion);
@@ -198,7 +221,7 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDatabaseAPI{
     @Override
     public ItemDto getItemFromId(long itemId){
         try(Transaction tx = db.beginTx()){
-            String stmt = String.format("MATCH (n:Item) WHERE n.id = %d return n", itemId);
+            String stmt = String.format("MATCH (n:Item) WHERE n.id = %d RETURN n;", itemId);
             Node node = getNode(stmt);
 
             if(node == null){
@@ -217,7 +240,8 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDatabaseAPI{
         try(Transaction tx = db.beginTx()){
             ItemDto i = new Item4j(item);
             String objectMap = mapper.writeValueAsString(i);
-            String stmt = String.format("CREATE (n:Item %s)", objectMap);
+            String stmt = String.format("MERGE (n:Item { id:%d }) ON CREATE SET n=%s ON MATCH SET n=%s;", item.getId(),
+                objectMap, objectMap);
             engine.execute(stmt);
 
             log.info("Neo4j: cached item " + item);
@@ -230,7 +254,7 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDatabaseAPI{
     @Override
     public SummonerSpellDto getSummonerSpellFromId(long spellId){
         try(Transaction tx = db.beginTx()){
-            String stmt = String.format("MATCH (n:Summonerspell) WHERE n.id = %d return n", spellId);
+            String stmt = String.format("MATCH (n:Summonerspell) WHERE n.id = %d RETURN n;", spellId);
             Node node = getNode(stmt);
 
             if(node == null){
@@ -249,7 +273,8 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDatabaseAPI{
         try(Transaction tx = db.beginTx()){
             SummonerSpellDto i = new SummonerSpell4j(spell);
             String objectMap = mapper.writeValueAsString(i);
-            String stmt = String.format("CREATE (n:Summonerspell %s)", objectMap);
+            String stmt = String.format("MERGE (n:Summonerspell { id:%d }) ON CREATE SET n=%s ON MATCH SET n=%s;",
+                spell.getId(), objectMap, objectMap);
             engine.execute(stmt);
 
             log.info("Neo4j: cached summoner spell " + spell);
@@ -273,14 +298,90 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDatabaseAPI{
 
     @Override
     public Match getRankedMatch(long matchId, long summonerId){
-        // TODO Auto-generated method stub
-        return null;
+        Match match;
+        // Fetch match itself
+        try(Transaction tx = db.beginTx()){
+            String stmt = String.format("MATCH (n:RankedMatch) WHERE n.id = %d RETURN n;", matchId);
+            Node node = getNode(stmt);
+
+            if(node == null){
+                log.warning("Neo4j: Ranked match " + matchId + " not found.");
+                return null;
+            }
+            match = new RankedMatch4j(node);
+            log.info("Neo4j: Fetched ranked match " + match);
+            tx.success();
+        }
+
+        // Fetch players
+        try(Transaction tx = db.beginTx()){
+            // @formatter:off
+            String stmt = String.format(
+                  "MATCH (player:RankedPlayer)-[:PLAYED_IN]->(match:RankedMatch) WHERE match.id = %d "
+                + "MATCH (champion:Champion)-[:CHAMP_PLAYED]->(player) "
+                + "MATCH (summoner:Summoner)-[:SUMMONER]->(player) "
+                + "MATCH (spell1:Summonerspell)-[:SPELL1]->(player) "
+                + "MATCH (spell2:Summonerspell)-[:SPELL2]->(player) "
+                + "MATCH (item0:Item)-[:ITEM0]->(player) "
+                + "MATCH (item1:Item)-[:ITEM1]->(player) "
+                + "MATCH (item2:Item)-[:ITEM2]->(player) "
+                + "MATCH (item3:Item)-[:ITEM3]->(player) "
+                + "MATCH (item4:Item)-[:ITEM4]->(player) "
+                + "MATCH (item5:Item)-[:ITEM5]->(player) "
+                + "MATCH (item6:Item)-[:ITEM6]->(player) "
+                + "RETURN player, champion, summoner, spell1, spell2, item0, item1, item2, item3, item4, item5, item6;",
+                matchId);
+            // @formatter:on
+            ExecutionResult results = engine.execute(stmt);
+            ResourceIterator<Map<String, Object>> itr = results.iterator();
+
+            while(itr.hasNext()){
+                Map<String, Object> found = itr.next();
+                Node playerNode = (Node) found.get("player");
+                Node championNode = (Node) found.get("champion");
+                Node summonerNode = (Node) found.get("summoner");
+                Node spell1Node = (Node) found.get("spell1");
+                Node spell2Node = (Node) found.get("spell2");
+                Node item0Node = (Node) found.get("item0");
+                Node item1Node = (Node) found.get("item1");
+                Node item2Node = (Node) found.get("item2");
+                Node item3Node = (Node) found.get("item3");
+                Node item4Node = (Node) found.get("item4");
+                Node item5Node = (Node) found.get("item5");
+                Node item6Node = (Node) found.get("item6");
+
+                RankedPlayer4j player = new RankedPlayer4j(playerNode);
+                player.setChampion(new Champion4j(championNode));
+                player.setSummoner(new Summoner4j(summonerNode));
+                player.setSpell1(new SummonerSpell4j(spell1Node));
+                player.setSpell2(new SummonerSpell4j(spell2Node));
+                List<ItemDto> items = new LinkedList<>();
+                items.add(new Item4j(item0Node));
+                items.add(new Item4j(item1Node));
+                items.add(new Item4j(item2Node));
+                items.add(new Item4j(item3Node));
+                items.add(new Item4j(item4Node));
+                items.add(new Item4j(item5Node));
+                items.add(new Item4j(item6Node));
+                player.setItems(items);
+
+                if(player.getTeamId() == LeagueConstants.BLUE_TEAM)
+                    match.addToBlueTeam(player);
+                else
+                    match.addToRedTeam(player);
+            }
+            tx.success();
+        }
+        return match;
     }
 
     @Override
     public boolean hasRankedMatch(Match match){
-        // TODO Auto-generated method stub
-        return false;
+        try(Transaction tx = db.beginTx()){
+            String stmt = String.format("MATCH (n:RankedMatch) WHERE n.id = %d RETURN n;", match.getId());
+            Node node = getNode(stmt);
+            return node != null;
+        }
     }
 
     @Override
@@ -316,12 +417,19 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDatabaseAPI{
             try(Transaction tx = db.beginTx()){
                 String objectMap = mapper.writeValueAsString(rankedPlayer);
 
+                cacheChampion(rankedPlayer.getChampion());
+                cacheSummoner(rankedPlayer.getSummoner());
+                cacheSummonerSpell(rankedPlayer.getSpell1());
+                cacheSummonerSpell(rankedPlayer.getSpell2());
+                for(ItemDto item : rankedPlayer.getItems())
+                    cacheItem(item);
+
                 // @formatter:off
                 String statement = "MATCH (match:RankedMatch) WHERE match.id = %d "
                                  + "MATCH (champion:Champion) WHERE champion.id=%d "
                                  + "MATCH (summoner:Summoner) WHERE summoner.id=%d "
-                                 + "MATCH (spell1:SummonerSpell) WHERE spell1.id=%d "
-                                 + "MATCH (spell2:SummonerSpell) WHERE spell2.id=%d "
+                                 + "MATCH (spell1:Summonerspell) WHERE spell1.id=%d "
+                                 + "MATCH (spell2:Summonerspell) WHERE spell2.id=%d "
                                  + "MATCH (item0:Item) WHERE item0.id=%d "
                                  + "MATCH (item1:Item) WHERE item1.id=%d "
                                  + "MATCH (item2:Item) WHERE item2.id=%d "
@@ -332,6 +440,7 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDatabaseAPI{
                                  + "CREATE (player:RankedPlayer %s) "
                                  + "CREATE (player)-[:PLAYED_IN]->(match) "
                                  + "CREATE (champion)-[:CHAMP_PLAYED]->(player) "
+                                 + "CREATE (summoner)-[:SUMMONER]->(player) "
                                  + "CREATE (spell1)-[:SPELL1]->(player) "
                                  + "CREATE (spell2)-[:SPELL2]->(player) "
                                  + "CREATE (item0)-[:ITEM0]->(player) "
@@ -363,9 +472,12 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDatabaseAPI{
         // Link banned champions
         for(ChampionDto ban : rankedMatch.getBlueBans()){
             try(Transaction tx = db.beginTx()){
+                // @formatter:off
                 String stmt = String.format("MATCH (match:RankedMatch) WHERE match.id = %d "
-                        + "MATCH (ban:Champion) WHERE ban.id=%d " + "CREATE (ban)-[:BANNED_BLUE]->(match);",
-                    match.getId(), ban.getId());
+                                          + "MATCH (ban:Champion) WHERE ban.id=%d "
+                                          + "CREATE (ban)-[:BANNED_BLUE]->(match);",
+                                          match.getId(), ban.getId());
+                // @formatter:on
                 engine.execute(stmt);
 
                 log.info("Neo4j: cached banned champion " + ban);
@@ -374,9 +486,12 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDatabaseAPI{
         }
         for(ChampionDto ban : rankedMatch.getRedBans()){
             try(Transaction tx = db.beginTx()){
+                // @formatter:off
                 String stmt = String.format("MATCH (match:RankedMatch) WHERE match.id = %d "
-                        + "MATCH (ban:Champion) WHERE ban.id=%d " + "CREATE (ban)-[:BANNED_RED]->(match);",
-                    match.getId(), ban.getId());
+                                          + "MATCH (ban:Champion) WHERE ban.id=%d " 
+                                          + "CREATE (ban)-[:BANNED_RED]->(match);",
+                                          match.getId(), ban.getId());
+                // @formatter:on
                 engine.execute(stmt);
 
                 log.info("Neo4j: cached banned champion " + ban);
@@ -476,27 +591,25 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDatabaseAPI{
     public static void main(String[] args){
         try{
             Neo4jDatabaseAPIImpl n = Neo4jDatabaseAPIImpl.getInstance();
-            // Summoner summ = NewDatabaseAPIImpl.getInstance().searchSummonerNew("zedenstein");
-            // Summoner s = new Summoner4j(summ);
-            // n.cacheSummoner(summ);
-            System.out.println(n.searchSummonerNew("l am bjerg"));
+            Summoner summ = NewDatabaseAPIImpl.getInstance().searchSummonerNew("zedenstein");
+            n.cacheSummoner(summ);
             System.out.println(n.getSummonerNewFromId(31569637));
-            System.out.println(n.searchSummonerNew("irascent"));
 
-            // ChampionDto c = NewDatabaseAPIImpl.getInstance().getChampFromId(1);
-            // n.cacheChampion(c);
+            ChampionDto c = NewDatabaseAPIImpl.getInstance().getChampFromId(1);
+            n.cacheChampion(c);
             System.out.println(n.getChampFromId(1));
 
-            // ItemDto i = NewDatabaseAPIImpl.getInstance().getItemFromId(1055);
-            // n.cacheItem(i);
+            ItemDto i = NewDatabaseAPIImpl.getInstance().getItemFromId(1055);
+            n.cacheItem(i);
             System.out.println(n.getItemFromId(3031));
 
-            // SummonerSpellDto s = NewDatabaseAPIImpl.getInstance().getSummonerSpellFromId(4);
-            // n.cacheSummonerSpell(s);
+            SummonerSpellDto s = NewDatabaseAPIImpl.getInstance().getSummonerSpellFromId(4);
+            n.cacheSummonerSpell(s);
             System.out.println(n.getSummonerSpellFromId(4));
 
-            Match m = NewDatabaseAPIImpl.getInstance().getRankedMatch(1435134253, 31569637);
+            Match m = NewDatabaseAPIImpl.getInstance().getRankedMatch(1752991005, 108491);
             n.cacheRankedMatch(m);
+            System.out.println(n.getRankedMatch(1752991005, 1));
         } catch(Exception e){
             e.printStackTrace();
         }

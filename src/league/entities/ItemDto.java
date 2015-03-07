@@ -51,7 +51,10 @@ public class ItemDto{
         setDescription((String) node.getProperty("description"));
         setId((int) (long) node.getProperty("id"));
         setName((String) node.getProperty("name"));
-        setPlaintext((String) node.getProperty("plaintext"));
+        if(node.hasProperty("plaintext"))
+            setPlaintext((String) node.getProperty("plaintext"));
+        else
+            setPlaintext("plaintext missing. riot pls");
     }
 
     public String getColloq(){

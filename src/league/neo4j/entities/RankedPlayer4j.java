@@ -64,8 +64,10 @@ public class RankedPlayer4j extends MatchPlayer{
     
     public RankedPlayer4j(Node node){
         super(node);
+        setParticipantId((int)(long) node.getProperty("participantId"));
+        setHighestAchievedSeasonTier((String) node.getProperty("highestAchievedSeasonTier"));
         try{
-            setStats(mapper.readValue((String) node.getProperty("statsString"), ParticipantStats.class));
+            setStats(mapper.readValue((String) node.getProperty("statsString"), RankedStatsImpl.class));
         } catch(IOException e){
             log.warning(e.getMessage());
         }
@@ -78,7 +80,7 @@ public class RankedPlayer4j extends MatchPlayer{
         for(int i = 0; i < items.size(); i++){
             ItemDto item = items.get(i);
             if(item == null)
-                items.set(i, new ItemDto("", 0, null, "", ""));
+                items.set(i, new ItemDto("none", 0, null, "none", "none"));
         }
     }
     
@@ -159,5 +161,4 @@ public class RankedPlayer4j extends MatchPlayer{
     public void setStatsString(String statsString){
         this.statsString = statsString;
     }
-
 }

@@ -155,4 +155,10 @@ public class RankedMatch4j extends Match{
     public void setTeamsString(String teamsString){
         this.teamsString = teamsString;
     }
+
+    @Override
+    public String toString(){
+        return "Ranked match " + getId();
+    }
+
 }
