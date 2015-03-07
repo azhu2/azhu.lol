@@ -1,6 +1,7 @@
 package league.neo4j.entities;
 
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -15,6 +16,7 @@ import league.entities.Rune;
 import league.entities.SummonerSpellDto;
 import league.entities.azhu.MatchPlayer;
 import league.entities.azhu.RankedPlayerImpl;
+import league.entities.azhu.RankedStatsImpl;
 
 @JsonIgnoreProperties(value = {"champion", "summoner", "masteries", "runes", "stats", "spell1", "spell2", "items"})
 public class RankedPlayer4j extends MatchPlayer{
@@ -47,6 +49,22 @@ public class RankedPlayer4j extends MatchPlayer{
         setStats(player.getStats());
         setSummoner(player.getSummoner());
         setTeamId(player.getTeamId());
+        
+        RankedStatsImpl stats = player.getStats();
+        items = new LinkedList<>();
+        items.add(stats.getItemDto0());
+        items.add(stats.getItemDto1());
+        items.add(stats.getItemDto2());
+        items.add(stats.getItemDto3());
+        items.add(stats.getItemDto4());
+        items.add(stats.getItemDto5());
+        items.add(stats.getItemDto6());
+        
+        for(int i = 0; i < items.size(); i++){
+            ItemDto item = items.get(i);
+            if(item == null)
+                items.set(i, new ItemDto("", 0, null, "", ""));
+        }
     }
     
     public RankedPlayer4j(Node node){
