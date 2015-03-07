@@ -8,7 +8,6 @@ import league.api.RiotAPIImpl.RiotPlsException;
 import league.entities.ChampionDto;
 import league.entities.Mastery;
 import league.entities.Participant;
-import league.entities.ParticipantStats;
 import league.entities.Rune;
 import league.entities.SummonerSpellDto;
 
@@ -19,7 +18,7 @@ public class RankedPlayerImpl extends MatchPlayer{
     private List<Rune> runes;
     private SummonerSpellDto spell1;
     private SummonerSpellDto spell2;
-    private ParticipantStats stats;
+    private RankedStatsImpl stats;
 
     private static LeagueAPI api = DynamicLeagueAPIImpl.getInstance();
 
@@ -36,7 +35,7 @@ public class RankedPlayerImpl extends MatchPlayer{
         runes = participant.getRunes();
         spell1 = api.getSummonerSpellFromId(participant.getSpell1Id());
         spell2 = api.getSummonerSpellFromId(participant.getSpell2Id());
-        stats = participant.getStats();
+        stats = new RankedStatsImpl(participant.getStats());
         setTeamId(participant.getTeamId());
     }
 
@@ -47,7 +46,7 @@ public class RankedPlayerImpl extends MatchPlayer{
 
     public RankedPlayerImpl(Summoner summoner, ChampionDto champion, String highestAchievedSeasonTier,
             List<Mastery> masteries, int participantId, List<Rune> runes, SummonerSpellDto spell1,
-            SummonerSpellDto spell2, ParticipantStats stats, int teamId){
+            SummonerSpellDto spell2, RankedStatsImpl stats, int teamId){
         super();
         setSummoner(summoner);
         setChampion(champion);
@@ -109,11 +108,11 @@ public class RankedPlayerImpl extends MatchPlayer{
         this.spell2 = spell2;
     }
 
-    public ParticipantStats getStats(){
+    public RankedStatsImpl getStats(){
         return stats;
     }
 
-    public void setStats(ParticipantStats stats){
+    public void setStats(RankedStatsImpl stats){
         this.stats = stats;
     }
 

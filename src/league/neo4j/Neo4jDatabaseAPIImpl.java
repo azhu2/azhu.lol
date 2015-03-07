@@ -324,7 +324,10 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDatabaseAPI{
                 tx.success();
             } catch(IOException e){
                 log.warning(e.getMessage());
+                continue;
             }
+            
+            // Link champion, summoner, spells, items
         }
 
         // Link banned champions

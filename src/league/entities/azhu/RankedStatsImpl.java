@@ -61,6 +61,14 @@ public class RankedStatsImpl extends ParticipantStats{
             log.warning(e.getMessage());
         }
         
+        item0 = stats.getItem0();
+        item1 = stats.getItem1();
+        item2 = stats.getItem2();
+        item3 = stats.getItem3();
+        item4 = stats.getItem4();
+        item5 = stats.getItem5();
+        item6 = stats.getItem6();
+        
         assists = stats.getAssists();
         champLevel = stats.getChampLevel();
         combatPlayerScore = stats.getCombatPlayerScore();

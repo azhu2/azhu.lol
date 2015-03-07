@@ -17,7 +17,6 @@ import league.entities.PlayerDto;
 import league.entities.azhu.Match;
 import league.entities.azhu.MatchPlayer;
 import league.entities.azhu.RankedMatchImpl;
-import league.entities.azhu.RankedPlayerImpl;
 import league.entities.azhu.Summoner;
 
 public class SummonerCrawler{
