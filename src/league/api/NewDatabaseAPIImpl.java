@@ -332,7 +332,7 @@ public class NewDatabaseAPIImpl extends DatabaseAPIImpl implements NewLeagueData
     @Override
     public void cacheGame(Match match){
         try{
-            if(hasGame(match) || !(match instanceof RankedMatchImpl))
+            if(hasGame(match) || !(match instanceof GeneralMatchImpl))
                 return;            
             GeneralMatchImpl game = (GeneralMatchImpl) match;
 
