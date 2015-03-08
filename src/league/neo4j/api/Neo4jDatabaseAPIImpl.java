@@ -1,22 +1,17 @@
-package league.neo4j;
+package league.neo4j.api;
 
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Logger;
 
 import league.LeagueConstants;
 import league.api.NewDatabaseAPIImpl;
-import league.api.NewLeagueDatabaseAPI;
 import league.entities.ChampionDto;
-import league.entities.GameDto;
 import league.entities.ItemDto;
-import league.entities.MatchDetail;
 import league.entities.MatchSummary;
-import league.entities.SummonerDto;
 import league.entities.SummonerSpellDto;
 import league.entities.azhu.League;
 import league.entities.azhu.Match;
@@ -42,7 +37,7 @@ import org.neo4j.graphdb.ResourceIterator;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 
-public class Neo4jDatabaseAPIImpl implements NewLeagueDatabaseAPI{
+public class Neo4jDatabaseAPIImpl implements Neo4jAPI, Neo4jDatabaseAPI{
     private static final String DB_PATH = "lol.db";
 
     private static Logger log = Logger.getLogger(Neo4jDatabaseAPIImpl.class.getName());
@@ -122,7 +117,7 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDatabaseAPI{
     }
 
     @Override
-    public Summoner getSummonerNewFromId(long summonerId){
+    public Summoner getSummonerFromId(long summonerId){
         try(Transaction tx = db.beginTx()){
             String stmt = String.format("MATCH (n:Summoner) WHERE n.id = %d RETURN n;", summonerId);
             Node node = getNode(stmt);
@@ -139,15 +134,15 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDatabaseAPI{
     }
 
     @Override
-    public List<Summoner> getSummonersNew(List<Long> summonerIds){
+    public List<Summoner> getSummoners(List<Long> summonerIds){
         List<Summoner> summoners = new LinkedList<>();
         for(Long id : summonerIds)
-            summoners.add(getSummonerNewFromId(id));
+            summoners.add(getSummonerFromId(id));
         return null;
     }
 
     @Override
-    public Summoner searchSummonerNew(String summonerName){
+    public Summoner searchSummoner(String summonerName){
         try(Transaction tx = db.beginTx()){
             String stmt = String.format("MATCH (n:Summoner) WHERE n.name =~ '(?i)%s' RETURN n;", summonerName);
             Node node = getNode(stmt);
@@ -177,12 +172,6 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDatabaseAPI{
         } catch(IOException e){
             log.warning(e.getMessage());
         }
-    }
-
-    @Override
-    public List<Summoner> getSummonersNew(List<Long> summonerIds, boolean cache){
-        // This okay?
-        return getSummonersNew(summonerIds);
     }
 
     @Override
@@ -297,7 +286,7 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDatabaseAPI{
     }
 
     @Override
-    public Match getRankedMatch(long matchId, long summonerId){
+    public Match getRankedMatch(long matchId){
         Match match;
         // Fetch match itself
         try(Transaction tx = db.beginTx()){
@@ -313,6 +302,11 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDatabaseAPI{
             tx.success();
         }
 
+        populateMatch(match);
+        return match;
+    }
+
+    private void populateMatch(Match match){
         // Fetch players
         try(Transaction tx = db.beginTx()){
             // @formatter:off
@@ -330,7 +324,7 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDatabaseAPI{
                 + "MATCH (item5:Item)-[:ITEM5]->(player) "
                 + "MATCH (item6:Item)-[:ITEM6]->(player) "
                 + "RETURN player, champion, summoner, spell1, spell2, item0, item1, item2, item3, item4, item5, item6;",
-                matchId);
+                match.getId());
             // @formatter:on
             ExecutionResult results = engine.execute(stmt);
             ResourceIterator<Map<String, Object>> itr = results.iterator();
@@ -372,11 +366,9 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDatabaseAPI{
             }
             tx.success();
         }
-        return match;
     }
 
-    @Override
-    public boolean hasRankedMatch(Match match){
+    private boolean hasRankedMatch(Match match){
         try(Transaction tx = db.beginTx()){
             String stmt = String.format("MATCH (n:RankedMatch) WHERE n.id = %d RETURN n;", match.getId());
             Node node = getNode(stmt);
@@ -385,9 +377,26 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDatabaseAPI{
     }
 
     @Override
-    public List<Match> getRankedMatchesAll(long summonerId){
-        // TODO Auto-generated method stub
-        return null;
+    public List<Match> getAllRankedMatches(long summonerId){
+        List<Match> matches = new LinkedList<>();
+        
+        try(Transaction tx = db.beginTx()){
+            String stmt = String.format(
+                "MATCH (summoner:Summoner)-[:SUMMONER]->(player:RankedPlayer)-[:PLAYED_IN]->(match:RankedMatch) "
+                        + "WHERE summoner.id = %d RETURN match", summonerId);
+            ExecutionResult results = engine.execute(stmt);
+            ResourceIterator<Map<String, Object>> itr = results.iterator();
+
+            while(itr.hasNext()){
+                Map<String, Object> map = itr.next();
+                Node matchNode = (Node) map.get("match");
+                Match match = new RankedMatch4j(matchNode);
+                populateMatch(match);
+                matches.add(match);
+            }
+        }
+
+        return matches;
     }
 
     @Override
@@ -523,68 +532,14 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDatabaseAPI{
         // TODO Auto-generated method stub
     }
 
-    @Override
-    public boolean hasGame(Match game){
+    private boolean hasGame(Match game){
         // TODO Auto-generated method stub
         return false;
     }
 
     @Override
-    public List<Match> getGamesAll(long summonerId){
+    public List<Match> getAllGames(long summonerId){
         // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public void setInfiniteRetry(boolean infinite){
-        // Nothing to do here
-    }
-
-    @Override
-    @Deprecated
-    public MatchDetail getMatchDetail(long matchId){
-        return null;
-    }
-
-    @Override
-    @Deprecated
-    public Set<GameDto> getMatchHistory(long summonerId){
-        return null;
-    }
-
-    @Override
-    @Deprecated
-    public Set<GameDto> getMatchHistoryAll(long summonerId){
-        return null;
-    }
-
-    @Override
-    @Deprecated
-    public List<MatchSummary> getRankedMatches(long summonerId){
-        return null;
-    }
-
-    @Override
-    @Deprecated
-    public SummonerDto getSummonerFromId(long summonerId){
-        return null;
-    }
-
-    @Override
-    @Deprecated
-    public List<SummonerDto> getSummoners(List<Long> summonerIds){
-        return null;
-    }
-
-    @Override
-    @Deprecated
-    public SummonerDto searchSummoner(String summonerName){
-        return null;
-    }
-
-    @Override
-    @Deprecated
-    public List<MatchSummary> getAllRankedMatches(long summonerId){
         return null;
     }
 
@@ -593,7 +548,7 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDatabaseAPI{
             Neo4jDatabaseAPIImpl n = Neo4jDatabaseAPIImpl.getInstance();
             Summoner summ = NewDatabaseAPIImpl.getInstance().searchSummonerNew("zedenstein");
             n.cacheSummoner(summ);
-            System.out.println(n.getSummonerNewFromId(31569637));
+            System.out.println(n.getSummonerFromId(31569637));
 
             ChampionDto c = NewDatabaseAPIImpl.getInstance().getChampFromId(1);
             n.cacheChampion(c);
@@ -607,9 +562,11 @@ public class Neo4jDatabaseAPIImpl implements NewLeagueDatabaseAPI{
             n.cacheSummonerSpell(s);
             System.out.println(n.getSummonerSpellFromId(4));
 
-            Match m = NewDatabaseAPIImpl.getInstance().getRankedMatch(1752991005, 108491);
-            n.cacheRankedMatch(m);
-            System.out.println(n.getRankedMatch(1752991005, 1));
+            List<Match> matches = NewDatabaseAPIImpl.getInstance().getRankedMatchesAll(108491);
+            for(Match m : matches)
+                n.cacheRankedMatch(m);
+            System.out.println(n.getRankedMatch(1752991005));
+            System.out.println(n.getAllRankedMatches(108491));
         } catch(Exception e){
             e.printStackTrace();
         }

@@ -90,7 +90,7 @@ public class NewLeagueResource extends LeagueResource{
         List<Match> matches = new LinkedList<>();
         for(MatchSummary summary : oldApiResults){
             long matchId = summary.getMatchId();
-            RankedMatchImpl match = (RankedMatchImpl) api.getRankedMatch(matchId, summonerId);
+            Match match = api.getRankedMatch(matchId, summonerId);
             if(match == null){
                 MatchDetail detail = api_dynamic.getMatchDetail(matchId);
                 match = new RankedMatchImpl(detail, summonerId, false);
