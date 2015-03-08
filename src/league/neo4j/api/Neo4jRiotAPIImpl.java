@@ -114,8 +114,15 @@ public class Neo4jRiotAPIImpl implements Neo4jAPI{
             Map<Long, SummonerDto> map = mapper.readValue(entity, new TypeReference<Map<Long, SummonerDto>>(){
             });
             List<Summoner> summoners = new LinkedList<>();
-            for(SummonerDto summoner : map.values())
-                summoners.add(new Summoner(summoner, getLeague(summoner.getId())));
+            
+            List<League> leagues = getLeagues(summonerIds);
+            for(int i = 0; i < summonerIds.size(); i++){
+                long id = summonerIds.get(i);
+                SummonerDto summonerDto = map.get(id);
+                League league = leagues.get(i);
+                summoners.add(new Summoner(summonerDto, league));
+            }
+            
             return summoners;
         } catch(IOException e){
             log.log(Level.SEVERE, e.getMessage(), e);
