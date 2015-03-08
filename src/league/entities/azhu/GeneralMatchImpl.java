@@ -49,7 +49,9 @@ public class GeneralMatchImpl extends Match{
         spell1 = api.getSummonerSpellFromId(game.getSpell1());
         spell2 = api.getSummonerSpellFromId(game.getSpell2());
 
-        List<PlayerDto> fellowPlayers = new LinkedList<>(game.getFellowPlayers());
+        List<PlayerDto> fellowPlayers = new LinkedList<>();
+        if(game.getFellowPlayers() != null)
+            fellowPlayers.addAll(game.getFellowPlayers());
         fellowPlayers.add(new PlayerDto(game.getChampionId(), summonerId, game.getTeamId()));
         List<Long> summonerIds = new LinkedList<>();
         for(PlayerDto player : fellowPlayers)
