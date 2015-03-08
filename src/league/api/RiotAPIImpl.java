@@ -254,7 +254,7 @@ public class RiotAPIImpl implements LeagueAPI{
 
         try{
             ChampionDto champ = mapper.readValue(entity, ChampionDto.class);
-            db.cacheChampion(champ);
+//            db.cacheChampion(champ);
             return champ;
         } catch(IOException e){
             log.log(Level.SEVERE, e.getMessage(), e);
@@ -274,7 +274,7 @@ public class RiotAPIImpl implements LeagueAPI{
 
         try{
             SummonerSpellDto spell = mapper.readValue(entity, SummonerSpellDto.class);
-            db.cacheSummonerSpell(spell);
+//            db.cacheSummonerSpell(spell);
             return spell;
         } catch(IOException e){
             log.log(Level.SEVERE, e.getMessage(), e);
@@ -312,7 +312,7 @@ public class RiotAPIImpl implements LeagueAPI{
         
         try{
             ItemDto item = mapper.readValue(entity, ItemDto.class);
-            db.cacheItem(item);
+//            db.cacheItem(item);
             return item;
         } catch(IOException e){
             log.log(Level.SEVERE, e.getMessage(), e);

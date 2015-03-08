@@ -35,13 +35,21 @@ public class DynamicLeagueAPIImpl implements LeagueAPI{
     @Override
     public ChampionDto getChampFromId(long champId) throws RiotPlsException{
         ChampionDto result = dbApi.getChampFromId(champId);
-        return result == null ? riotApi.getChampFromId(champId) : result;
+        if(result != null)
+            return result;
+        result = riotApi.getChampFromId(champId);
+        dbApi.cacheChampion(result);
+        return result;
     }
     
     @Override
     public ItemDto getItemFromId(long itemId) throws RiotPlsException{
         ItemDto result = dbApi.getItemFromId(itemId);
-        return result == null ? riotApi.getItemFromId(itemId) : result;
+        if(result != null)
+            return result;
+        result = riotApi.getItemFromId(itemId);
+        dbApi.cacheItem(result);
+        return result;
     }
 
     @Override
@@ -188,7 +196,11 @@ public class DynamicLeagueAPIImpl implements LeagueAPI{
     @Override
     public SummonerSpellDto getSummonerSpellFromId(long spellId) throws RiotPlsException{
         SummonerSpellDto result = dbApi.getSummonerSpellFromId(spellId);
-        return result == null ? riotApi.getSummonerSpellFromId(spellId) : result;
+        if(result != null)
+            return result;
+        result = riotApi.getSummonerSpellFromId(spellId);
+        dbApi.cacheSummonerSpell(result);
+        return result;
     }
 
     @Override
