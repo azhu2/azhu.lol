@@ -287,7 +287,7 @@ public class Neo4jDatabaseAPIImpl implements Neo4jAPI, Neo4jDatabaseAPI{
 
     @Override
     public Match getRankedMatch(long matchId){
-        Match match;
+        RankedMatch4j match;
         // Fetch match itself
         try(Transaction tx = db.beginTx()){
             String stmt = String.format("MATCH (n:RankedMatch) WHERE n.id = %d RETURN n;", matchId);
@@ -306,7 +306,7 @@ public class Neo4jDatabaseAPIImpl implements Neo4jAPI, Neo4jDatabaseAPI{
         return match;
     }
 
-    private void populateMatch(Match match){
+    private void populateMatch(RankedMatch4j match){
         // Fetch players
         try(Transaction tx = db.beginTx()){
             // @formatter:off
@@ -323,7 +323,8 @@ public class Neo4jDatabaseAPIImpl implements Neo4jAPI, Neo4jDatabaseAPI{
                 + "MATCH (item4:Item)-[:ITEM4]->(player) "
                 + "MATCH (item5:Item)-[:ITEM5]->(player) "
                 + "MATCH (item6:Item)-[:ITEM6]->(player) "
-                + "RETURN player, champion, summoner, spell1, spell2, item0, item1, item2, item3, item4, item5, item6;",
+                + "RETURN player, champion, summoner, spell1, spell2, "
+                + "item0, item1, item2, item3, item4, item5, item6;",
                 match.getId());
             // @formatter:on
             ExecutionResult results = engine.execute(stmt);
@@ -332,6 +333,8 @@ public class Neo4jDatabaseAPIImpl implements Neo4jAPI, Neo4jDatabaseAPI{
             while(itr.hasNext()){
                 Map<String, Object> found = itr.next();
                 Node playerNode = (Node) found.get("player");
+                RankedPlayer4j player = new RankedPlayer4j(playerNode);
+                
                 Node championNode = (Node) found.get("champion");
                 Node summonerNode = (Node) found.get("summoner");
                 Node spell1Node = (Node) found.get("spell1");
@@ -344,7 +347,6 @@ public class Neo4jDatabaseAPIImpl implements Neo4jAPI, Neo4jDatabaseAPI{
                 Node item5Node = (Node) found.get("item5");
                 Node item6Node = (Node) found.get("item6");
 
-                RankedPlayer4j player = new RankedPlayer4j(playerNode);
                 player.setChampion(new Champion4j(championNode));
                 player.setSummoner(new Summoner4j(summonerNode));
                 player.setSpell1(new SummonerSpell4j(spell1Node));
@@ -366,6 +368,48 @@ public class Neo4jDatabaseAPIImpl implements Neo4jAPI, Neo4jDatabaseAPI{
             }
             tx.success();
         }
+        
+        // Bans
+        try(Transaction tx = db.beginTx()){
+            List<ChampionDto> bans = new LinkedList<>();
+            
+            // @formatter:off
+            String stmt = String.format(
+                  "MATCH (match:RankedMatch) WHERE match.id = %d "
+                + "MATCH (ban:Champion)-[:BANNED_BLUE]->(match) "
+                + "RETURN ban", match.getId());
+            // @formatter:on
+            ExecutionResult results = engine.execute(stmt);
+            ResourceIterator<Map<String, Object>> itr = results.iterator();
+
+            while(itr.hasNext()){
+                Map<String, Object> found = itr.next();
+                Node banNode = (Node) found.get("ban");
+                ChampionDto champ = new Champion4j(banNode);
+                bans.add(champ);
+            }
+            match.setBlueBans(bans);
+        }
+        try(Transaction tx = db.beginTx()){
+            List<ChampionDto> bans = new LinkedList<>();
+            
+            // @formatter:off
+            String stmt = String.format(
+                  "MATCH (match:RankedMatch) WHERE match.id = %d "
+                + "MATCH (ban:Champion)-[:BANNED_RED]->(match) "
+                + "RETURN ban", match.getId());
+            // @formatter:on
+            ExecutionResult results = engine.execute(stmt);
+            ResourceIterator<Map<String, Object>> itr = results.iterator();
+
+            while(itr.hasNext()){
+                Map<String, Object> found = itr.next();
+                Node banNode = (Node) found.get("ban");
+                ChampionDto champ = new Champion4j(banNode);
+                bans.add(champ);
+            }
+            match.setRedBans(bans);
+        }
     }
 
     private boolean hasRankedMatch(Match match){
@@ -379,7 +423,7 @@ public class Neo4jDatabaseAPIImpl implements Neo4jAPI, Neo4jDatabaseAPI{
     @Override
     public List<Match> getAllRankedMatches(long summonerId){
         List<Match> matches = new LinkedList<>();
-        
+
         try(Transaction tx = db.beginTx()){
             String stmt = String.format(
                 "MATCH (summoner:Summoner)-[:SUMMONER]->(player:RankedPlayer)-[:PLAYED_IN]->(match:RankedMatch) "
@@ -390,7 +434,7 @@ public class Neo4jDatabaseAPIImpl implements Neo4jAPI, Neo4jDatabaseAPI{
             while(itr.hasNext()){
                 Map<String, Object> map = itr.next();
                 Node matchNode = (Node) map.get("match");
-                Match match = new RankedMatch4j(matchNode);
+                RankedMatch4j match = new RankedMatch4j(matchNode);
                 populateMatch(match);
                 matches.add(match);
             }
@@ -474,12 +518,11 @@ public class Neo4jDatabaseAPIImpl implements Neo4jAPI, Neo4jDatabaseAPI{
                 log.warning(e.getMessage());
                 continue;
             }
-
-            // Link champion, summoner, spells, items
         }
 
         // Link banned champions
         for(ChampionDto ban : rankedMatch.getBlueBans()){
+            cacheChampion(ban);
             try(Transaction tx = db.beginTx()){
                 // @formatter:off
                 String stmt = String.format("MATCH (match:RankedMatch) WHERE match.id = %d "
@@ -489,11 +532,12 @@ public class Neo4jDatabaseAPIImpl implements Neo4jAPI, Neo4jDatabaseAPI{
                 // @formatter:on
                 engine.execute(stmt);
 
-                log.info("Neo4j: cached banned champion " + ban);
+                log.info("Neo4j: cached blue banned champion " + ban);
                 tx.success();
             }
         }
         for(ChampionDto ban : rankedMatch.getRedBans()){
+            cacheChampion(ban);
             try(Transaction tx = db.beginTx()){
                 // @formatter:off
                 String stmt = String.format("MATCH (match:RankedMatch) WHERE match.id = %d "
@@ -503,7 +547,7 @@ public class Neo4jDatabaseAPIImpl implements Neo4jAPI, Neo4jDatabaseAPI{
                 // @formatter:on
                 engine.execute(stmt);
 
-                log.info("Neo4j: cached banned champion " + ban);
+                log.info("Neo4j: cached red banned champion " + ban);
                 tx.success();
             }
         }
