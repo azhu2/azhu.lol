@@ -3,7 +3,6 @@ package league.api;
 import java.util.List;
 import java.util.Set;
 
-import league.api.RiotAPIImpl.RiotPlsException;
 import league.entities.ChampionDto;
 import league.entities.GameDto;
 import league.entities.ItemDto;

@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.logging.Level;
 
-import league.api.RiotAPIImpl.RiotPlsException;
 import league.entities.ChampionDto;
 import league.entities.SummonerDto;
 import league.entities.SummonerSpellDto;

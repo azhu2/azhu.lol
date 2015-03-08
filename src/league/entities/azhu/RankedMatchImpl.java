@@ -8,7 +8,7 @@ import league.api.DynamicLeagueAPIImpl;
 import league.api.LeagueAPI;
 import league.api.NewDatabaseAPIImpl;
 import league.api.NewLeagueAPI;
-import league.api.RiotAPIImpl.RiotPlsException;
+import league.api.RiotPlsException;
 import league.entities.BannedChampion;
 import league.entities.ChampionDto;
 import league.entities.MatchDetail;

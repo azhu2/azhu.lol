@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import league.api.RiotAPIImpl.RiotPlsException;
 import league.entities.ChampionDto;
 import league.entities.GameDto;
 import league.entities.ItemDto;
@@ -38,17 +37,30 @@ public class DynamicLeagueAPIImpl implements LeagueAPI{
         if(result != null)
             return result;
         result = riotApi.getChampFromId(champId);
-        dbApi.cacheChampion(result);
+        if(result != null)
+            dbApi.cacheChampion(result);
         return result;
     }
-    
+
     @Override
     public ItemDto getItemFromId(long itemId) throws RiotPlsException{
         ItemDto result = dbApi.getItemFromId(itemId);
         if(result != null)
             return result;
         result = riotApi.getItemFromId(itemId);
-        dbApi.cacheItem(result);
+        if(result != null)
+            dbApi.cacheItem(result);
+        return result;
+    }
+
+    @Override
+    public SummonerSpellDto getSummonerSpellFromId(long spellId) throws RiotPlsException{
+        SummonerSpellDto result = dbApi.getSummonerSpellFromId(spellId);
+        if(result != null)
+            return result;
+        result = riotApi.getSummonerSpellFromId(spellId);
+        if(result != null)
+            dbApi.cacheSummonerSpell(result);
         return result;
     }
 
@@ -191,16 +203,6 @@ public class DynamicLeagueAPIImpl implements LeagueAPI{
             if(summoner.getId() == id)
                 return summoner;
         return null;
-    }
-
-    @Override
-    public SummonerSpellDto getSummonerSpellFromId(long spellId) throws RiotPlsException{
-        SummonerSpellDto result = dbApi.getSummonerSpellFromId(spellId);
-        if(result != null)
-            return result;
-        result = riotApi.getSummonerSpellFromId(spellId);
-        dbApi.cacheSummonerSpell(result);
-        return result;
     }
 
     @Override

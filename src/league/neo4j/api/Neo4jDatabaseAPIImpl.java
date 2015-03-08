@@ -5,13 +5,14 @@ import java.sql.Timestamp;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import league.LeagueConstants;
+import league.api.APIConstants;
 import league.api.NewDatabaseAPIImpl;
 import league.entities.ChampionDto;
 import league.entities.ItemDto;
-import league.entities.MatchSummary;
 import league.entities.SummonerSpellDto;
 import league.entities.azhu.League;
 import league.entities.azhu.Match;
@@ -421,6 +422,29 @@ public class Neo4jDatabaseAPIImpl implements Neo4jAPI, Neo4jDatabaseAPI{
     }
 
     @Override
+    public List<Match> getRankedMatches(long summonerId){
+        List<Match> matches = new LinkedList<>();
+
+        try(Transaction tx = db.beginTx()){
+            String stmt = String.format(
+                "MATCH (summoner:Summoner)-[:SUMMONER]->(player:RankedPlayer)-[:PLAYED_IN]->(match:RankedMatch) "
+                        + "WHERE summoner.id = %d ORDER BY match.matchCreation LIMIT %d RETURN match", summonerId, APIConstants.RANKED_PAGE_SIZE);
+            ExecutionResult results = engine.execute(stmt);
+            ResourceIterator<Map<String, Object>> itr = results.iterator();
+
+            while(itr.hasNext()){
+                Map<String, Object> map = itr.next();
+                Node matchNode = (Node) map.get("match");
+                RankedMatch4j match = new RankedMatch4j(matchNode);
+                populateMatch(match);
+                matches.add(match);
+            }
+        }
+
+        return matches;
+    }
+    
+    @Override
     public List<Match> getAllRankedMatches(long summonerId){
         List<Match> matches = new LinkedList<>();
 
@@ -582,7 +606,13 @@ public class Neo4jDatabaseAPIImpl implements Neo4jAPI, Neo4jDatabaseAPI{
     }
 
     @Override
-    public List<Match> getAllGames(long summonerId){
+    public Set<Match> getAllGames(long summonerId){
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
+    @Override
+    public Set<Match> getMatchHistory(long summonerId){
         // TODO Auto-generated method stub
         return null;
     }

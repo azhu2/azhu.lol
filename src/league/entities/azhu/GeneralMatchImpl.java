@@ -6,7 +6,7 @@ import java.util.List;
 import league.LeagueConstants;
 import league.api.NewDatabaseAPIImpl;
 import league.api.NewLeagueAPI;
-import league.api.RiotAPIImpl.RiotPlsException;
+import league.api.RiotPlsException;
 import league.entities.ChampionDto;
 import league.entities.GameDto;
 import league.entities.PlayerDto;

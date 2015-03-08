@@ -23,7 +23,7 @@ import league.api.DynamicLeagueAPIImpl;
 import league.api.NewDatabaseAPIImpl;
 import league.api.NewLeagueDatabaseAPI;
 import league.api.RiotAPIImpl;
-import league.api.RiotAPIImpl.RiotPlsException;
+import league.api.RiotPlsException;
 import league.entities.GameDto;
 import league.entities.MatchDetail;
 import league.entities.MatchSummary;

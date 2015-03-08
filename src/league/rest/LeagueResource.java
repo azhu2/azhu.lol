@@ -17,7 +17,7 @@ import javax.ws.rs.core.Response;
 import league.api.APIConstants;
 import league.api.DynamicLeagueAPIImpl;
 import league.api.LeagueAPI;
-import league.api.RiotAPIImpl.RiotPlsException;
+import league.api.RiotPlsException;
 import league.entities.ChampionDto;
 import league.entities.GameDto;
 import league.entities.ItemDto;

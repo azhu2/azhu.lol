@@ -1,8 +1,9 @@
 package league.neo4j.api;
 
 import java.util.List;
+import java.util.Set;
 
-import league.api.RiotAPIImpl.RiotPlsException;
+import league.api.RiotPlsException;
 import league.entities.ChampionDto;
 import league.entities.ItemDto;
 import league.entities.SummonerSpellDto;
@@ -26,12 +27,13 @@ public interface Neo4jAPI{
     public List<League> getLeagues(List<Long> idList) throws RiotPlsException;
 
     // Ranked matches
-    public Match getRankedMatch(long matchId);
-    public List<Match> getAllRankedMatches(long summonerId);
-    public void cacheRankedMatch(Match match);
+    public Match getRankedMatch(long matchId) throws RiotPlsException;
+    public List<Match> getRankedMatches(long summonerId) throws RiotPlsException;
+    public List<Match> getAllRankedMatches(long summonerId) throws RiotPlsException;
     public int cacheAllRankedMatches(long summonerId) throws RiotPlsException;
     
     // Games
-    public Match getGame(long matchId, long summonerId);
-    public List<Match> getAllGames(long summonerId);
+    public Match getGame(long matchId, long summonerId) throws RiotPlsException;
+    public Set<Match> getMatchHistory(long summonerId) throws RiotPlsException;
+    public Set<Match> getAllGames(long summonerId) throws RiotPlsException;
 }

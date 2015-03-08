@@ -4,7 +4,7 @@ import java.util.List;
 
 import league.api.DynamicLeagueAPIImpl;
 import league.api.LeagueAPI;
-import league.api.RiotAPIImpl.RiotPlsException;
+import league.api.RiotPlsException;
 import league.entities.ChampionDto;
 import league.entities.Mastery;
 import league.entities.Participant;

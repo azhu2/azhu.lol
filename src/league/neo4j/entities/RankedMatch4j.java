@@ -1,14 +1,24 @@
 package league.neo4j.entities;
 
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import league.LeagueConstants;
+import league.api.RiotPlsException;
+import league.entities.BannedChampion;
 import league.entities.ChampionDto;
+import league.entities.MatchDetail;
+import league.entities.Participant;
+import league.entities.ParticipantIdentity;
 import league.entities.Team;
 import league.entities.azhu.Match;
 import league.entities.azhu.MatchPlayer;
 import league.entities.azhu.RankedMatchImpl;
+import league.entities.azhu.Summoner;
+import league.neo4j.api.Neo4jAPI;
+import league.neo4j.api.Neo4jRiotAPIImpl;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -27,6 +37,7 @@ public class RankedMatch4j extends Match{
 
     private String teamsString;
 
+    private static Neo4jAPI api = Neo4jRiotAPIImpl.getInstance();       // TODO Change to dynamic
     private static Logger log = Logger.getLogger(RankedMatch4j.class.getName());
     private static ObjectMapper mapper = new ObjectMapper();
 
@@ -65,6 +76,69 @@ public class RankedMatch4j extends Match{
         } catch(IOException e){
             log.warning(e.getMessage());
         }
+    }
+
+    public RankedMatch4j(MatchDetail detail) throws RiotPlsException{
+        setMapId(detail.getMapId());
+        setMatchCreation(detail.getMatchCreation());
+        setMatchDuration(detail.getMatchDuration());
+        setId(detail.getMatchId());
+        setMatchMode(detail.getMatchMode());
+        setMatchType(detail.getMatchType());
+        setMatchVersion(detail.getMatchVersion());
+        setPlatformId(detail.getPlatformId());
+        setQueueType(detail.getQueueType());
+        setRegion(detail.getRegion());
+        setSeason(detail.getSeason());
+        setTeams(detail.getTeams());
+
+        processPlayers(detail.getParticipantIdentities(), detail.getParticipants());
+        processBans(detail.getTeams());
+    }
+
+    private void processPlayers(List<ParticipantIdentity> participantIdentities, List<Participant> participants)
+            throws RiotPlsException{
+        List<MatchPlayer> bluePlayers = new LinkedList<>();
+        List<MatchPlayer> redPlayers = new LinkedList<>();
+
+        List<Long> summonerIds = new LinkedList<>();
+        for(ParticipantIdentity id : participantIdentities)
+            summonerIds.add(id.getPlayer().getSummonerId());
+        List<Summoner> summoners;
+        try{
+            summoners = api.getSummoners(summonerIds);
+            for(int i = 0; i < participantIdentities.size(); i++){
+                MatchPlayer player = new RankedPlayer4j(summoners.get(i), participants.get(i));
+                if(player.getTeamId() == LeagueConstants.BLUE_TEAM)
+                    bluePlayers.add(player);
+                else
+                    redPlayers.add(player);
+            }
+        } catch(RiotPlsException e){
+            log.warning(e.getMessage());
+        }
+
+        setBlueTeam(bluePlayers);
+        setRedTeam(redPlayers);
+    }
+
+    private void processBans(List<Team> teamsData) throws RiotPlsException{
+        List<List<ChampionDto>> banLists = new LinkedList<>();
+        blueBans = new LinkedList<>();
+        redBans = new LinkedList<>();
+        banLists.add(blueBans);
+        banLists.add(redBans);
+
+        for(int i = 0; i < teamsData.size(); i++){
+            List<BannedChampion> bans = teamsData.get(i).getBans();
+            for(BannedChampion ban : bans){
+                ChampionDto champ = api.getChampFromId(ban.getChampionId());
+                banLists.get(i).add(champ);
+            }
+        }
+        
+        setBlueBans(blueBans);
+        setRedBans(redBans);
     }
 
     @Override

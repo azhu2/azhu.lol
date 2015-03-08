@@ -2,7 +2,6 @@ package league.api;
 
 import java.util.List;
 
-import league.api.RiotAPIImpl.RiotPlsException;
 import league.entities.azhu.Match;
 import league.entities.azhu.Summoner;
 

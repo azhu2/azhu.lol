@@ -10,6 +10,7 @@ import league.entities.azhu.Summoner;
 
 public interface Neo4jDatabaseAPI{
     public void cacheSummoner(Summoner summoner);
+    public void cacheRankedMatch(Match match);
     public void cacheRankedMatches(List<Match> matches);
     public void cacheGame(Match match);
     public void cacheChampion(ChampionDto champion);

@@ -5,14 +5,19 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import league.api.RiotPlsException;
 import league.entities.ItemDto;
 import league.entities.Mastery;
+import league.entities.Participant;
 import league.entities.ParticipantStats;
 import league.entities.Rune;
 import league.entities.SummonerSpellDto;
 import league.entities.azhu.MatchPlayer;
 import league.entities.azhu.RankedPlayerImpl;
 import league.entities.azhu.RankedStatsImpl;
+import league.entities.azhu.Summoner;
+import league.neo4j.api.Neo4jAPI;
+import league.neo4j.api.Neo4jRiotAPIImpl;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -24,13 +29,14 @@ public class RankedPlayer4j extends MatchPlayer{
     private int participantId;
     private List<Mastery> masteries;
     private List<Rune> runes;
-    private ParticipantStats stats;
+    private RankedStatsImpl stats;
     private SummonerSpellDto spell1;
     private SummonerSpellDto spell2;
     private List<ItemDto> items;
 
     private String statsString;
     
+    private static Neo4jAPI api = Neo4jRiotAPIImpl.getInstance();       // TODO Change to dynamic
     private static Logger log = Logger.getLogger(RankedMatch4j.class.getName());
     private static ObjectMapper mapper = new ObjectMapper();
 
@@ -51,15 +57,7 @@ public class RankedPlayer4j extends MatchPlayer{
         setTeamId(player.getTeamId());
         
         RankedStatsImpl stats = player.getStats();
-        items = new LinkedList<>();
-        items.add(stats.getItemDto0());
-        items.add(stats.getItemDto1());
-        items.add(stats.getItemDto2());
-        items.add(stats.getItemDto3());
-        items.add(stats.getItemDto4());
-        items.add(stats.getItemDto5());
-        items.add(stats.getItemDto6());
-        processItems();
+        addItems(stats);
     }
     
     public RankedPlayer4j(Node node){
@@ -73,6 +71,32 @@ public class RankedPlayer4j extends MatchPlayer{
         }
     }
 
+    public RankedPlayer4j(Summoner summoner, Participant participant) throws RiotPlsException{
+        setSummoner(summoner);
+        setChampion(api.getChampFromId(participant.getChampionId()));
+        highestAchievedSeasonTier = participant.getHighestAchievedSeasonTier();
+        masteries = participant.getMasteries();
+        participantId = participant.getParticipantId();
+        runes = participant.getRunes();
+        spell1 = api.getSummonerSpellFromId(participant.getSpell1Id());
+        spell2 = api.getSummonerSpellFromId(participant.getSpell2Id());
+        stats = new RankedStatsImpl(participant.getStats());
+        setTeamId(participant.getTeamId());
+        addItems(stats);
+    }
+    
+    private void addItems(RankedStatsImpl stats){
+        items = new LinkedList<>();
+        items.add(stats.getItemDto0());
+        items.add(stats.getItemDto1());
+        items.add(stats.getItemDto2());
+        items.add(stats.getItemDto3());
+        items.add(stats.getItemDto4());
+        items.add(stats.getItemDto5());
+        items.add(stats.getItemDto6());
+        processItems();
+    }
+    
     /**
      * Replace null items with a dummy ItemDto object
      */
@@ -120,7 +144,7 @@ public class RankedPlayer4j extends MatchPlayer{
         return stats;
     }
 
-    public void setStats(ParticipantStats stats){
+    public void setStats(RankedStatsImpl stats){
         this.stats = stats;
         try{
             this.statsString = mapper.writeValueAsString(stats);

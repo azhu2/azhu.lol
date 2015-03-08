@@ -11,7 +11,7 @@ import league.api.DynamicLeagueAPIImpl;
 import league.api.LeagueAPI;
 import league.api.NewDatabaseAPIImpl;
 import league.api.NewLeagueAPI;
-import league.api.RiotAPIImpl.RiotPlsException;
+import league.api.RiotPlsException;
 import league.entities.GameDto;
 import league.entities.PlayerDto;
 import league.entities.azhu.Match;
