@@ -119,7 +119,9 @@ public class Neo4jRiotAPIImpl implements Neo4jAPI{
             for(int i = 0; i < summonerIds.size(); i++){
                 long id = summonerIds.get(i);
                 SummonerDto summonerDto = map.get(id);
-                League league = leagues.get(i);
+                League league = null;
+                if(leagues != null)
+                    league = leagues.get(i);
                 summoners.add(new Summoner(summonerDto, league));
             }
             
@@ -274,7 +276,7 @@ public class Neo4jRiotAPIImpl implements Neo4jAPI{
     }
 
     @Override
-    public ChampionDto getChampFromId(long id) throws RiotPlsException{
+    public ChampionDto getChampionFromId(long id) throws RiotPlsException{
         String uri = buildUri(String.format(CHAMP_QUERY, id));
         Map<String, String> params = new HashMap<>();
         params.put("champData", "image");

@@ -253,6 +253,5 @@ public class NewLeagueResource extends LeagueResource{
             }
         Collection<SummaryData> champData = RankedAnalysis.getChampData(matches);
         return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(champData)).build();
-
     }
 }

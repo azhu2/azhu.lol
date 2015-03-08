@@ -17,12 +17,12 @@ public class Match{
     private List<MatchPlayer> redTeam = new LinkedList<>();
 
     public Match(){
-        
+
     }
-    
+
     public Match(Node node){
         setId((long) node.getProperty("id"));
-        setMapId((int)(long) node.getProperty("mapId"));
+        setMapId((int) (long) node.getProperty("mapId"));
         setMatchCreation((long) node.getProperty("matchCreation"));
         setMatchDuration((long) node.getProperty("matchDuration"));
         setMatchMode((String) node.getProperty("matchMode"));
@@ -105,11 +105,11 @@ public class Match{
     public void addToBlueTeam(MatchPlayer player){
         blueTeam.add(player);
     }
-    
+
     public void addToRedTeam(MatchPlayer player){
         redTeam.add(player);
     }
-    
+
     public List<MatchPlayer> getPlayers(){
         List<MatchPlayer> players = new LinkedList<>();
         for(MatchPlayer player : blueTeam)
@@ -117,5 +117,27 @@ public class Match{
         for(MatchPlayer player : redTeam)
             players.add(player);
         return players;
+    }
+
+    @Override
+    public int hashCode(){
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (int) (id ^ (id >>> 32));
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj){
+        if(this == obj)
+            return true;
+        if(obj == null)
+            return false;
+        if(getClass() != obj.getClass())
+            return false;
+        Match other = (Match) obj;
+        if(id != other.id)
+            return false;
+        return true;
     }
 }

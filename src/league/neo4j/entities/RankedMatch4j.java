@@ -132,7 +132,7 @@ public class RankedMatch4j extends Match{
         for(int i = 0; i < teamsData.size(); i++){
             List<BannedChampion> bans = teamsData.get(i).getBans();
             for(BannedChampion ban : bans){
-                ChampionDto champ = api.getChampFromId(ban.getChampionId());
+                ChampionDto champ = api.getChampionFromId(ban.getChampionId());
                 banLists.get(i).add(champ);
             }
         }

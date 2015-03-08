@@ -8,7 +8,7 @@ import league.entities.SummonerSpellDto;
 import league.entities.azhu.Match;
 import league.entities.azhu.Summoner;
 
-public interface Neo4jDatabaseAPI{
+public interface Neo4jDatabaseAPI extends Neo4jAPI{
     public void cacheSummoner(Summoner summoner);
     public void cacheRankedMatch(Match match);
     public void cacheRankedMatches(List<Match> matches);

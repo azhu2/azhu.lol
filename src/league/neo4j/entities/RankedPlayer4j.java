@@ -73,7 +73,7 @@ public class RankedPlayer4j extends MatchPlayer{
 
     public RankedPlayer4j(Summoner summoner, Participant participant) throws RiotPlsException{
         setSummoner(summoner);
-        setChampion(api.getChampFromId(participant.getChampionId()));
+        setChampion(api.getChampionFromId(participant.getChampionId()));
         highestAchievedSeasonTier = participant.getHighestAchievedSeasonTier();
         masteries = participant.getMasteries();
         participantId = participant.getParticipantId();

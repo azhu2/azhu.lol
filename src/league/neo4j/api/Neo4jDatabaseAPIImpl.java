@@ -38,7 +38,7 @@ import org.neo4j.graphdb.ResourceIterator;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 
-public class Neo4jDatabaseAPIImpl implements Neo4jAPI, Neo4jDatabaseAPI{
+public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
     private static final String DB_PATH = "lol.db";
 
     private static Logger log = Logger.getLogger(Neo4jDatabaseAPIImpl.class.getName());
@@ -176,7 +176,7 @@ public class Neo4jDatabaseAPIImpl implements Neo4jAPI, Neo4jDatabaseAPI{
     }
 
     @Override
-    public ChampionDto getChampFromId(long champId){
+    public ChampionDto getChampionFromId(long champId){
         try(Transaction tx = db.beginTx()){
             String stmt = String.format("MATCH (n:Champion) WHERE n.id = %d RETURN n;", champId);
             Node node = getNode(stmt);
@@ -473,7 +473,11 @@ public class Neo4jDatabaseAPIImpl implements Neo4jAPI, Neo4jDatabaseAPI{
             log.info("Neo4j: Match " + match + " already cached.");
             return;
         }
-        RankedMatch4j rankedMatch = new RankedMatch4j((RankedMatchImpl) match);
+        RankedMatch4j rankedMatch;
+        if(match instanceof RankedMatchImpl)
+            rankedMatch = new RankedMatch4j((RankedMatchImpl) match);
+        else
+            rankedMatch = (RankedMatch4j) match;
 
         // Cache match itself
         try(Transaction tx = db.beginTx()){
@@ -489,7 +493,11 @@ public class Neo4jDatabaseAPIImpl implements Neo4jAPI, Neo4jDatabaseAPI{
 
         // Cache and link players
         for(MatchPlayer player : rankedMatch.getPlayers()){
-            RankedPlayer4j rankedPlayer = new RankedPlayer4j((RankedPlayerImpl) player);
+            RankedPlayer4j rankedPlayer;
+            if(player instanceof RankedPlayerImpl)
+                rankedPlayer = new RankedPlayer4j((RankedPlayerImpl) player);
+            else
+                rankedPlayer = (RankedPlayer4j) player;
 
             try(Transaction tx = db.beginTx()){
                 String objectMap = mapper.writeValueAsString(rankedPlayer);
@@ -626,7 +634,7 @@ public class Neo4jDatabaseAPIImpl implements Neo4jAPI, Neo4jDatabaseAPI{
 
             ChampionDto c = NewDatabaseAPIImpl.getInstance().getChampFromId(1);
             n.cacheChampion(c);
-            System.out.println(n.getChampFromId(1));
+            System.out.println(n.getChampionFromId(1));
 
             ItemDto i = NewDatabaseAPIImpl.getInstance().getItemFromId(1055);
             n.cacheItem(i);
