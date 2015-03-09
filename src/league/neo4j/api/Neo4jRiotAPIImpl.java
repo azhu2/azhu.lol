@@ -205,6 +205,28 @@ public class Neo4jRiotAPIImpl implements Neo4jAPI{
     }
 
     @Override
+    public List<Long> getRankedMatchIds(long summonerId) throws RiotPlsException{
+        String uri = buildUri(String.format(RANKED_QUERY, summonerId));
+        String entity = getEntity(uri);
+
+        if(entity == null)
+            return null;
+
+        try{
+            PlayerHistory history = mapper.readValue(entity, PlayerHistory.class);
+            List<MatchSummary> historyMatches = history.getMatches();
+
+            List<Long> matches = new LinkedList<>();
+            for(MatchSummary historyMatch : historyMatches)
+                matches.add(historyMatch.getMatchId());
+            return matches;
+        } catch(IOException e){
+            log.log(Level.SEVERE, e.getMessage(), e);
+            return null;
+        }
+    }
+    
+    @Override
     public List<Match> getRankedMatches(long summonerId) throws RiotPlsException{
         return getRankedMatches(summonerId, 0);
     }

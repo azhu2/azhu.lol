@@ -422,6 +422,14 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
         }
     }
 
+    /**
+     * Use Riot API
+     */
+    @Override
+    public List<Long> getRankedMatchIds(long summonerId){
+        return null;
+    }
+    
     @Override
     public List<Match> getRankedMatches(long summonerId){
         List<Match> matches = new LinkedList<>();

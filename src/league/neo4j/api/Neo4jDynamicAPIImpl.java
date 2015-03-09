@@ -133,11 +133,25 @@ public class Neo4jDynamicAPIImpl implements Neo4jAPI{
     }
 
     @Override
+    public List<Long> getRankedMatchIds(long summonerId) throws RiotPlsException{
+        return api_riot.getRankedMatchIds(summonerId);
+    }
+    
+    @Override
     public List<Match> getRankedMatches(long summonerId) throws RiotPlsException{
-        List<Match> riotResults = api_riot.getRankedMatches(summonerId);
-        for(Match match : riotResults)
-            api_db.cacheRankedMatch(match);
-        return riotResults;
+        List<Long> matchIds = getRankedMatchIds(summonerId);
+        List<Match> matches = new LinkedList<>();
+        
+        for(Long matchId : matchIds){
+            Match match = api_db.getRankedMatch(matchId);
+            if(match == null){
+                match = api_riot.getRankedMatch(matchId);
+                api_db.cacheRankedMatch(match);
+            }
+            matches.add(match);
+        }
+        
+        return matches;
     }
 
     @Override

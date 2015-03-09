@@ -17,9 +17,11 @@ public class AnalysisUtils{
     public static List<Match> getChampMatches(Collection<Match> matchList, long championId){
         List<Match> matches = new LinkedList<>();
         for(Match game : matchList){
-            RankedMatchImpl match = (RankedMatchImpl) game;
-            if(match.getQueryPlayer().getChampion().getId() == championId)
-                matches.add(match);
+            if(game instanceof RankedMatchImpl){
+                RankedMatchImpl match = (RankedMatchImpl) game;
+                if(match.getQueryPlayer().getChampion().getId() == championId)
+                    matches.add(match);
+            }
         }
         return matches;
     }
