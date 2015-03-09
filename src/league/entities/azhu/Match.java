@@ -3,6 +3,9 @@ package league.entities.azhu;
 import java.util.LinkedList;
 import java.util.List;
 
+import league.neo4j.entities.Views;
+
+import org.codehaus.jackson.map.annotate.JsonView;
 import org.neo4j.graphdb.Node;
 
 public class Match{
@@ -13,7 +16,10 @@ public class Match{
     private String matchMode;
     private String matchType;
     private String queueType;
+    
+    @JsonView(Views.RestView.class)
     private List<MatchPlayer> blueTeam = new LinkedList<>();
+    @JsonView(Views.RestView.class)
     private List<MatchPlayer> redTeam = new LinkedList<>();
 
     public Match(){
@@ -110,6 +116,7 @@ public class Match{
         redTeam.add(player);
     }
 
+    @JsonView(Views.RestView.class)
     public List<MatchPlayer> getPlayers(){
         List<MatchPlayer> players = new LinkedList<>();
         for(MatchPlayer player : blueTeam)

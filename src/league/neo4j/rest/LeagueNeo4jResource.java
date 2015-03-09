@@ -1,7 +1,6 @@
 package league.neo4j.rest;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -15,8 +14,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import league.analysis.RankedAnalysis;
-import league.analysis.SummaryData;
 import league.api.APIConstants;
 import league.api.RiotPlsException;
 import league.entities.ChampionDto;
@@ -27,6 +24,7 @@ import league.entities.azhu.Match;
 import league.entities.azhu.Summoner;
 import league.neo4j.api.Neo4jAPI;
 import league.neo4j.api.Neo4jDynamicAPIImpl;
+import league.neo4j.entities.Views;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig;
@@ -38,6 +36,7 @@ public class LeagueNeo4jResource{
 
     public LeagueNeo4jResource(){
         mapper.configure(SerializationConfig.Feature.FAIL_ON_EMPTY_BEANS, false);
+        mapper.getSerializationConfig().setSerializationView(Views.RestView.class);
     }
 
     @GET
@@ -75,6 +74,18 @@ public class LeagueNeo4jResource{
 
             List<Summoner> summoners = api.getSummoners(idList);
             return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(summoners)).build();
+        } catch(RiotPlsException e){
+            return Response.status(e.getStatus()).entity(e.getMessage()).build();
+        }
+    }
+
+    @GET
+    @Path("/match/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getRankedMatch(@PathParam("id") long id) throws ServletException, IOException{
+        try{
+            Match match = api.getRankedMatch(id);
+            return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(match)).build();
         } catch(RiotPlsException e){
             return Response.status(e.getStatus()).entity(e.getMessage()).build();
         }
@@ -179,18 +190,6 @@ public class LeagueNeo4jResource{
     }
 
     @GET
-    @Path("/match/{id}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getMatch(@PathParam("id") long id) throws ServletException, IOException{
-        try{
-            Match history = api.getRankedMatch(id);
-            return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(history)).build();
-        } catch(RiotPlsException e){
-            return Response.status(e.getStatus()).entity(e.getMessage()).build();
-        }
-    }
-
-    @GET
     @Path("/summoner-spell/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getSummonerSpellFromId(@PathParam("id") long id) throws ServletException, IOException{
@@ -234,12 +233,13 @@ public class LeagueNeo4jResource{
     @Path("/ranked-stats/champions/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getRankedStatsByChampion(@PathParam("id") long summonerId) throws ServletException, IOException{
-        try{
-            List<Match> matches = api.getAllRankedMatches(summonerId);
-            Collection<SummaryData> champData = RankedAnalysis.getChampData(matches);
-            return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(champData)).build();
-        } catch(RiotPlsException e){
-            return Response.status(e.getStatus()).entity(e.getMessage()).build();
-        }
+//        try{
+//            List<Match> matches = api.getAllRankedMatches(summonerId);
+//            Collection<SummaryData> champData = RankedAnalysis.getChampData(matches);
+//            return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(champData)).build();
+//        } catch(RiotPlsException e){
+//            return Response.status(e.getStatus()).entity(e.getMessage()).build();
+//        }
+        return Response.status(APIConstants.HTTP_UNAVAILABLE).entity("It's broke atm :(").build();
     }
 }

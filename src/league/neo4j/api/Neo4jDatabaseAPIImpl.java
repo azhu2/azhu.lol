@@ -26,6 +26,7 @@ import league.neo4j.entities.RankedMatch4j;
 import league.neo4j.entities.RankedPlayer4j;
 import league.neo4j.entities.Summoner4j;
 import league.neo4j.entities.SummonerSpell4j;
+import league.neo4j.entities.Views;
 
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -56,6 +57,7 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
         createDb();
         mapper.configure(SerializationConfig.Feature.FAIL_ON_EMPTY_BEANS, false);
         mapper.configure(JsonGenerator.Feature.QUOTE_FIELD_NAMES, false);
+        mapper.getSerializationConfig().setSerializationView(Views.Neo4jView.class);
     }
 
     private void createDb(){

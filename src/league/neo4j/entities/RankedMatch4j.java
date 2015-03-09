@@ -20,21 +20,23 @@ import league.entities.azhu.Summoner;
 import league.neo4j.api.Neo4jAPI;
 import league.neo4j.api.Neo4jDynamicAPIImpl;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.annotate.JsonView;
 import org.codehaus.jackson.type.TypeReference;
 import org.neo4j.graphdb.Node;
 
-@JsonIgnoreProperties(value = {"blueTeam", "redTeam", "blueBans", "redBans", "teams", "players"})
 public class RankedMatch4j extends Match{
     private String matchVersion;
     private String platformId;
     private String region;
     private String season;
     private List<Team> teams;
+    @JsonView(Views.RestView.class)
     private List<ChampionDto> blueBans;
+    @JsonView(Views.RestView.class)
     private List<ChampionDto> redBans;
 
+    @JsonView(Views.Neo4jView.class)
     private String teamsString;
 
     private static Neo4jAPI api = Neo4jDynamicAPIImpl.getInstance();

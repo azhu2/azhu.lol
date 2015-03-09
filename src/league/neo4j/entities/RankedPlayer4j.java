@@ -19,21 +19,27 @@ import league.entities.azhu.Summoner;
 import league.neo4j.api.Neo4jAPI;
 import league.neo4j.api.Neo4jDynamicAPIImpl;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.annotate.JsonView;
 import org.neo4j.graphdb.Node;
 
-@JsonIgnoreProperties(value = {"champion", "summoner", "masteries", "runes", "stats", "spell1", "spell2", "items"})
 public class RankedPlayer4j extends MatchPlayer{
     private String highestAchievedSeasonTier;
     private int participantId;
+    @JsonView(Views.RestView.class)
     private List<Mastery> masteries;
+    @JsonView(Views.RestView.class)
     private List<Rune> runes;
+    @JsonView(Views.RestView.class)
     private ParticipantStats stats;
+    @JsonView(Views.RestView.class)
     private SummonerSpellDto spell1;
+    @JsonView(Views.RestView.class)
     private SummonerSpellDto spell2;
+    @JsonView(Views.RestView.class)
     private List<ItemDto> items;
 
+    @JsonView(Views.Neo4jView.class)
     private String statsString;
 
     private static Neo4jAPI api = Neo4jDynamicAPIImpl.getInstance();

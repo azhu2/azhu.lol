@@ -30,6 +30,7 @@ import league.entities.azhu.League;
 import league.entities.azhu.Match;
 import league.entities.azhu.Summoner;
 import league.neo4j.entities.RankedMatch4j;
+import league.neo4j.entities.Views;
 
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -71,6 +72,7 @@ public class Neo4jRiotAPIImpl implements Neo4jAPI{
     private Neo4jRiotAPIImpl(){
         System.setProperty("javax.net.ssl.trustStoreType", "JCEKS");
         mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.getSerializationConfig().setSerializationView(Views.Neo4jView.class);
         client = new JerseyClientBuilder().build();
     }
 
