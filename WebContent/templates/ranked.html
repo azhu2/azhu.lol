@@ -66,7 +66,7 @@
 					<div class="expandTitle">Match Details</div>
 						<div class="rankedTeam blue">
 							<div class="teamTitle">
-								Blue Team ({{ match.players[match.bluePlayers[0]].stats.winner ? "WIN" : "LOSS" }})
+								Blue Team ({{ match.blueTeam[0].stats.winner ? "WIN" : "LOSS" }})
 							</div>
 							<div class="tableHeadings">
 								<div class="playerStat playerRank heading">Rank</div>
@@ -132,7 +132,7 @@
 						</div>
 						<div class="rankedTeam red">
 							<div class="teamTitle">
-								Purple Team ({{ match.players[match.redPlayers[0]].stats.winner ? "WIN" : "LOSS" }})
+								Purple Team ({{ match.redTeam[0].stats.winner ? "WIN" : "LOSS" }})
 							</div>
 							<div class="tableHeadings">
 								<div class="playerStat playerRank heading">Rank</div>
