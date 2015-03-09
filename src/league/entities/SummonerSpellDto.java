@@ -14,7 +14,6 @@ public class SummonerSpellDto{
     private String description;
     private String key;
     private int summonerLevel;
-    @JsonView(Views.RestView.class)
     private ImageDto image;
 
     public SummonerSpellDto(){

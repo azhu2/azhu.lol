@@ -1,13 +1,10 @@
 package league.entities.azhu;
 
-import org.codehaus.jackson.map.annotate.JsonView;
+import league.entities.SummonerDto;
+
 import org.neo4j.graphdb.Node;
 
-import league.entities.SummonerDto;
-import league.neo4j.entities.Views;
-
 public class Summoner extends SummonerDto{
-    @JsonView(Views.RestView.class)
     protected League league;
 
     public Summoner(){

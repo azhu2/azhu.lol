@@ -34,8 +34,15 @@ public class Summoner4j extends Summoner{
     }
 
     @Override
+    @JsonView(Views.RestView.class)
     public void setLeague(League league){
         super.setLeague(league);
         leagueString = league != null ? league.toString() : "unranked";
+    }
+    
+    @Override
+    @JsonView(Views.RestView.class)
+    public League getLeague(){
+        return super.getLeague();
     }
 }

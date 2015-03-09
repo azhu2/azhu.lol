@@ -23,7 +23,7 @@ public class Champion4j extends ChampionDto{
         setName(champion.getName());
         setTitle(champion.getTitle());
     }
-    
+
     public Champion4j(Node node){
         super(node);
         imageString = (String) node.getProperty("imageString");
@@ -50,5 +50,11 @@ public class Champion4j extends ChampionDto{
         } catch(IOException e){
             log.warning(e.getMessage());
         }
+    }
+
+    @Override
+    @JsonView(Views.RestView.class)
+    public ImageDto getImage(){
+        return super.getImage();
     }
 }

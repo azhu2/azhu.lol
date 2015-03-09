@@ -31,12 +31,9 @@ public class RankedMatch4j extends Match{
     private String region;
     private String season;
     private List<Team> teams;
-    @JsonView(Views.RestView.class)
     private List<ChampionDto> blueBans;
-    @JsonView(Views.RestView.class)
     private List<ChampionDto> redBans;
 
-    @JsonView(Views.Neo4jView.class)
     private String teamsString;
 
     private static Neo4jAPI api = Neo4jDynamicAPIImpl.getInstance();
@@ -138,14 +135,27 @@ public class RankedMatch4j extends Match{
                 banLists.get(i).add(champ);
             }
         }
-        
+
         setBlueBans(blueBans);
         setRedBans(redBans);
     }
 
     @Override
+    @JsonView(Views.RestView.class)
+    public List<MatchPlayer> getBlueTeam(){
+        return super.getBlueTeam();
+    }
+
+    @Override
+    @JsonView(Views.RestView.class)
     public void setBlueTeam(List<MatchPlayer> team){
         super.setBlueTeam(team);
+    }
+
+    @Override
+    @JsonView(Views.RestView.class)
+    public List<MatchPlayer> getRedTeam(){
+        return super.getRedTeam();
     }
 
     @Override
@@ -195,10 +205,12 @@ public class RankedMatch4j extends Match{
         this.season = season;
     }
 
+    @JsonView(Views.RestView.class)
     public List<Team> getTeams(){
         return teams;
     }
 
+    @JsonView(Views.RestView.class)
     public void setTeams(List<Team> teams){
         this.teams = teams;
         try{
@@ -208,30 +220,36 @@ public class RankedMatch4j extends Match{
         }
     }
 
+    @JsonView(Views.RestView.class)
     public List<ChampionDto> getBlueBans(){
         return blueBans;
     }
 
+    @JsonView(Views.RestView.class)
     public void setBlueBans(List<ChampionDto> bans){
         this.blueBans = bans;
     }
 
+    @JsonView(Views.RestView.class)
     public List<ChampionDto> getRedBans(){
         return redBans;
     }
 
+    @JsonView(Views.RestView.class)
     public void setRedBans(List<ChampionDto> bans){
         this.redBans = bans;
     }
 
+    @JsonView(Views.Neo4jView.class)
     public String getTeamsString(){
         return teamsString;
     }
 
+    @JsonView(Views.Neo4jView.class)
     public void setTeamsString(String teamsString){
         this.teamsString = teamsString;
     }
-    
+
     @Override
     public String toString(){
         return "Ranked match " + getId();

@@ -44,6 +44,7 @@ public class SummonerSpell4j extends SummonerSpellDto{
     }
 
     @Override
+    @JsonView(Views.RestView.class)
     public void setImage(ImageDto image){
         super.setImage(image);
         try{
@@ -51,5 +52,11 @@ public class SummonerSpell4j extends SummonerSpellDto{
         } catch(IOException e){
             log.warning(e.getMessage());
         }
+    }
+    
+    @Override
+    @JsonView(Views.RestView.class)
+    public ImageDto getImage(){
+        return super.getImage();
     }
 }

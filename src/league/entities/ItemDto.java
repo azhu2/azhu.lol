@@ -24,7 +24,6 @@ public class ItemDto{
     private String group;
     private boolean hideFromAll;
     private int id;
-    @JsonView(Views.RestView.class)
     private ImageDto image;
     private boolean inStore;
     private List<String> info;

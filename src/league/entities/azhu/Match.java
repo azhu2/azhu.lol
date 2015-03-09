@@ -17,9 +17,7 @@ public class Match{
     private String matchType;
     private String queueType;
     
-    @JsonView(Views.RestView.class)
     private List<MatchPlayer> blueTeam = new LinkedList<>();
-    @JsonView(Views.RestView.class)
     private List<MatchPlayer> redTeam = new LinkedList<>();
 
     public Match(){

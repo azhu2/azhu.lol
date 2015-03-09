@@ -23,7 +23,7 @@ public class Item4j extends ItemDto{
         setDescription(item.getDescription());
         setPlaintext(item.getPlaintext());
     }
-    
+
     public Item4j(Node node){
         super(node);
         imageString = (String) node.getProperty("imageString");
@@ -33,7 +33,7 @@ public class Item4j extends ItemDto{
             log.warning(e.getMessage());
         }
     }
-    
+
     public String getImageString(){
         return imageString;
     }
@@ -50,5 +50,11 @@ public class Item4j extends ItemDto{
         } catch(IOException e){
             log.warning(e.getMessage());
         }
+    }
+
+    @Override
+    @JsonView(Views.RestView.class)
+    public ImageDto getImage(){
+        return super.getImage();
     }
 }

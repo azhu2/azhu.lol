@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import league.api.RiotPlsException;
+import league.entities.ChampionDto;
 import league.entities.ItemDto;
 import league.entities.Mastery;
 import league.entities.Participant;
@@ -26,20 +27,13 @@ import org.neo4j.graphdb.Node;
 public class RankedPlayer4j extends MatchPlayer{
     private String highestAchievedSeasonTier;
     private int participantId;
-    @JsonView(Views.RestView.class)
     private List<Mastery> masteries;
-    @JsonView(Views.RestView.class)
     private List<Rune> runes;
-    @JsonView(Views.RestView.class)
     private ParticipantStats stats;
-    @JsonView(Views.RestView.class)
     private SummonerSpellDto spell1;
-    @JsonView(Views.RestView.class)
     private SummonerSpellDto spell2;
-    @JsonView(Views.RestView.class)
     private List<ItemDto> items;
 
-    @JsonView(Views.Neo4jView.class)
     private String statsString;
 
     private static Neo4jAPI api = Neo4jDynamicAPIImpl.getInstance();
@@ -149,6 +143,30 @@ public class RankedPlayer4j extends MatchPlayer{
         }
     }
 
+    @Override
+    @JsonView(Views.RestView.class)
+    public ChampionDto getChampion(){
+        return super.getChampion();
+    }
+
+    @Override
+    @JsonView(Views.RestView.class)
+    public void setChampion(ChampionDto champion){
+        super.setChampion(champion);
+    }
+
+    @Override
+    @JsonView(Views.RestView.class)
+    public Summoner getSummoner(){
+        return super.getSummoner();
+    }
+
+    @Override
+    @JsonView(Views.RestView.class)
+    public void setSummoner(Summoner summoner){
+        super.setSummoner(summoner);
+    }
+
     public String getHighestAchievedSeasonTier(){
         return highestAchievedSeasonTier;
     }
@@ -165,26 +183,32 @@ public class RankedPlayer4j extends MatchPlayer{
         this.participantId = participantId;
     }
 
+    @JsonView(Views.RestView.class)
     public List<Mastery> getMasteries(){
         return masteries;
     }
 
+    @JsonView(Views.RestView.class)
     public void setMasteries(List<Mastery> masteries){
         this.masteries = masteries;
     }
 
+    @JsonView(Views.RestView.class)
     public List<Rune> getRunes(){
         return runes;
     }
 
+    @JsonView(Views.RestView.class)
     public void setRunes(List<Rune> runes){
         this.runes = runes;
     }
 
+    @JsonView(Views.RestView.class)
     public ParticipantStats getStats(){
         return stats;
     }
 
+    @JsonView(Views.RestView.class)
     public void setStats(ParticipantStats stats){
         this.stats = stats;
         try{
@@ -194,35 +218,43 @@ public class RankedPlayer4j extends MatchPlayer{
         }
     }
 
+    @JsonView(Views.RestView.class)
     public SummonerSpellDto getSpell1(){
         return spell1;
     }
 
+    @JsonView(Views.RestView.class)
     public void setSpell1(SummonerSpellDto spell1){
         this.spell1 = spell1;
     }
 
+    @JsonView(Views.RestView.class)
     public SummonerSpellDto getSpell2(){
         return spell2;
     }
 
+    @JsonView(Views.RestView.class)
     public void setSpell2(SummonerSpellDto spell2){
         this.spell2 = spell2;
     }
 
+    @JsonView(Views.RestView.class)
     public List<ItemDto> getItems(){
         return items;
     }
 
+    @JsonView(Views.RestView.class)
     public void setItems(List<ItemDto> items){
         this.items = items;
         processItems();
     }
 
+    @JsonView(Views.Neo4jView.class)
     public String getStatsString(){
         return statsString;
     }
 
+    @JsonView(Views.Neo4jView.class)
     public void setStatsString(String statsString){
         this.statsString = statsString;
     }

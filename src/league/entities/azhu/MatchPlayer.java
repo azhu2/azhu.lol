@@ -1,15 +1,11 @@
 package league.entities.azhu;
 
-import org.codehaus.jackson.map.annotate.JsonView;
+import league.entities.ChampionDto;
+
 import org.neo4j.graphdb.Node;
 
-import league.entities.ChampionDto;
-import league.neo4j.entities.Views;
-
 public class MatchPlayer{
-    @JsonView(Views.RestView.class)
     private ChampionDto champion;
-    @JsonView(Views.RestView.class)
     private Summoner summoner;
     private int teamId;
 

@@ -8,7 +8,6 @@ import league.neo4j.entities.Views;
 
 public class ChampionDto{
     private int id;
-    @JsonView(Views.RestView.class)
     private ImageDto image;
     private String name;
     private String title;
