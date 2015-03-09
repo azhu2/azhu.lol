@@ -1,6 +1,14 @@
 package league.neo4j.entities;
 
+/**
+ * Views for JSON mapper
+ */
 public class Views{
-    public static class Neo4jView{}
-    public static class RestView{}
+    /** View for DB */
+    public static class Neo4jView{
+    }
+
+    /** View for REST resource */
+    public static class RestView{
+    }
 }

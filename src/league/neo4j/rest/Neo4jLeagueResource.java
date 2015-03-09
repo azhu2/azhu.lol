@@ -30,11 +30,11 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig;
 
 @Path("/")
-public class LeagueNeo4jResource{
+public class Neo4jLeagueResource{
     private static final Neo4jAPI api = Neo4jDynamicAPIImpl.getInstance();
     protected static ObjectMapper mapper = new ObjectMapper();
 
-    public LeagueNeo4jResource(){
+    public Neo4jLeagueResource(){
         mapper.configure(SerializationConfig.Feature.FAIL_ON_EMPTY_BEANS, false);
         mapper.getSerializationConfig().setSerializationView(Views.RestView.class);
     }
