@@ -16,4 +16,5 @@ public interface Neo4jDatabaseAPI extends Neo4jAPI{
     public void cacheChampion(ChampionDto champion);
     public void cacheItem(ItemDto item);
     public void cacheSummonerSpell(SummonerSpellDto spell);
+    public boolean hasRankedMatch(long matchId);
 }

@@ -33,7 +33,7 @@ import org.codehaus.jackson.map.SerializationConfig;
 
 @Path("/")
 public class LeagueNeo4jResource{
-    private static Neo4jAPI api = Neo4jDynamicAPIImpl.getInstance();
+    private static final Neo4jAPI api = Neo4jDynamicAPIImpl.getInstance();
     protected static ObjectMapper mapper = new ObjectMapper();
 
     public LeagueNeo4jResource(){
@@ -181,7 +181,7 @@ public class LeagueNeo4jResource{
     @GET
     @Path("/match/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getMatchDetail(@PathParam("id") long id) throws ServletException, IOException{
+    public Response getMatch(@PathParam("id") long id) throws ServletException, IOException{
         try{
             Match history = api.getRankedMatch(id);
             return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(history)).build();

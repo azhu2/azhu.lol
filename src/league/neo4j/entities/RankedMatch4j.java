@@ -18,7 +18,7 @@ import league.entities.azhu.MatchPlayer;
 import league.entities.azhu.RankedMatchImpl;
 import league.entities.azhu.Summoner;
 import league.neo4j.api.Neo4jAPI;
-import league.neo4j.api.Neo4jRiotAPIImpl;
+import league.neo4j.api.Neo4jDynamicAPIImpl;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -37,7 +37,7 @@ public class RankedMatch4j extends Match{
 
     private String teamsString;
 
-    private static Neo4jAPI api = Neo4jRiotAPIImpl.getInstance();       // TODO Change to dynamic
+    private static Neo4jAPI api = Neo4jDynamicAPIImpl.getInstance();
     private static Logger log = Logger.getLogger(RankedMatch4j.class.getName());
     private static ObjectMapper mapper = new ObjectMapper();
 
@@ -229,7 +229,7 @@ public class RankedMatch4j extends Match{
     public void setTeamsString(String teamsString){
         this.teamsString = teamsString;
     }
-
+    
     @Override
     public String toString(){
         return "Ranked match " + getId();

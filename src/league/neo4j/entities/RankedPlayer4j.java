@@ -17,7 +17,7 @@ import league.entities.azhu.RankedPlayerImpl;
 import league.entities.azhu.RankedStatsImpl;
 import league.entities.azhu.Summoner;
 import league.neo4j.api.Neo4jAPI;
-import league.neo4j.api.Neo4jRiotAPIImpl;
+import league.neo4j.api.Neo4jDynamicAPIImpl;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -29,21 +29,21 @@ public class RankedPlayer4j extends MatchPlayer{
     private int participantId;
     private List<Mastery> masteries;
     private List<Rune> runes;
-    private RankedStatsImpl stats;
+    private ParticipantStats stats;
     private SummonerSpellDto spell1;
     private SummonerSpellDto spell2;
     private List<ItemDto> items;
 
     private String statsString;
-    
-    private static Neo4jAPI api = Neo4jRiotAPIImpl.getInstance();       // TODO Change to dynamic
+
+    private static Neo4jAPI api = Neo4jDynamicAPIImpl.getInstance();
     private static Logger log = Logger.getLogger(RankedMatch4j.class.getName());
     private static ObjectMapper mapper = new ObjectMapper();
 
     public RankedPlayer4j(){
 
     }
-    
+
     public RankedPlayer4j(RankedPlayerImpl player){
         setChampion(player.getChampion());
         setHighestAchievedSeasonTier(player.getHighestAchievedSeasonTier());
@@ -55,17 +55,17 @@ public class RankedPlayer4j extends MatchPlayer{
         setStats(player.getStats());
         setSummoner(player.getSummoner());
         setTeamId(player.getTeamId());
-        
+
         RankedStatsImpl stats = player.getStats();
         addItems(stats);
     }
-    
+
     public RankedPlayer4j(Node node){
         super(node);
-        setParticipantId((int)(long) node.getProperty("participantId"));
+        setParticipantId((int) (long) node.getProperty("participantId"));
         setHighestAchievedSeasonTier((String) node.getProperty("highestAchievedSeasonTier"));
         try{
-            setStats(mapper.readValue((String) node.getProperty("statsString"), RankedStatsImpl.class));
+            setStats(mapper.readValue((String) node.getProperty("statsString"), ParticipantStats.class));
         } catch(IOException e){
             log.warning(e.getMessage());
         }
@@ -74,29 +74,64 @@ public class RankedPlayer4j extends MatchPlayer{
     public RankedPlayer4j(Summoner summoner, Participant participant) throws RiotPlsException{
         setSummoner(summoner);
         setChampion(api.getChampionFromId(participant.getChampionId()));
-        highestAchievedSeasonTier = participant.getHighestAchievedSeasonTier();
-        masteries = participant.getMasteries();
-        participantId = participant.getParticipantId();
-        runes = participant.getRunes();
-        spell1 = api.getSummonerSpellFromId(participant.getSpell1Id());
-        spell2 = api.getSummonerSpellFromId(participant.getSpell2Id());
-        stats = new RankedStatsImpl(participant.getStats());
+        setHighestAchievedSeasonTier(participant.getHighestAchievedSeasonTier());
+        setMasteries(participant.getMasteries());
+        setParticipantId(participant.getParticipantId());
+        setRunes(participant.getRunes());
+        setSpell1(api.getSummonerSpellFromId(participant.getSpell1Id()));
+        setSpell2(api.getSummonerSpellFromId(participant.getSpell2Id()));
+        setStats(participant.getStats());
         setTeamId(participant.getTeamId());
         addItems(stats);
     }
-    
-    private void addItems(RankedStatsImpl stats){
+
+    private void addItems(ParticipantStats stats2){
         items = new LinkedList<>();
-        items.add(stats.getItemDto0());
-        items.add(stats.getItemDto1());
-        items.add(stats.getItemDto2());
-        items.add(stats.getItemDto3());
-        items.add(stats.getItemDto4());
-        items.add(stats.getItemDto5());
-        items.add(stats.getItemDto6());
+        try{
+            items.add(api.getItemFromId(stats.getItem0()));
+        } catch(RiotPlsException e){
+            items.add(null);
+            log.warning(e.getMessage());
+        }
+        try{
+            items.add(api.getItemFromId(stats.getItem1()));
+        } catch(RiotPlsException e){
+            items.add(null);
+            log.warning(e.getMessage());
+        }
+        try{
+            items.add(api.getItemFromId(stats.getItem2()));
+        } catch(RiotPlsException e){
+            items.add(null);
+            log.warning(e.getMessage());
+        }
+        try{
+            items.add(api.getItemFromId(stats.getItem3()));
+        } catch(RiotPlsException e){
+            items.add(null);
+            log.warning(e.getMessage());
+        }
+        try{
+            items.add(api.getItemFromId(stats.getItem4()));
+        } catch(RiotPlsException e){
+            items.add(null);
+            log.warning(e.getMessage());
+        }
+        try{
+            items.add(api.getItemFromId(stats.getItem5()));
+        } catch(RiotPlsException e){
+            items.add(null);
+            log.warning(e.getMessage());
+        }
+        try{
+            items.add(api.getItemFromId(stats.getItem6()));
+        } catch(RiotPlsException e){
+            items.add(null);
+            log.warning(e.getMessage());
+        }
         processItems();
     }
-    
+
     /**
      * Replace null items with a dummy ItemDto object
      */
@@ -107,7 +142,7 @@ public class RankedPlayer4j extends MatchPlayer{
                 items.set(i, new ItemDto("none", 0, null, "none", "none"));
         }
     }
-    
+
     public String getHighestAchievedSeasonTier(){
         return highestAchievedSeasonTier;
     }
@@ -144,7 +179,7 @@ public class RankedPlayer4j extends MatchPlayer{
         return stats;
     }
 
-    public void setStats(RankedStatsImpl stats){
+    public void setStats(ParticipantStats stats){
         this.stats = stats;
         try{
             this.statsString = mapper.writeValueAsString(stats);

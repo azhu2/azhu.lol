@@ -39,14 +39,14 @@ import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 
 public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
-    private static final String DB_PATH = "lol.db";
+    private static final String DB_PATH = "/home/alex/workspace/azhu.lol/lol.db";
 
     private static Logger log = Logger.getLogger(Neo4jDatabaseAPIImpl.class.getName());
     private GraphDatabaseService db;
     private ObjectMapper mapper = new ObjectMapper();
     private ExecutionEngine engine;
 
-    private static Neo4jDatabaseAPIImpl _instance = new Neo4jDatabaseAPIImpl();
+    private static final Neo4jDatabaseAPIImpl _instance = new Neo4jDatabaseAPIImpl();
 
     public static Neo4jDatabaseAPIImpl getInstance(){
         return _instance;
@@ -182,7 +182,7 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
             Node node = getNode(stmt);
 
             if(node == null){
-                System.out.println("Neo4j: Champion " + champId + " not found.");
+                log.warning("Neo4j: Champion " + champId + " not found.");
                 return null;
             }
             ChampionDto champion = new Champion4j(node);
@@ -215,7 +215,7 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
             Node node = getNode(stmt);
 
             if(node == null){
-                log.warning("Neo4j: Item" + itemId + " not found.");
+                log.warning("Neo4j: Item " + itemId + " not found.");
                 return null;
             }
             ItemDto item = new Item4j(node);
@@ -413,9 +413,10 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
         }
     }
 
-    private boolean hasRankedMatch(Match match){
+    @Override
+    public boolean hasRankedMatch(long matchId){
         try(Transaction tx = db.beginTx()){
-            String stmt = String.format("MATCH (n:RankedMatch) WHERE n.id = %d RETURN n;", match.getId());
+            String stmt = String.format("MATCH (n:RankedMatch) WHERE n.id = %d RETURN n;", matchId);
             Node node = getNode(stmt);
             return node != null;
         }
@@ -428,7 +429,7 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
         try(Transaction tx = db.beginTx()){
             String stmt = String.format(
                 "MATCH (summoner:Summoner)-[:SUMMONER]->(player:RankedPlayer)-[:PLAYED_IN]->(match:RankedMatch) "
-                        + "WHERE summoner.id = %d ORDER BY match.matchCreation LIMIT %d RETURN match", summonerId, APIConstants.RANKED_PAGE_SIZE);
+                        + "WHERE summoner.id = %d RETURN match ORDER BY match.matchCreation LIMIT %d ", summonerId, APIConstants.RANKED_PAGE_SIZE);
             ExecutionResult results = engine.execute(stmt);
             ResourceIterator<Map<String, Object>> itr = results.iterator();
 
@@ -469,7 +470,7 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
 
     @Override
     public void cacheRankedMatch(Match match){
-        if(hasRankedMatch(match)){
+        if(hasRankedMatch(match.getId())){
             log.info("Neo4j: Match " + match + " already cached.");
             return;
         }
@@ -647,8 +648,8 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
             List<Match> matches = NewDatabaseAPIImpl.getInstance().getRankedMatchesAll(108491);
             for(Match m : matches)
                 n.cacheRankedMatch(m);
-            System.out.println(n.getRankedMatch(1752991005));
-            System.out.println(n.getAllRankedMatches(108491));
+            System.out.println(n.getRankedMatch(1719650755));
+//            System.out.println(n.getAllRankedMatches(108491));
         } catch(Exception e){
             e.printStackTrace();
         }

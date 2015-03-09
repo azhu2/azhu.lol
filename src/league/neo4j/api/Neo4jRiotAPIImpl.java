@@ -220,6 +220,7 @@ public class Neo4jRiotAPIImpl implements Neo4jAPI{
 
     /**
      * Query the API for all ranked matches and cache them in DB
+     * TODO: Finish this
      */
     @Override
     public int cacheAllRankedMatches(long summonerId) throws RiotPlsException{
