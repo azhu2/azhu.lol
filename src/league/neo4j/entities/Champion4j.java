@@ -3,15 +3,15 @@ package league.neo4j.entities;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.neo4j.graphdb.Node;
-
 import league.entities.ChampionDto;
 import league.entities.ImageDto;
 
-@JsonIgnoreProperties(value = {"image"})
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.annotate.JsonView;
+import org.neo4j.graphdb.Node;
+
 public class Champion4j extends ChampionDto{
+    @JsonView(Views.Neo4jView.class)
     private String imageString;
     private static Logger log = Logger.getLogger(Champion4j.class.getName());
     private static ObjectMapper mapper = new ObjectMapper();

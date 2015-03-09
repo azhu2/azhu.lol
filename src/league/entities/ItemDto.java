@@ -3,7 +3,10 @@ package league.entities;
 import java.util.List;
 import java.util.Map;
 
+import league.neo4j.entities.Views;
+
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.codehaus.jackson.map.annotate.JsonView;
 import org.neo4j.graphdb.Node;
 
 @JsonIgnoreProperties(value = {"colloq", "consumeOnFull", "consumed", "depth", "effect", "from", "group",
@@ -21,6 +24,7 @@ public class ItemDto{
     private String group;
     private boolean hideFromAll;
     private int id;
+    @JsonView(Views.RestView.class)
     private ImageDto image;
     private boolean inStore;
     private List<String> info;

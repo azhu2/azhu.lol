@@ -6,12 +6,12 @@ import java.util.logging.Logger;
 import league.entities.ImageDto;
 import league.entities.SummonerSpellDto;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.annotate.JsonView;
 import org.neo4j.graphdb.Node;
 
-@JsonIgnoreProperties(value = {"image"})
 public class SummonerSpell4j extends SummonerSpellDto{
+    @JsonView(Views.Neo4jView.class)
     private String imageString;
     private static Logger log = Logger.getLogger(SummonerSpell4j.class.getName());
     private static ObjectMapper mapper = new ObjectMapper();

@@ -3,11 +3,11 @@ package league.neo4j.entities;
 import league.entities.azhu.League;
 import league.entities.azhu.Summoner;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.codehaus.jackson.map.annotate.JsonView;
 import org.neo4j.graphdb.Node;
 
-@JsonIgnoreProperties(value = { "league" })
 public class Summoner4j extends Summoner{
+    @JsonView(Views.Neo4jView.class)
     private String leagueString;
     
     public Summoner4j(Summoner summoner){

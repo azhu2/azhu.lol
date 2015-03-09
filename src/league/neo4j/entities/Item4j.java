@@ -6,12 +6,12 @@ import java.util.logging.Logger;
 import league.entities.ImageDto;
 import league.entities.ItemDto;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.annotate.JsonView;
 import org.neo4j.graphdb.Node;
 
-@JsonIgnoreProperties(value = {"image"})
 public class Item4j extends ItemDto{
+    @JsonView(Views.Neo4jView.class)
     private String imageString;
     private static Logger log = Logger.getLogger(Item4j.class.getName());
     private static ObjectMapper mapper = new ObjectMapper();

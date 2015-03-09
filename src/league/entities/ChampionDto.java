@@ -1,11 +1,14 @@
 package league.entities;
 
+import org.codehaus.jackson.map.annotate.JsonView;
 import org.neo4j.graphdb.Node;
 
 import league.entities.ImageDto;
+import league.neo4j.entities.Views;
 
 public class ChampionDto{
     private int id;
+    @JsonView(Views.RestView.class)
     private ImageDto image;
     private String name;
     private String title;

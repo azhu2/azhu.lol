@@ -298,8 +298,9 @@
 }
 
 #matches .match .expandMatch .rankedTeam .playerItem {
-	margin: -1px;
-	display: inline-block;
+	margin: 1px;
+	height: 18px;
+	width: 18px;
 	display: inline-block;
 }
 
