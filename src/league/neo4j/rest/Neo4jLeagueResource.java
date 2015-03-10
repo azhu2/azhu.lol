@@ -66,10 +66,10 @@ public class Neo4jLeagueResource{
     @GET
     @Path("/summoners/{ids}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getSummoners(@PathParam("ids") String ids) throws ServletException, IOException{
+    public Response getSummoners(@PathParam("ids") String summonerIds) throws ServletException, IOException{
         try{
             List<Long> idList = new LinkedList<>();
-            for(String id : ids.split(","))
+            for(String id : summonerIds.split(","))
                 idList.add(Long.parseLong(id.trim()));
 
             List<Summoner> summoners = api.getSummoners(idList);
@@ -82,9 +82,9 @@ public class Neo4jLeagueResource{
     @GET
     @Path("/match/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getRankedMatch(@PathParam("id") long id) throws ServletException, IOException{
+    public Response getRankedMatch(@PathParam("id") long matchId) throws ServletException, IOException{
         try{
-            Match match = api.getRankedMatch(id);
+            Match match = api.getRankedMatch(matchId);
             return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(match)).build();
         } catch(RiotPlsException e){
             return Response.status(e.getStatus()).entity(e.getMessage()).build();
@@ -94,9 +94,9 @@ public class Neo4jLeagueResource{
     @GET
     @Path("/ranked-matches/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getRankedMatches(@PathParam("id") long id) throws ServletException, IOException{
+    public Response getRankedMatches(@PathParam("id") long summonerId) throws ServletException, IOException{
         try{
-            List<Match> history = api.getRankedMatches(id);
+            List<Match> history = api.getRankedMatches(summonerId);
             return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(history)).build();
         } catch(RiotPlsException e){
             return Response.status(e.getStatus()).entity(e.getMessage()).build();
@@ -106,9 +106,9 @@ public class Neo4jLeagueResource{
     @GET
     @Path("/ranked-matches/{id}/all")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAllRankedMatches(@PathParam("id") long id) throws ServletException, IOException{
+    public Response getAllRankedMatches(@PathParam("id") long summonerId) throws ServletException, IOException{
         try{
-            List<Match> history = api.getAllRankedMatches(id);
+            List<Match> history = api.getAllRankedMatches(summonerId);
             return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(history)).build();
         } catch(RiotPlsException e){
             return Response.status(e.getStatus()).entity(e.getMessage()).build();
@@ -118,9 +118,9 @@ public class Neo4jLeagueResource{
     @POST
     @Path("/ranked-matches/{id}/all")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response cacheAllRankedMatches(@PathParam("id") long id) throws ServletException, IOException{
+    public Response cacheAllRankedMatches(@PathParam("id") long summonerId) throws ServletException, IOException{
         try{
-            int count = api.cacheAllRankedMatches(id);
+            int count = api.cacheAllRankedMatches(summonerId);
             UpdateCount countObj = new UpdateCount();
             countObj.count = count;
             if(count != APIConstants.INVALID)
@@ -144,9 +144,9 @@ public class Neo4jLeagueResource{
     @GET
     @Path("/match-history/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getMatchHistory(@PathParam("id") long id) throws ServletException, IOException{
+    public Response getMatchHistory(@PathParam("id") long summonerId) throws ServletException, IOException{
         try{
-            Set<Match> history = api.getMatchHistory(id);
+            Set<Match> history = api.getMatchHistory(summonerId);
             return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(history)).build();
         } catch(RiotPlsException e){
             return Response.status(e.getStatus()).entity(e.getMessage()).build();
@@ -156,9 +156,9 @@ public class Neo4jLeagueResource{
     @GET
     @Path("/match-history/{id}/all")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getMatchHistoryAll(@PathParam("id") long id) throws ServletException, IOException{
+    public Response getMatchHistoryAll(@PathParam("id") long summonerId) throws ServletException, IOException{
         try{
-            Set<Match> history = api.getAllGames(id);
+            Set<Match> history = api.getAllGames(summonerId);
             return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(history)).build();
         } catch(RiotPlsException e){
             return Response.status(e.getStatus()).entity(e.getMessage()).build();
@@ -180,7 +180,7 @@ public class Neo4jLeagueResource{
     @GET
     @Path("/item/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getItem(@PathParam("id") long id) throws ServletException, IOException{
+    public Response getItemFromId(@PathParam("id") long id) throws ServletException, IOException{
         try{
             ItemDto item = api.getItemFromId(id);
             return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(item)).build();
@@ -216,10 +216,10 @@ public class Neo4jLeagueResource{
     @GET
     @Path("/leagues/{ids}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getLeagues(@PathParam("ids") String ids) throws ServletException, IOException{
+    public Response getLeagues(@PathParam("ids") String summonerIds) throws ServletException, IOException{
         try{
             List<Long> idList = new LinkedList<>();
-            for(String id : ids.split(","))
+            for(String id : summonerIds.split(","))
                 idList.add(Long.parseLong(id.trim()));
 
             List<League> leagues = api.getLeagues(idList);
