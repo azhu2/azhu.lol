@@ -8,31 +8,10 @@ import java.util.Map;
 
 import league.entities.ChampionDto;
 import league.entities.azhu.Match;
+import league.entities.azhu.MatchPlayer;
 import league.entities.azhu.RankedMatchImpl;
 
 public class AnalysisUtils{
-    /**
-     * Get a list of all matches for a given champion
-     */
-    public static List<Match> getChampMatches(Collection<Match> matchList, long championId){
-        List<Match> matches = new LinkedList<>();
-        for(Match game : matchList){
-            if(game instanceof RankedMatchImpl){
-                RankedMatchImpl match = (RankedMatchImpl) game;
-                if(match.getQueryPlayer().getChampion().getId() == championId)
-                    matches.add(match);
-            }
-        }
-        return matches;
-    }
-
-    /**
-     * Get a list of all matches for a given champion
-     */
-    public static List<Match> getChampMatches(Collection<Match> matchList, ChampionDto champion){
-        return getChampMatches(matchList, champion.getId());
-    }
-
     /**
      * Separate a list of matches by champion played
      */
@@ -54,6 +33,35 @@ public class AnalysisUtils{
         return map;
     }
 
+    public static Map<ChampionDto, List<Match>> getChampMatches(Collection<Match> matchList, long summonerId){
+        Map<ChampionDto, List<Match>> map = new HashMap<>();
+
+        for(Match match : matchList){
+            ChampionDto champ = getLookupPlayer(match, summonerId).getChampion();
+            for(MatchPlayer player : match.getPlayers()){
+                if(player.getSummoner().getId() == summonerId)
+                    champ = player.getChampion();
+            }
+            if(map.keySet().contains(champ))
+                map.get(champ).add(match);
+            else{
+                List<Match> list = new LinkedList<>();
+                list.add(match);
+                map.put(champ, list);
+            }
+        }
+
+        return map;
+    }
+    
+    public static MatchPlayer getLookupPlayer(Match match, long summonerId){
+        for(MatchPlayer player : match.getPlayers()){
+            if(player.getSummoner().getId() == summonerId)
+                return player;
+        }
+        return null;
+    }
+
     public static Map<String, List<Match>> filterByQueueType(Collection<Match> matchList){
         Map<String, List<Match>> filtered = new HashMap<>();
 
@@ -71,6 +79,13 @@ public class AnalysisUtils{
         return filtered;
     }
 
+    public static SummaryData getSummary(Collection<Match> matchList, long summonerId){
+        SummaryData data = new SummaryData();
+        for(Match match : matchList)
+            data.addMatch(match, summonerId);
+        return data;
+    }
+    
     public static SummaryData getSummary(Collection<Match> matchList){
         SummaryData data = new SummaryData();
         for(Match match : matchList)

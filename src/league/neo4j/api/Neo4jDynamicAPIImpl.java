@@ -23,11 +23,11 @@ public class Neo4jDynamicAPIImpl implements Neo4jAPI{
     public static Neo4jDynamicAPIImpl getInstance(){
         return _instance;
     }
-    
+
     private Neo4jDynamicAPIImpl(){
 
     }
-    
+
     @Override
     public ChampionDto getChampionFromId(long champId) throws RiotPlsException{
         ChampionDto result = api_db.getChampionFromId(champId);
@@ -136,12 +136,12 @@ public class Neo4jDynamicAPIImpl implements Neo4jAPI{
     public List<Long> getRankedMatchIds(long summonerId) throws RiotPlsException{
         return api_riot.getRankedMatchIds(summonerId);
     }
-    
+
     @Override
     public List<Match> getRankedMatches(long summonerId) throws RiotPlsException{
         List<Long> matchIds = getRankedMatchIds(summonerId);
         List<Match> matches = new LinkedList<>();
-        
+
         for(Long matchId : matchIds){
             Match match = api_db.getRankedMatch(matchId);
             if(match == null){
@@ -150,15 +150,16 @@ public class Neo4jDynamicAPIImpl implements Neo4jAPI{
             }
             matches.add(match);
         }
-        
+
         return matches;
     }
 
     @Override
     public List<Match> getAllRankedMatches(long summonerId) throws RiotPlsException{
-        List<Match> riotResults = api_riot.getRankedMatches(summonerId);
+        List<Match> riotResults = getRankedMatches(summonerId);
         for(Match match : riotResults)
-            api_db.cacheRankedMatch(match);
+            if(!api_db.hasRankedMatch(match.getId()))
+                api_db.cacheRankedMatch(match);
 
         List<Match> dbResults = api_db.getRankedMatches(summonerId);
         return dbResults;

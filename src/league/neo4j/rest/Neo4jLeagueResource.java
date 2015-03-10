@@ -1,6 +1,7 @@
 package league.neo4j.rest;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -14,6 +15,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import league.analysis.RankedAnalysis;
+import league.analysis.SummaryData;
 import league.api.APIConstants;
 import league.api.RiotPlsException;
 import league.entities.ChampionDto;
@@ -233,13 +236,12 @@ public class Neo4jLeagueResource{
     @Path("/ranked-stats/champions/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getRankedStatsByChampion(@PathParam("id") long summonerId) throws ServletException, IOException{
-//        try{
-//            List<Match> matches = api.getAllRankedMatches(summonerId);
-//            Collection<SummaryData> champData = RankedAnalysis.getChampData(matches);
-//            return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(champData)).build();
-//        } catch(RiotPlsException e){
-//            return Response.status(e.getStatus()).entity(e.getMessage()).build();
-//        }
-        return Response.status(APIConstants.HTTP_UNAVAILABLE).entity("It's broke atm :(").build();
+        try{
+            List<Match> matches = api.getAllRankedMatches(summonerId);
+            Collection<SummaryData> champData = RankedAnalysis.getChampData(matches, summonerId);
+            return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(champData)).build();
+        } catch(RiotPlsException e){
+            return Response.status(e.getStatus()).entity(e.getMessage()).build();
+        }
     }
 }

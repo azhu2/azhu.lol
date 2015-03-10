@@ -5,6 +5,8 @@ import league.entities.ParticipantStats;
 import league.entities.azhu.Match;
 import league.entities.azhu.RankedMatchImpl;
 import league.entities.azhu.RankedPlayerImpl;
+import league.neo4j.entities.RankedMatch4j;
+import league.neo4j.entities.RankedPlayer4j;
 
 public class SummaryData{
     private int numGames = 0;
@@ -55,6 +57,54 @@ public class SummaryData{
     public void addMatch(Match match){
         RankedMatchImpl rankedMatch = (RankedMatchImpl) match;
         RankedPlayerImpl player = (RankedPlayerImpl) rankedMatch.getQueryPlayer();
+        ParticipantStats stats = player.getStats();
+        numGames++;
+        if(stats.isWinner())
+            wins++;
+        else
+            losses++;
+        timePlayed += match.getMatchDuration();
+        kills += stats.getKills();
+        deaths += stats.getDeaths();
+        assists += stats.getAssists();
+        if(stats.isFirstBloodKill())
+            firstBloods++;
+        if(stats.isFirstBloodAssist())
+            firstBloodAssists++;
+        goldEarned += stats.getGoldEarned();
+        goldSpent += stats.getGoldSpent();
+        largestKillingSpree = Math.max(largestKillingSpree, stats.getLargestKillingSpree());
+        largestMultiKill = Math.max(largestMultiKill, stats.getLargestMultiKill());
+        magicDamageDealt += stats.getMagicDamageDealt();
+        magicDamageDealtToChampions += stats.getMagicDamageDealtToChampions();
+        magicDamageTaken += stats.getMagicDamageTaken();
+        physicalDamageDealt += stats.getPhysicalDamageDealt();
+        physicalDamageDealtToChampions += stats.getPhysicalDamageDealtToChampions();
+        physicalDamageTaken += stats.getPhysicalDamageTaken();
+        trueDamageDealt += stats.getTrueDamageDealt();
+        trueDamageDealtToChampions += stats.getTrueDamageDealtToChampions();
+        trueDamageTaken += stats.getTrueDamageTaken();
+        totalDamageDealt += stats.getTotalDamageDealt();
+        totalDamageDealtToChampions += stats.getTotalDamageDealtToChampions();
+        totalDamageTaken += stats.getTotalDamageTaken();
+        totalHeal += stats.getTotalHeal();
+        minionsKilled += stats.getMinionsKilled();
+        neutralMinionsKilled += stats.getNeutralMinionsKilled();
+        neutralMinionsKilledEnemyJungle += stats.getNeutralMinionsKilledEnemyJungle();
+        neutralMinionsKilledTeamJungle  += stats.getNeutralMinionsKilledTeamJungle();
+        wardsKilled += stats.getWardsKilled();
+        wardsPlaced += stats.getWardsPlaced();
+        sightWardsBought += stats.getSightWardsBoughtInGame();
+        visionWardsBought += stats.getVisionWardsBoughtInGame();
+        doubleKills += stats.getDoubleKills();
+        tripleKills += stats.getTriplekills();
+        quadraKills += stats.getQuadrakills();
+        pentaKills += stats.getPentakills();
+    }
+    
+    public void addMatch(Match match, long summonerId){
+        RankedMatch4j rankedMatch = (RankedMatch4j) match;
+        RankedPlayer4j player = (RankedPlayer4j) AnalysisUtils.getLookupPlayer(rankedMatch, summonerId);
         ParticipantStats stats = player.getStats();
         numGames++;
         if(stats.isWinner())
