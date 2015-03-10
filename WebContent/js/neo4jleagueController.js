@@ -84,12 +84,12 @@ neo4jLeagueApp.controller('lookupController', function($scope, $rootScope, $rout
 			id : summonerId
 		}, function(data) {
 			if (summonerId == lookupSummoner)
-				$rootScope.newRanked = data;
+				setRankedMatches(summonerId, data);
 		});
 		$rootScope.showTab = true;
 		$rootScope.showAll = false;
 	};
-
+	
 	$rootScope.lookupAllRanked = function(summonerId) {
 		lookupSummoner = summonerId;
 
@@ -97,10 +97,23 @@ neo4jLeagueApp.controller('lookupController', function($scope, $rootScope, $rout
 			id : summonerId
 		}, function(data) {
 			if (summonerId == lookupSummoner)
-				$rootScope.newRanked = data;
+				setRankedMatches(summonerId, data);
 		});
 		$rootScope.showTab = true;
 		$rootScope.showAll = true;
+	};
+	
+	var setRankedMatches = function(summonerId, data) {
+		for(var i = 0; i < data.length; i++){
+			var match = data[i];
+			var players = match.players;
+			for(var j = 0; j < players.length; j++)
+				if(players[j].summoner.id == summonerId){
+					match.lookupPlayer = j;
+				}
+		}
+		
+		$rootScope.newRanked = data;
 	};
 
 	$rootScope.lookupMatches = function(summonerId) {
