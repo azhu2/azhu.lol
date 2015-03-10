@@ -13,9 +13,9 @@ import league.entities.azhu.Summoner;
 
 public interface Neo4jAPI{
     // Static data
-    public ChampionDto getChampionFromId(long champId) throws RiotPlsException;
-    public ItemDto getItemFromId(long itemId) throws RiotPlsException;
-    public SummonerSpellDto getSummonerSpellFromId(long spellId) throws RiotPlsException;
+    public ChampionDto getChampionFromId(int champId) throws RiotPlsException;
+    public ItemDto getItemFromId(int itemId) throws RiotPlsException;
+    public SummonerSpellDto getSummonerSpellFromId(int spellId) throws RiotPlsException;
     
     // Summoners
     public Summoner getSummonerFromId(long summonerId) throws RiotPlsException;

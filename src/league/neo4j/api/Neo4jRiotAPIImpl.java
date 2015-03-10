@@ -326,7 +326,7 @@ public class Neo4jRiotAPIImpl implements Neo4jAPI{
     }
 
     @Override
-    public ChampionDto getChampionFromId(long id) throws RiotPlsException{
+    public ChampionDto getChampionFromId(int id) throws RiotPlsException{
         String uri = buildUri(String.format(CHAMP_QUERY, id));
         Map<String, String> params = new HashMap<>();
         params.put("champData", "image");
@@ -345,7 +345,7 @@ public class Neo4jRiotAPIImpl implements Neo4jAPI{
     }
 
     @Override
-    public SummonerSpellDto getSummonerSpellFromId(long id) throws RiotPlsException{
+    public SummonerSpellDto getSummonerSpellFromId(int id) throws RiotPlsException{
         String uri = buildUri(String.format(SUMMONERSPELL_QUERY, id));
         Map<String, String> params = new HashMap<>();
         params.put("spellData", "image");
@@ -364,7 +364,7 @@ public class Neo4jRiotAPIImpl implements Neo4jAPI{
     }
 
     @Override
-    public ItemDto getItemFromId(long itemId) throws RiotPlsException{
+    public ItemDto getItemFromId(int itemId) throws RiotPlsException{
         String uri = buildUri(String.format(ITEM_QUERY, itemId));
         Map<String, String> params = new HashMap<>();
         params.put("itemData", "image");

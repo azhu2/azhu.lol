@@ -5,11 +5,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import league.api.APIConstants;
 import league.api.RiotPlsException;
 import league.entities.ChampionDto;
 import league.entities.ItemDto;
-import league.entities.MatchSummary;
 import league.entities.SummonerSpellDto;
 import league.entities.azhu.League;
 import league.entities.azhu.Match;
@@ -31,7 +29,7 @@ public class Neo4jDynamicAPIImpl implements Neo4jAPI{
     }
 
     @Override
-    public ChampionDto getChampionFromId(long champId) throws RiotPlsException{
+    public ChampionDto getChampionFromId(int champId) throws RiotPlsException{
         ChampionDto result = api_db.getChampionFromId(champId);
         if(result != null)
             return result;
@@ -42,7 +40,7 @@ public class Neo4jDynamicAPIImpl implements Neo4jAPI{
     }
 
     @Override
-    public ItemDto getItemFromId(long itemId) throws RiotPlsException{
+    public ItemDto getItemFromId(int itemId) throws RiotPlsException{
         ItemDto result = api_db.getItemFromId(itemId);
         if(result != null)
             return result;
@@ -53,7 +51,7 @@ public class Neo4jDynamicAPIImpl implements Neo4jAPI{
     }
 
     @Override
-    public SummonerSpellDto getSummonerSpellFromId(long spellId) throws RiotPlsException{
+    public SummonerSpellDto getSummonerSpellFromId(int spellId) throws RiotPlsException{
         SummonerSpellDto result = api_db.getSummonerSpellFromId(spellId);
         if(result != null)
             return result;

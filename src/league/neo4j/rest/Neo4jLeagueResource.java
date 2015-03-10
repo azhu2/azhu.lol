@@ -171,7 +171,7 @@ public class Neo4jLeagueResource{
     @GET
     @Path("/champion/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getChampFromId(@PathParam("id") long id) throws ServletException, IOException{
+    public Response getChampFromId(@PathParam("id") int id) throws ServletException, IOException{
         try{
             ChampionDto champion = api.getChampionFromId(id);
             return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(champion)).build();
@@ -183,7 +183,7 @@ public class Neo4jLeagueResource{
     @GET
     @Path("/item/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getItemFromId(@PathParam("id") long id) throws ServletException, IOException{
+    public Response getItemFromId(@PathParam("id") int id) throws ServletException, IOException{
         try{
             ItemDto item = api.getItemFromId(id);
             return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(item)).build();
@@ -195,7 +195,7 @@ public class Neo4jLeagueResource{
     @GET
     @Path("/summoner-spell/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getSummonerSpellFromId(@PathParam("id") long id) throws ServletException, IOException{
+    public Response getSummonerSpellFromId(@PathParam("id") int id) throws ServletException, IOException{
         try{
             SummonerSpellDto history = api.getSummonerSpellFromId(id);
             return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(history)).build();

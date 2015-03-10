@@ -2,6 +2,7 @@ package league.neo4j.api;
 
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +43,11 @@ import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 
 public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
     private static final String DB_PATH = "/home/alex/workspace/azhu.lol/lol.db";
+
+    // Java cache(-ish) to speed up lookups
+    private static Map<Integer, ItemDto> itemMap = new HashMap<>();
+    private static Map<Integer, SummonerSpellDto> spellMap = new HashMap<>();
+    private static Map<Integer, ChampionDto> championMap = new HashMap<>();
 
     private static Logger log = Logger.getLogger(Neo4jDatabaseAPIImpl.class.getName());
     private GraphDatabaseService db;
@@ -179,7 +185,11 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
     }
 
     @Override
-    public ChampionDto getChampionFromId(long champId){
+    public ChampionDto getChampionFromId(int champId){
+        ChampionDto champion = championMap.get(champId);
+        if(champion != null)
+            return champion;
+
         try(Transaction tx = db.beginTx()){
             String stmt = String.format("MATCH (n:Champion) WHERE n.id = %d RETURN n;", champId);
             Node node = getNode(stmt);
@@ -188,7 +198,7 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
                 log.warning("Neo4j: Champion " + champId + " not found.");
                 return null;
             }
-            ChampionDto champion = new Champion4j(node);
+            champion = new Champion4j(node);
             log.info("Neo4j: Fetched champion " + champion);
             tx.success();
             return champion;
@@ -197,6 +207,12 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
 
     @Override
     public void cacheChampion(ChampionDto champion){
+        if(championMap.containsKey(champion.getId())){
+            log.info("Neo4j: " + champion + " already cached.");
+            return;
+        }
+        
+        championMap.put(champion.getId(), champion);
         try(Transaction tx = db.beginTx()){
             ChampionDto c = new Champion4j(champion);
             String objectMap = mapper.writeValueAsString(c);
@@ -212,7 +228,11 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
     }
 
     @Override
-    public ItemDto getItemFromId(long itemId){
+    public ItemDto getItemFromId(int itemId){
+        ItemDto item = itemMap.get(itemId);
+        if(item != null)
+            return item;
+
         try(Transaction tx = db.beginTx()){
             String stmt = String.format("MATCH (n:Item) WHERE n.id = %d RETURN n;", itemId);
             Node node = getNode(stmt);
@@ -221,7 +241,7 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
                 log.warning("Neo4j: Item " + itemId + " not found.");
                 return null;
             }
-            ItemDto item = new Item4j(node);
+            item = new Item4j(node);
             log.info("Neo4j: Fetched item " + item);
             tx.success();
             return item;
@@ -230,6 +250,12 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
 
     @Override
     public void cacheItem(ItemDto item){
+        if(itemMap.containsKey(item.getId())){
+            log.info("Neo4j: " + item + " already cached.");
+            return;
+        }
+        
+        itemMap.put(item.getId(), item);
         try(Transaction tx = db.beginTx()){
             ItemDto i = new Item4j(item);
             String objectMap = mapper.writeValueAsString(i);
@@ -245,7 +271,11 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
     }
 
     @Override
-    public SummonerSpellDto getSummonerSpellFromId(long spellId){
+    public SummonerSpellDto getSummonerSpellFromId(int spellId){
+        SummonerSpellDto spell = spellMap.get(spellId);
+        if(spell != null)
+            return spell;
+
         try(Transaction tx = db.beginTx()){
             String stmt = String.format("MATCH (n:Summonerspell) WHERE n.id = %d RETURN n;", spellId);
             Node node = getNode(stmt);
@@ -254,7 +284,7 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
                 log.warning("Neo4j: Summoner spell " + spellId + " not found.");
                 return null;
             }
-            SummonerSpellDto spell = new SummonerSpell4j(node);
+            spell = new SummonerSpell4j(node);
             log.info("Neo4j: Fetched summoner spell " + spell);
             tx.success();
             return spell;
@@ -263,6 +293,12 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
 
     @Override
     public void cacheSummonerSpell(SummonerSpellDto spell){
+        if(spellMap.containsKey(spell.getId())){
+            log.info("Neo4j: " + spell + " already cached.");
+            return;
+        }
+        
+        spellMap.put(spell.getId(), spell);
         try(Transaction tx = db.beginTx()){
             SummonerSpellDto i = new SummonerSpell4j(spell);
             String objectMap = mapper.writeValueAsString(i);
@@ -338,7 +374,7 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
                 Map<String, Object> found = itr.next();
                 Node playerNode = (Node) found.get("player");
                 RankedPlayer4j player = new RankedPlayer4j(playerNode);
-                
+
                 Node championNode = (Node) found.get("champion");
                 Node summonerNode = (Node) found.get("summoner");
                 Node spell1Node = (Node) found.get("spell1");
@@ -372,11 +408,11 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
             }
             tx.success();
         }
-        
+
         // Bans
         try(Transaction tx = db.beginTx()){
             List<ChampionDto> bans = new LinkedList<>();
-            
+
             // @formatter:off
             String stmt = String.format(
                   "MATCH (match:RankedMatch) WHERE match.id = %d "
@@ -396,7 +432,7 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
         }
         try(Transaction tx = db.beginTx()){
             List<ChampionDto> bans = new LinkedList<>();
-            
+
             // @formatter:off
             String stmt = String.format(
                   "MATCH (match:RankedMatch) WHERE match.id = %d "
@@ -432,7 +468,7 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
     public List<Long> getAllRankedMatchIds(long summonerId) throws RiotPlsException{
         return null;
     }
-    
+
     /**
      * Use Riot API
      */
@@ -440,7 +476,7 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
     public List<Long> getRankedMatchIds(long summonerId){
         return null;
     }
-    
+
     @Override
     public List<Match> getRankedMatches(long summonerId){
         List<Match> matches = new LinkedList<>();
@@ -448,7 +484,8 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
         try(Transaction tx = db.beginTx()){
             String stmt = String.format(
                 "MATCH (summoner:Summoner)-[:SUMMONER]->(player:RankedPlayer)-[:PLAYED_IN]->(match:RankedMatch) "
-                        + "WHERE summoner.id = %d RETURN match ORDER BY match.matchCreation LIMIT %d ", summonerId, APIConstants.RANKED_PAGE_SIZE);
+                        + "WHERE summoner.id = %d RETURN match ORDER BY match.matchCreation LIMIT %d ", summonerId,
+                APIConstants.RANKED_PAGE_SIZE);
             ExecutionResult results = engine.execute(stmt);
             ResourceIterator<Map<String, Object>> itr = results.iterator();
 
@@ -463,7 +500,7 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
 
         return matches;
     }
-    
+
     @Override
     public List<Match> getAllRankedMatches(long summonerId){
         List<Match> matches = new LinkedList<>();
@@ -638,7 +675,7 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
         // TODO Auto-generated method stub
         return null;
     }
-    
+
     @Override
     public Set<Match> getMatchHistory(long summonerId){
         // TODO Auto-generated method stub
@@ -668,7 +705,7 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
             for(Match m : matches)
                 n.cacheRankedMatch(m);
             System.out.println(n.getRankedMatch(1719650755));
-//            System.out.println(n.getAllRankedMatches(108491));
+            // System.out.println(n.getAllRankedMatches(108491));
         } catch(Exception e){
             e.printStackTrace();
         }

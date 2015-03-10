@@ -85,46 +85,47 @@ public class RankedPlayer4j extends MatchPlayer{
         addItems(stats);
     }
 
+    // TODO: Fix up stats so no item casting
     private void addItems(ParticipantStats stats2){
         items = new LinkedList<>();
         try{
-            items.add(api.getItemFromId(stats.getItem0()));
+            items.add(api.getItemFromId((int) stats.getItem0()));
         } catch(RiotPlsException e){
             items.add(null);
             log.warning(e.getMessage());
         }
         try{
-            items.add(api.getItemFromId(stats.getItem1()));
+            items.add(api.getItemFromId((int) stats.getItem1()));
         } catch(RiotPlsException e){
             items.add(null);
             log.warning(e.getMessage());
         }
         try{
-            items.add(api.getItemFromId(stats.getItem2()));
+            items.add(api.getItemFromId((int) stats.getItem2()));
         } catch(RiotPlsException e){
             items.add(null);
             log.warning(e.getMessage());
         }
         try{
-            items.add(api.getItemFromId(stats.getItem3()));
+            items.add(api.getItemFromId((int) stats.getItem3()));
         } catch(RiotPlsException e){
             items.add(null);
             log.warning(e.getMessage());
         }
         try{
-            items.add(api.getItemFromId(stats.getItem4()));
+            items.add(api.getItemFromId((int) stats.getItem4()));
         } catch(RiotPlsException e){
             items.add(null);
             log.warning(e.getMessage());
         }
         try{
-            items.add(api.getItemFromId(stats.getItem5()));
+            items.add(api.getItemFromId((int) stats.getItem5()));
         } catch(RiotPlsException e){
             items.add(null);
             log.warning(e.getMessage());
         }
         try{
-            items.add(api.getItemFromId(stats.getItem6()));
+            items.add(api.getItemFromId((int) stats.getItem6()));
         } catch(RiotPlsException e){
             items.add(null);
             log.warning(e.getMessage());
