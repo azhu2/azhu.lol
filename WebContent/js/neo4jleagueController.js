@@ -250,14 +250,15 @@ neo4jLeagueApp.service('LeagueResource', function($resource) {
 		});
 	};
 
+	// TODO: Change these once online
 	this.matchHistory = function() {
-		return $resource('/azhu.lol/neo4j/rest/match-history/:id', {
+		return $resource('/azhu.lol/rest/new/match-history/:id', {
 			id : '@id'
 		});
 	};
 
 	this.matchHistoryAll = function() {
-		return $resource('/azhu.lol/neo4j/rest/match-history/:id/all', {
+		return $resource('/azhu.lol/rest/new/match-history/:id/all', {
 			id : '@id'
 		});
 	};
