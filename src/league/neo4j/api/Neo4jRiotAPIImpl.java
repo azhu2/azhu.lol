@@ -116,7 +116,7 @@ public class Neo4jRiotAPIImpl implements Neo4jAPI{
             Map<Long, SummonerDto> map = mapper.readValue(entity, new TypeReference<Map<Long, SummonerDto>>(){
             });
             List<Summoner> summoners = new LinkedList<>();
-            
+
             List<League> leagues = getLeagues(summonerIds);
             for(int i = 0; i < summonerIds.size(); i++){
                 long id = summonerIds.get(i);
@@ -126,7 +126,7 @@ public class Neo4jRiotAPIImpl implements Neo4jAPI{
                     league = leagues.get(i);
                 summoners.add(new Summoner(summonerDto, league));
             }
-            
+
             return summoners;
         } catch(IOException e){
             log.log(Level.SEVERE, e.getMessage(), e);
@@ -206,10 +206,12 @@ public class Neo4jRiotAPIImpl implements Neo4jAPI{
         return getRankedMatches(summonerId, startIndex, APIConstants.RANKED_PAGE_SIZE);
     }
 
-    @Override
-    public List<Long> getRankedMatchIds(long summonerId) throws RiotPlsException{
+    private List<Long> getRankedMatchIds(long summonerId, int start) throws RiotPlsException{
         String uri = buildUri(String.format(RANKED_QUERY, summonerId));
-        String entity = getEntity(uri);
+        Map<String, String> params = new HashMap<>();
+        params.put("beginIndex", start + "");
+        params.put("endIndex", (start + APIConstants.MAX_PAGE_SIZE) + "");
+        String entity = getEntity(uri, params);
 
         if(entity == null)
             return null;
@@ -217,7 +219,9 @@ public class Neo4jRiotAPIImpl implements Neo4jAPI{
         try{
             PlayerHistory history = mapper.readValue(entity, PlayerHistory.class);
             List<MatchSummary> historyMatches = history.getMatches();
-
+            if(historyMatches == null || historyMatches.isEmpty())
+                return null;
+            
             List<Long> matches = new LinkedList<>();
             for(MatchSummary historyMatch : historyMatches)
                 matches.add(historyMatch.getMatchId());
@@ -227,7 +231,28 @@ public class Neo4jRiotAPIImpl implements Neo4jAPI{
             return null;
         }
     }
-    
+
+    @Override
+    public List<Long> getRankedMatchIds(long summonerId) throws RiotPlsException{
+        return getRankedMatchIds(summonerId, 0);
+    }
+
+    @Override
+    public List<Long> getAllRankedMatchIds(long summonerId) throws RiotPlsException{
+        List<Long> ids = new LinkedList<>();
+        int start = 0;
+
+        List<Long> matchPage = null;
+        do{
+            matchPage = getRankedMatchIds(summonerId, start);
+            if(matchPage != null)
+                ids.addAll(matchPage);
+            start += APIConstants.MAX_PAGE_SIZE;
+        } while(matchPage != null);
+
+        return ids;
+    }
+
     @Override
     public List<Match> getRankedMatches(long summonerId) throws RiotPlsException{
         return getRankedMatches(summonerId, 0);
@@ -244,19 +269,19 @@ public class Neo4jRiotAPIImpl implements Neo4jAPI{
 
     /**
      * Query the API for all ranked matches and cache them in DB
-     * TODO: Finish this
      */
     @Override
     public int cacheAllRankedMatches(long summonerId) throws RiotPlsException{
         int start = 0;
         int count = 0;
 
-        List<Match> matchPage = null;
+        List<Long> matchPage = null;
         do{
-            matchPage = getRankedMatches(summonerId, start);
+            matchPage = getRankedMatchIds(summonerId, start);
             if(matchPage != null)
-                for(Match match : matchPage){
-                    db.cacheRankedMatch(match);
+                for(Long matchId : matchPage){
+                    if(!db.hasRankedMatch(matchId))
+                        db.cacheRankedMatch(getRankedMatch(matchId));
                     count++;
                 }
             start += APIConstants.MAX_PAGE_SIZE;

@@ -29,6 +29,7 @@ public interface Neo4jAPI{
     // Ranked matches
     public Match getRankedMatch(long matchId) throws RiotPlsException;
     public List<Long> getRankedMatchIds(long summonerId) throws RiotPlsException;
+    public List<Long> getAllRankedMatchIds(long summonerId) throws RiotPlsException;
     public List<Match> getRankedMatches(long summonerId) throws RiotPlsException;
     public List<Match> getAllRankedMatches(long summonerId) throws RiotPlsException;
     public int cacheAllRankedMatches(long summonerId) throws RiotPlsException;

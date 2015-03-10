@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 import league.LeagueConstants;
 import league.api.APIConstants;
 import league.api.NewDatabaseAPIImpl;
+import league.api.RiotPlsException;
 import league.entities.ChampionDto;
 import league.entities.ItemDto;
 import league.entities.SummonerSpellDto;
@@ -424,6 +425,14 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
         }
     }
 
+    /**
+     * Use Riot API
+     */
+    @Override
+    public List<Long> getAllRankedMatchIds(long summonerId) throws RiotPlsException{
+        return null;
+    }
+    
     /**
      * Use Riot API
      */

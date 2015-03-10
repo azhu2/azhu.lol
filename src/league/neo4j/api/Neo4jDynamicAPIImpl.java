@@ -5,9 +5,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import league.api.APIConstants;
 import league.api.RiotPlsException;
 import league.entities.ChampionDto;
 import league.entities.ItemDto;
+import league.entities.MatchSummary;
 import league.entities.SummonerSpellDto;
 import league.entities.azhu.League;
 import league.entities.azhu.Match;
@@ -161,16 +163,24 @@ public class Neo4jDynamicAPIImpl implements Neo4jAPI{
             if(!api_db.hasRankedMatch(match.getId()))
                 api_db.cacheRankedMatch(match);
 
-        List<Match> dbResults = api_db.getRankedMatches(summonerId);
+        List<Match> dbResults = api_db.getAllRankedMatches(summonerId);
         return dbResults;
     }
 
     @Override
     public int cacheAllRankedMatches(long summonerId) throws RiotPlsException{
-        // TODO Auto-generated method stub
-        return 0;
+        List<Long> matchIds = api_riot.getAllRankedMatchIds(summonerId);
+        for(Long matchId : matchIds)
+            if(!api_db.hasRankedMatch(matchId))
+                getRankedMatch(matchId);        // Will cache it if not already cached
+        return matchIds.size();
     }
 
+    @Override
+    public List<Long> getAllRankedMatchIds(long summonerId) throws RiotPlsException{
+        return api_riot.getAllRankedMatchIds(summonerId);
+    }
+    
     @Override
     public Match getGame(long matchId, long summonerId) throws RiotPlsException{
         // TODO Auto-generated method stub
