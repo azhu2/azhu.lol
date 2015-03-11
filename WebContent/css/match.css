@@ -150,6 +150,10 @@
 	margin: 0;
 }
 
+#matches .match .items .item.ranked {
+	padding: 2px;
+}
+
 #matches .match .expandMatchButton {
 	display: inline-block;
 	vertical-align: top;
