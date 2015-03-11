@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 
 import league.api.RiotPlsException;
 import league.entities.ChampionDto;
+import league.entities.ImageDto;
 import league.entities.ItemDto;
 import league.entities.Mastery;
 import league.entities.Participant;
@@ -15,7 +16,6 @@ import league.entities.Rune;
 import league.entities.SummonerSpellDto;
 import league.entities.azhu.MatchPlayer;
 import league.entities.azhu.RankedPlayerImpl;
-import league.entities.azhu.RankedStatsImpl;
 import league.entities.azhu.Summoner;
 import league.neo4j.api.Neo4jAPI;
 import league.neo4j.api.Neo4jDynamicAPIImpl;
@@ -40,6 +40,9 @@ public class RankedPlayer4j extends MatchPlayer{
     private static Logger log = Logger.getLogger(RankedMatch4j.class.getName());
     private static ObjectMapper mapper = new ObjectMapper();
 
+    private static final ItemDto DUMMY_ITEM = new ItemDto("No item", 0, null, "none", "none");
+    private static final ImageDto REMOVED_IMAGE = new ImageDto("item_removed.png");
+
     public RankedPlayer4j(){
 
     }
@@ -55,9 +58,8 @@ public class RankedPlayer4j extends MatchPlayer{
         setStats(player.getStats());
         setSummoner(player.getSummoner());
         setTeamId(player.getTeamId());
-
-        RankedStatsImpl stats = player.getStats();
-        addItems(stats);
+        setStats(player.getStats());
+        addItems();
     }
 
     public RankedPlayer4j(Node node){
@@ -82,54 +84,35 @@ public class RankedPlayer4j extends MatchPlayer{
         setSpell2(api.getSummonerSpellFromId(participant.getSpell2Id()));
         setStats(participant.getStats());
         setTeamId(participant.getTeamId());
-        addItems(stats);
+        addItems();
     }
 
-    // TODO: Fix up stats so no item casting
-    private void addItems(ParticipantStats stats2){
+    private void addItems(){
         items = new LinkedList<>();
-        try{
-            items.add(api.getItemFromId((int) stats.getItem0()));
-        } catch(RiotPlsException e){
-            items.add(null);
-            log.warning(e.getMessage());
+
+        LinkedList<Integer> itemIds = new LinkedList<>();
+        // Casting is done because stats has item ids as longs, but lookup is done as ints
+        itemIds.add((int) stats.getItem0());
+        itemIds.add((int) stats.getItem1());
+        itemIds.add((int) stats.getItem2());
+        itemIds.add((int) stats.getItem3());
+        itemIds.add((int) stats.getItem4());
+        itemIds.add((int) stats.getItem5());
+        itemIds.add((int) stats.getItem6());
+        
+        for(Integer itemId : itemIds){
+            try{
+                ItemDto item = api.getItemFromId(itemId);
+                if(item == null && itemId != 0)
+                    item = new ItemDto("This item has been removed.", itemId, REMOVED_IMAGE, "Removed item",
+                            "Item removed");
+                items.add(item);
+            } catch(RiotPlsException e){
+                items.add(null);
+                log.warning(e.getMessage());
+            }
         }
-        try{
-            items.add(api.getItemFromId((int) stats.getItem1()));
-        } catch(RiotPlsException e){
-            items.add(null);
-            log.warning(e.getMessage());
-        }
-        try{
-            items.add(api.getItemFromId((int) stats.getItem2()));
-        } catch(RiotPlsException e){
-            items.add(null);
-            log.warning(e.getMessage());
-        }
-        try{
-            items.add(api.getItemFromId((int) stats.getItem3()));
-        } catch(RiotPlsException e){
-            items.add(null);
-            log.warning(e.getMessage());
-        }
-        try{
-            items.add(api.getItemFromId((int) stats.getItem4()));
-        } catch(RiotPlsException e){
-            items.add(null);
-            log.warning(e.getMessage());
-        }
-        try{
-            items.add(api.getItemFromId((int) stats.getItem5()));
-        } catch(RiotPlsException e){
-            items.add(null);
-            log.warning(e.getMessage());
-        }
-        try{
-            items.add(api.getItemFromId((int) stats.getItem6()));
-        } catch(RiotPlsException e){
-            items.add(null);
-            log.warning(e.getMessage());
-        }
+
         processItems();
     }
 
@@ -140,7 +123,7 @@ public class RankedPlayer4j extends MatchPlayer{
         for(int i = 0; i < items.size(); i++){
             ItemDto item = items.get(i);
             if(item == null)
-                items.set(i, new ItemDto("none", 0, null, "none", "none"));
+                items.set(i, DUMMY_ITEM);
         }
     }
 

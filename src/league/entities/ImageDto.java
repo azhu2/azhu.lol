@@ -11,6 +11,10 @@ public class ImageDto{
         
     }
     
+    public ImageDto(String full){
+        this.full = full;
+    }
+    
     public int getW(){
         return w;
     }

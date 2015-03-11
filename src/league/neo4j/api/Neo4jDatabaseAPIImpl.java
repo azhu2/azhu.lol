@@ -567,7 +567,7 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
                     cacheItem(item);
 
                 // @formatter:off
-                String statement = "MATCH (match:RankedMatch) WHERE match.id = %d "
+                String statement = "MATCH (match:RankedMatch) WHERE match.id=%d "
                                  + "MATCH (champion:Champion) WHERE champion.id=%d "
                                  + "MATCH (summoner:Summoner) WHERE summoner.id=%d "
                                  + "MATCH (spell1:Summonerspell) WHERE spell1.id=%d "

@@ -41,7 +41,10 @@
 				
 				<div class="bottomRow">
 					<div class="items">
-						<img ng-repeat="item in match.players[match.lookupPlayer].items" class="item ranked" ng-src="{{ item == null || item.image == null ? 'img/item_0.png' : 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/item/' + item.image.full }}">
+						<img ng-repeat="item in match.players[match.lookupPlayer].items" class="item ranked"
+						ng-src="{{ item == null || item.image == null ? 'img/item_0.png' :
+							item.image.full == 'item_removed.png' ? 'img/item_removed.png' :
+							'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/item/' + item.image.full }}">
 					</div>
 					
 					<div class="expandMatchButton">
@@ -78,13 +81,15 @@
 										<div class="playerStats playerSummoners">
 											<img class="playerSummoner spell1" alt="{{ player.spell1 == null ? 'summoner spell 1' : player.spell1.name }}"
 												ng-src="{{ player.spell1 == null ? '' : 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/spell/' + player.spell1.image.full }}">
-												<img class="playerSummoner spell2" alt="{{ player.spell2 == null ? 'summoner spell 2' : player.spell2.name }}"
+											<img class="playerSummoner spell2" alt="{{ player.spell2 == null ? 'summoner spell 2' : player.spell2.name }}"
 												ng-src="{{ player.spell2 == null ? '' : 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/spell/' + player.spell2.image.full }}">
 										</div>
 										<a class="playerStat playerName" ng-href="#{{ player.summoner.id }}">{{ player.summoner.name }}</a>
 										<div class="playerStat playerScore">{{ player.stats.kills }}/{{ player.stats.deaths }}/{{ player.stats.assists }}</div>
 										<div class="playerStat playerItems">
-											<img ng-repeat="item in player.items" class="playerItem" ng-src="{{ item == null || item.image == null ? 'img/item_0.png' : 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/item/' + item.image.full }}">
+											<img ng-repeat="item in player.items" class="playerItem" ng-src="{{ item == null || item.image == null ? 'img/item_0.png' :
+												item.image.full == 'item_removed.png' ? 'img/item_removed.png' :
+												'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/item/' + item.image.full }}">
 										</div>
 										<div class="playerStat playerGold">{{ player.stats.goldEarned / 1000 | number:1 }}k</div>
 										<div class="playerStat playerCS">{{ player.stats.minionsKilled + player.stats.neutralMinionsKilled }}</div>
@@ -145,13 +150,15 @@
 										<div class="playerStats playerSummoners">
 											<img class="playerSummoner spell1" alt="{{ player.spell1 == null ? 'summoner spell 1' : player.spell1.name }}"
 												ng-src="{{ player.spell1 == null ? '' : 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/spell/' + player.spell1.image.full }}">
-												<img class="playerSummoner spell2" alt="{{ player.spell2 == null ? 'summoner spell 2' : player.spell2.name }}"
+											<img class="playerSummoner spell2" alt="{{ player.spell2 == null ? 'summoner spell 2' : player.spell2.name }}"
 												ng-src="{{ player.spell2 == null ? '' : 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/spell/' + player.spell2.image.full }}">
 										</div>
 										<a class="playerStat playerName" ng-href="#{{ player.summoner.id }}">{{ player.summoner.name }}</a>
 										<div class="playerStat playerScore">{{ player.stats.kills }}/{{ player.stats.deaths }}/{{ player.stats.assists }}</div>
 										<div class="playerStat playerItems">
-											<img ng-repeat="item in player.items" class="playerItem" ng-src="{{ item == null || item.image == null ? 'img/item_0.png' : 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/item/' + item.image.full }}">
+											<img ng-repeat="item in player.items" class="playerItem" ng-src="{{ item == null || item.image == null ? 'img/item_0.png' :
+												item.image.full == 'item_removed.png' ? 'img/item_removed.png' :
+												'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/item/' + item.image.full }}">
 										</div>
 
 										<div class="playerStat playerGold">{{ player.stats.goldEarned / 1000 | number:1 }}k</div>
