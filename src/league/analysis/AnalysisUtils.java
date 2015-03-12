@@ -13,7 +13,7 @@ import league.entities.azhu.RankedMatchImpl;
 
 public class AnalysisUtils{
     /**
-     * Separate a list of matches by champion played
+     * Separate a list of matches by champion played. Deals with RankedMatchImpl
      */
     public static Map<ChampionDto, List<Match>> getChampMatches(Collection<Match> matchList){
         Map<ChampionDto, List<Match>> map = new HashMap<>();
@@ -33,6 +33,7 @@ public class AnalysisUtils{
         return map;
     }
 
+    /** Deals with RankedMatch4j */
     public static Map<ChampionDto, List<Match>> getChampMatches(Collection<Match> matchList, long summonerId){
         Map<ChampionDto, List<Match>> map = new HashMap<>();
 
@@ -53,7 +54,7 @@ public class AnalysisUtils{
 
         return map;
     }
-    
+
     public static MatchPlayer getLookupPlayer(Match match, long summonerId){
         for(MatchPlayer player : match.getPlayers()){
             if(player.getSummoner().getId() == summonerId)
@@ -86,7 +87,7 @@ public class AnalysisUtils{
             data.addMatch(match, summonerId);
         return data;
     }
-    
+
     /** Deals with RankedMatchImpl */
     public static SummaryData getSummary(Collection<Match> matchList){
         SummaryData data = new SummaryData();
