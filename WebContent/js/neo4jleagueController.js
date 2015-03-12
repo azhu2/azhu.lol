@@ -126,9 +126,9 @@ neo4jLeagueApp.controller('lookupController', function($scope, $rootScope, $rout
 			if (summonerId == lookupSummoner) {
 				for (var i = 0; i < data.length; i++) {
 					if (data[i].teamId == 100)
-						data[i].champion = data[i].blueTeam[data[i].blueTeam.length - 1];
+						data[i].champion = data[i].blueTeam[0];	// Hella hacky... it works...
 					else
-						data[i].champion = data[i].redTeam[data[i].redTeam.length - 1];
+						data[i].champion = data[i].redTeam[0];
 				}
 				$rootScope.newGames = data;
 			}
@@ -250,15 +250,14 @@ neo4jLeagueApp.service('LeagueResource', function($resource) {
 		});
 	};
 
-	// TODO: Change these once online
 	this.matchHistory = function() {
-		return $resource('/azhu.lol/rest/new/match-history/:id', {
+		return $resource('/azhu.lol/neo4j/rest/match-history/:id', {
 			id : '@id'
 		});
 	};
 
 	this.matchHistoryAll = function() {
-		return $resource('/azhu.lol/rest/new/match-history/:id/all', {
+		return $resource('/azhu.lol/neo4j/rest/match-history/:id/all', {
 			id : '@id'
 		});
 	};

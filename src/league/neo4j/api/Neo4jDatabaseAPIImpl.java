@@ -14,7 +14,6 @@ import league.api.APIConstants;
 import league.api.NewDatabaseAPIImpl;
 import league.api.RiotPlsException;
 import league.entities.ChampionDto;
-import league.entities.GameDto;
 import league.entities.ItemDto;
 import league.entities.SummonerSpellDto;
 import league.entities.azhu.League;

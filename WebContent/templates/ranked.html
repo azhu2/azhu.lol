@@ -41,7 +41,7 @@
 				
 				<div class="bottomRow">
 					<div class="items">
-						<img ng-repeat="item in match.players[match.lookupPlayer].items" class="item ranked"
+						<img ng-repeat="item in match.players[match.lookupPlayer].items" class="item"
 						ng-src="{{ item == null || item.image == null ? 'img/item_0.png' :
 							item.image.full == 'item_removed.png' ? 'img/item_removed.png' :
 							'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/item/' + item.image.full }}">

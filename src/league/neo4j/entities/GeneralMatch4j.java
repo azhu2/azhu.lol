@@ -1,5 +1,6 @@
 package league.neo4j.entities;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -10,6 +11,7 @@ import league.api.RiotPlsException;
 import league.entities.ChampionDto;
 import league.entities.GameDto;
 import league.entities.ItemDto;
+import league.entities.ParticipantStats;
 import league.entities.PlayerDto;
 import league.entities.RawStatsDto;
 import league.entities.SummonerSpellDto;
@@ -19,6 +21,7 @@ import league.entities.azhu.Summoner;
 import league.neo4j.api.Neo4jAPI;
 import league.neo4j.api.Neo4jDynamicAPIImpl;
 
+import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonView;
 import org.neo4j.graphdb.Node;
 
@@ -32,9 +35,13 @@ public class GeneralMatch4j extends Match{
 
     private long summonerId;
     private List<ItemDto> items;
+    private RawStatsDto stats;
+
+    private String statsString;
 
     private static Neo4jAPI api = Neo4jDynamicAPIImpl.getInstance();
     private static Logger log = Logger.getLogger(GeneralMatch4j.class.getName());
+    private static ObjectMapper mapper = new ObjectMapper();
 
     public GeneralMatch4j(){
 
@@ -53,6 +60,8 @@ public class GeneralMatch4j extends Match{
         setLevel(game.getLevel());
         setTeamId(game.getTeamId());
         setSummonerId(summonerId);
+        setStats(game.getStats());
+
         try{
             setSpell1(api.getSummonerSpellFromId(game.getSpell1()));
             setSpell2(api.getSummonerSpellFromId(game.getSpell2()));
@@ -78,6 +87,12 @@ public class GeneralMatch4j extends Match{
         setLevel((int) (long) node.getProperty("level"));
         setTeamId((int) (long) node.getProperty("teamId"));
         setSummonerId((long) node.getProperty("summonerId"));
+        
+        try{
+            setStats(mapper.readValue((String) node.getProperty("statsString"), RawStatsDto.class));
+        } catch(IOException e){
+            log.warning(e.getMessage());
+        }
     }
 
     private void processPlayers(List<PlayerDto> fellowPlayers){
@@ -111,13 +126,13 @@ public class GeneralMatch4j extends Match{
         itemIds.add(stats.getItem4());
         itemIds.add(stats.getItem5());
         itemIds.add(stats.getItem6());
-        
+
         for(Integer itemId : itemIds){
             try{
                 ItemDto item = api.getItemFromId(itemId);
                 if(item == null && itemId != 0)
-                    item = new ItemDto("This item has been removed.", itemId, APIConstants.REMOVED_IMAGE, "Removed item",
-                            "Item removed");
+                    item = new ItemDto("This item has been removed.", itemId, APIConstants.REMOVED_IMAGE,
+                            "Removed item", "Item removed");
                 items.add(item);
             } catch(RiotPlsException e){
                 items.add(null);
@@ -243,5 +258,30 @@ public class GeneralMatch4j extends Match{
 
     public void setSummonerId(long summonerId){
         this.summonerId = summonerId;
+    }
+
+    @JsonView(Views.RestView.class)
+    public RawStatsDto getStats(){
+        return stats;
+    }
+
+    @JsonView(Views.RestView.class)
+    public void setStats(RawStatsDto stats){
+        this.stats = stats;
+        try{
+            this.statsString = mapper.writeValueAsString(stats);
+        } catch(IOException e){
+            log.warning(e.getMessage());
+        }
+    }
+
+    @JsonView(Views.Neo4jView.class)
+    public String getStatsString(){
+        return statsString;
+    }
+
+    @JsonView(Views.Neo4jView.class)
+    public void setStatsString(String statsString){
+        this.statsString = statsString;
     }
 }
