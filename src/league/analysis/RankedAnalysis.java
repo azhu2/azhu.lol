@@ -15,9 +15,11 @@ public class RankedAnalysis{
 
     /** Deals with RankedMatchImpl */
     public static Collection<SummaryData> getChampData(Collection<Match> matchList){
-        List<Match> queueFiltered = AnalysisUtils.filterByQueueType(matchList).get(LeagueConstants.SOLO_QUEUE_5v5);
+        Map<String, List<Match>> filtered = AnalysisUtils.filterByQueueType(matchList);
+        List<Match> filteredMatches = filtered.get(LeagueConstants.SOLO_QUEUE_5v5);
+        filteredMatches.addAll(filtered.get(LeagueConstants.RANKED_TEAM_5v5));
         Map<ChampionDto, SummaryData> champData = new HashMap<>();
-        Map<ChampionDto, List<Match>> champMatches = AnalysisUtils.getChampMatches(queueFiltered);
+        Map<ChampionDto, List<Match>> champMatches = AnalysisUtils.getChampMatches(filteredMatches);
 
         for(ChampionDto champ : champMatches.keySet()){
             List<Match> matches = champMatches.get(champ);
@@ -31,9 +33,11 @@ public class RankedAnalysis{
 
     /** Deals with RankedMatch4j */
     public static Collection<SummaryData> getChampData(Collection<Match> matchList, long summonerId){
-        List<Match> queueFiltered = AnalysisUtils.filterByQueueType(matchList).get(LeagueConstants.SOLO_QUEUE_5v5);
+        Map<String, List<Match>> filtered = AnalysisUtils.filterByQueueType(matchList);
+        List<Match> filteredMatches = filtered.get(LeagueConstants.SOLO_QUEUE_5v5);
+        filteredMatches.addAll(filtered.get(LeagueConstants.RANKED_TEAM_5v5));
         Map<ChampionDto, SummaryData> champData = new HashMap<>();
-        Map<ChampionDto, List<Match>> champMatches = AnalysisUtils.getChampMatches(queueFiltered, summonerId);
+        Map<ChampionDto, List<Match>> champMatches = AnalysisUtils.getChampMatches(filteredMatches, summonerId);
 
         for(ChampionDto champ : champMatches.keySet()){
             List<Match> matches = champMatches.get(champ);
