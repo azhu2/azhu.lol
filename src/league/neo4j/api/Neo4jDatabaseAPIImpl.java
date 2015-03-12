@@ -173,6 +173,9 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
 
     @Override
     public void cacheSummoner(Summoner summoner){
+        if(summoner == null)
+            return;
+        
         try(Transaction tx = db.beginTx()){
             Summoner s = new Summoner4j(summoner);
             String objectMap = mapper.writeValueAsString(s);
@@ -210,6 +213,9 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
 
     @Override
     public void cacheChampion(ChampionDto champion){
+        if(champion == null)
+            return;
+        
         if(championMap.containsKey(champion.getId())){
             log.info("Neo4j: " + champion + " already cached.");
             return;
@@ -253,6 +259,9 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
 
     @Override
     public void cacheItem(ItemDto item){
+        if(item == null)
+            return;
+        
         if(itemMap.containsKey(item.getId())){
             log.info("Neo4j: " + item + " already cached.");
             return;
@@ -296,6 +305,9 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
 
     @Override
     public void cacheSummonerSpell(SummonerSpellDto spell){
+        if(spell == null)
+            return;
+        
         if(spellMap.containsKey(spell.getId())){
             log.info("Neo4j: " + spell + " already cached.");
             return;
@@ -532,6 +544,9 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
 
     @Override
     public void cacheRankedMatch(Match match){
+        if(match == null)
+            return;
+        
         if(hasRankedMatch(match.getId())){
             log.info("Neo4j: Match " + match + " already cached.");
             return;
@@ -686,6 +701,9 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
 
     @Override
     public void cacheGame(Match match, long summonerId){
+        if(match == null)
+            return;
+        
         if(hasGame(match.getId(), summonerId)){
             log.info("Neo4j: Match " + match + " already cached.");
             return;
