@@ -31,9 +31,16 @@ public class RankedAnalysis{
 
     private static List<Match> filterMatches(Collection<Match> matchList){
         Map<String, List<Match>> filtered = AnalysisUtils.filterByQueueType(matchList);
-        List<Match> filteredMatches = filtered.get(LeagueConstants.SOLO_QUEUE_5v5);
-        filteredMatches.addAll(filtered.get(LeagueConstants.RANKED_TEAM_5v5));
-        return filteredMatches;
+        List<Match> soloQueue = filtered.get(LeagueConstants.SOLO_QUEUE_5v5);
+        List<Match> ranked5s = filtered.get(LeagueConstants.RANKED_TEAM_5v5);
+
+        if(soloQueue != null && ranked5s != null){
+            soloQueue.addAll(filtered.get(LeagueConstants.RANKED_TEAM_5v5));
+            return soloQueue;
+        }
+        if(soloQueue != null)
+            return soloQueue;
+        return ranked5s;
     }
 
     /** Deals with RankedMatch4j */
