@@ -3,6 +3,7 @@ package league.neo4j.api;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -864,8 +865,23 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
 
     @Override
     public Set<Match> getAllGames(long summonerId){
-        // TODO Auto-generated method stub
-        return null;
+        Set<Match> games = new HashSet<>();
+        
+        try(Transaction tx = db.beginTx()){
+            String stmt = String.format("MATCH (n:GeneralMatch) WHERE n.summonerId = %d RETURN n;", summonerId);
+            ExecutionResult results = engine.execute(stmt);
+            ResourceIterator<Map<String, Object>> itr = results.iterator();
+            
+            while(itr.hasNext()){
+                Map<String, Object> found = itr.next();
+                Node node = (Node) found.get("n");
+                long matchId = (Long) node.getProperty("id");
+                games.add(getGame(matchId, summonerId));
+            }
+
+            tx.success();
+        }
+        return games;
     }
 
     @Override

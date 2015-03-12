@@ -194,8 +194,10 @@ public class Neo4jDynamicAPIImpl implements Neo4jAPI{
 
     @Override
     public Set<Match> getAllGames(long summonerId) throws RiotPlsException{
-        // TODO Auto-generated method stub
-        return null;
+        Set<Match> games = api_db.getAllGames(summonerId);
+        if(games == null || games.isEmpty())
+            games = getMatchHistory(summonerId);
+        return games;
     }
 
 }

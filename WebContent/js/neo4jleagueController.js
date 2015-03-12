@@ -159,9 +159,9 @@ neo4jLeagueApp.controller('lookupController', function($scope, $rootScope, $rout
 			if (summonerId == lookupSummoner) {
 				for (var i = 0; i < data.length; i++) {
 					if (data[i].teamId == 100)
-						data[i].champion = data[i].blueTeam[data[i].blueTeam.length - 1];
+						data[i].champion = data[i].blueTeam[0];
 					else
-						data[i].champion = data[i].redTeam[data[i].redTeam.length - 1];
+						data[i].champion = data[i].redTeam[0];
 				}
 				$rootScope.newGames = data;
 			}
