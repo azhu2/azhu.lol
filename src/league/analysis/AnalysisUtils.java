@@ -79,6 +79,7 @@ public class AnalysisUtils{
         return filtered;
     }
 
+    /** Deals with RankedMatch4j */
     public static SummaryData getSummary(Collection<Match> matchList, long summonerId){
         SummaryData data = new SummaryData();
         for(Match match : matchList)
@@ -86,6 +87,7 @@ public class AnalysisUtils{
         return data;
     }
     
+    /** Deals with RankedMatchImpl */
     public static SummaryData getSummary(Collection<Match> matchList){
         SummaryData data = new SummaryData();
         for(Match match : matchList)
