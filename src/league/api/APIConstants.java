@@ -1,5 +1,8 @@
 package league.api;
 
+import league.entities.ImageDto;
+import league.entities.ItemDto;
+
 public class APIConstants{
     public static final int HTTP_OK = 200;
     public static final int HTTP_UNAUTHORIZED = 401;
@@ -12,4 +15,8 @@ public class APIConstants{
     public static final int RANKED_PAGE_SIZE = 10;
     public static final int LEAGUES_PAGE_SIZE = 10;
     public static final int INVALID = -1;
+    
+    public static final ItemDto DUMMY_ITEM = new ItemDto("No item", 0, null, "none", "none");
+    public static final ImageDto REMOVED_IMAGE = new ImageDto("item_removed.png");
+
 }

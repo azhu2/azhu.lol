@@ -12,7 +12,7 @@ public interface Neo4jDatabaseAPI extends Neo4jAPI{
     public void cacheSummoner(Summoner summoner);
     public void cacheRankedMatch(Match match);
     public void cacheRankedMatches(List<Match> matches);
-    public void cacheGame(Match match);
+    public void cacheGame(Match match, long summonerId);
     public void cacheChampion(ChampionDto champion);
     public void cacheItem(ItemDto item);
     public void cacheSummonerSpell(SummonerSpellDto spell);

@@ -14,6 +14,7 @@ import league.api.APIConstants;
 import league.api.NewDatabaseAPIImpl;
 import league.api.RiotPlsException;
 import league.entities.ChampionDto;
+import league.entities.GameDto;
 import league.entities.ItemDto;
 import league.entities.SummonerSpellDto;
 import league.entities.azhu.League;
@@ -23,6 +24,8 @@ import league.entities.azhu.RankedMatchImpl;
 import league.entities.azhu.RankedPlayerImpl;
 import league.entities.azhu.Summoner;
 import league.neo4j.entities.Champion4j;
+import league.neo4j.entities.GeneralMatch4j;
+import league.neo4j.entities.GeneralPlayer4j;
 import league.neo4j.entities.Item4j;
 import league.neo4j.entities.RankedMatch4j;
 import league.neo4j.entities.RankedPlayer4j;
@@ -211,7 +214,7 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
             log.info("Neo4j: " + champion + " already cached.");
             return;
         }
-        
+
         championMap.put(champion.getId(), champion);
         try(Transaction tx = db.beginTx()){
             ChampionDto c = new Champion4j(champion);
@@ -254,7 +257,7 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
             log.info("Neo4j: " + item + " already cached.");
             return;
         }
-        
+
         itemMap.put(item.getId(), item);
         try(Transaction tx = db.beginTx()){
             ItemDto i = new Item4j(item);
@@ -297,7 +300,7 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
             log.info("Neo4j: " + spell + " already cached.");
             return;
         }
-        
+
         spellMap.put(spell.getId(), spell);
         try(Transaction tx = db.beginTx()){
             SummonerSpellDto i = new SummonerSpell4j(spell);
@@ -451,7 +454,7 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
             match.setRedBans(bans);
         }
     }
-
+    
     @Override
     public boolean hasRankedMatch(long matchId){
         try(Transaction tx = db.beginTx()){
@@ -648,26 +651,216 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
             cacheRankedMatch(match);
     }
 
+    /**
+     * @deprecated Use the one in the Riot API
+     */
     @Override
     public int cacheAllRankedMatches(long summonerId){
-        // TODO Auto-generated method stub
-        return 0;
+        return -1;
     }
 
     @Override
     public Match getGame(long matchId, long summonerId){
-        // TODO Auto-generated method stub
-        return null;
+        GeneralMatch4j match;
+        // Fetch match itself
+        try(Transaction tx = db.beginTx()){
+            String stmt = String.format("MATCH (n:GeneralMatch) WHERE n.id = %d AND n.summonerId = %d RETURN n;",
+                matchId, summonerId);
+            Node node = getNode(stmt);
+
+            if(node == null){
+                log.warning("Neo4j: General match " + matchId + " not found.");
+                return null;
+            }
+            match = new GeneralMatch4j(node);
+            log.info("Neo4j: Fetched general match " + match);
+            tx.success();
+        }
+
+         populateMatch(match);
+        return match;
     }
 
     @Override
-    public void cacheGame(Match match){
-        // TODO Auto-generated method stub
+    public void cacheGame(Match match, long summonerId){
+        if(hasGame(match.getId(), summonerId)){
+            log.info("Neo4j: Match " + match + " already cached.");
+            return;
+        }
+        GeneralMatch4j game = (GeneralMatch4j) match;
+
+        // Cache match itself
+        try(Transaction tx = db.beginTx()){
+            String objectMap = mapper.writeValueAsString(game);
+            String stmt = String.format("CREATE (n:GeneralMatch %s)", objectMap);
+            engine.execute(stmt);
+
+            log.info("Neo4j: cached general match " + match);
+            tx.success();
+        } catch(IOException e){
+            log.warning(e.getMessage());
+        }
+
+        // Cache and link summoner spells and items
+        try(Transaction tx = db.beginTx()){
+            cacheSummonerSpell(game.getSpell1());
+            cacheSummonerSpell(game.getSpell2());
+            for(ItemDto item : game.getItems())
+                cacheItem(item);
+
+            // @formatter:off
+            String statement = "MATCH (match:GeneralMatch) WHERE match.id=%d "
+                             + "MATCH (spell1:Summonerspell) WHERE spell1.id=%d "
+                             + "MATCH (spell2:Summonerspell) WHERE spell2.id=%d "
+                             + "MATCH (item0:Item) WHERE item0.id=%d "
+                             + "MATCH (item1:Item) WHERE item1.id=%d "
+                             + "MATCH (item2:Item) WHERE item2.id=%d "
+                             + "MATCH (item3:Item) WHERE item3.id=%d "
+                             + "MATCH (item4:Item) WHERE item4.id=%d "
+                             + "MATCH (item5:Item) WHERE item5.id=%d "
+                             + "MATCH (item6:Item) WHERE item6.id=%d "
+                             + "CREATE (spell1)-[:SPELL1]->(match) "
+                             + "CREATE (spell2)-[:SPELL2]->(match) "
+                             + "CREATE (item0)-[:ITEM0]->(match) "
+                             + "CREATE (item1)-[:ITEM1]->(match) "
+                             + "CREATE (item2)-[:ITEM2]->(match) "
+                             + "CREATE (item3)-[:ITEM3]->(match) "
+                             + "CREATE (item4)-[:ITEM4]->(match) "
+                             + "CREATE (item5)-[:ITEM5]->(match) "
+                             + "CREATE (item6)-[:ITEM6]->(match);";
+            String stmt = String.format(statement, match.getId(), game.getSpell1().getId(),
+                game.getSpell2().getId(), game.getItems().get(0).getId(),
+                game.getItems().get(1).getId(), game.getItems().get(2).getId(),
+                game.getItems().get(3).getId(), game.getItems().get(4).getId(),
+                game.getItems().get(5).getId(), game.getItems().get(6).getId());
+            // @formatter:on
+            engine.execute(stmt);
+
+            log.info("Neo4j: cached general stats for " + game);
+            tx.success();
+        }
+
+        // Cache and link players
+        for(MatchPlayer player : game.getPlayers()){
+            GeneralPlayer4j generalPlayer = (GeneralPlayer4j) player;
+
+            try(Transaction tx = db.beginTx()){
+                String objectMap = mapper.writeValueAsString(generalPlayer);
+
+                cacheChampion(generalPlayer.getChampion());
+                cacheSummoner(generalPlayer.getSummoner());
+
+                // @formatter:off
+                String statement = "MATCH (match:GeneralMatch) WHERE match.id=%d "
+                                 + "MATCH (champion:Champion) WHERE champion.id=%d "
+                                 + "MATCH (summoner:Summoner) WHERE summoner.id=%d "
+                                 + "CREATE (player:GeneralPlayer %s) "
+                                 + "CREATE (player)-[:PLAYED_IN]->(match) "
+                                 + "CREATE (champion)-[:CHAMP_PLAYED]->(player) "
+                                 + "CREATE (summoner)-[:SUMMONER]->(player);";
+                String stmt = String.format(statement, match.getId(), generalPlayer.getChampion().getId(),
+                                    generalPlayer.getSummoner().getId(), objectMap);
+                // @formatter:on
+                engine.execute(stmt);
+
+                log.info("Neo4j: cached general player " + player);
+                tx.success();
+            } catch(IOException e){
+                log.warning(e.getMessage());
+                continue;
+            }
+        }
     }
 
-    private boolean hasGame(Match game){
-        // TODO Auto-generated method stub
-        return false;
+    private boolean hasGame(long gameId, long summonerId){
+        try(Transaction tx = db.beginTx()){
+            String stmt = String.format("MATCH (n:GeneralMatch) WHERE n.id = %d AND n.summonerId = %d RETURN n;",
+                gameId, summonerId);
+            Node node = getNode(stmt);
+            return node != null;
+        }
+    }
+
+    private void populateMatch(GeneralMatch4j match){
+        // Fetch players
+        try(Transaction tx = db.beginTx()){
+            // @formatter:off
+            String stmt = String.format(
+                  "MATCH (player:GeneralPlayer)-[:PLAYED_IN]->(match:GeneralMatch) WHERE match.id = %d "
+                + "MATCH (champion:Champion)-[:CHAMP_PLAYED]->(player) "
+                + "MATCH (summoner:Summoner)-[:SUMMONER]->(player) "
+                + "RETURN player, champion, summoner;",
+                match.getId());
+            // @formatter:on
+            ExecutionResult results = engine.execute(stmt);
+            ResourceIterator<Map<String, Object>> itr = results.iterator();
+    
+            while(itr.hasNext()){
+                Map<String, Object> found = itr.next();
+                Node playerNode = (Node) found.get("player");
+                GeneralPlayer4j player = new GeneralPlayer4j(playerNode);
+    
+                Node championNode = (Node) found.get("champion");
+                Node summonerNode = (Node) found.get("summoner");
+    
+                player.setChampion(new Champion4j(championNode));
+                player.setSummoner(new Summoner4j(summonerNode));
+    
+                if(player.getTeamId() == LeagueConstants.BLUE_TEAM)
+                    match.addToBlueTeam(player);
+                else
+                    match.addToRedTeam(player);
+            }
+            tx.success();
+        }
+    
+        // Summoner spells & items
+        try(Transaction tx = db.beginTx()){
+            // @formatter:off
+            String stmt = String.format(
+                  "MATCH (match:GeneralMatch) WHERE match.id = %d "
+                + "MATCH (spell1:Summonerspell)-[:SPELL1]->(match) "
+                + "MATCH (spell2:Summonerspell)-[:SPELL2]->(match) "
+                + "MATCH (item0:Item)-[:ITEM0]->(match) "
+                + "MATCH (item1:Item)-[:ITEM1]->(match) "
+                + "MATCH (item2:Item)-[:ITEM2]->(match) "
+                + "MATCH (item3:Item)-[:ITEM3]->(match) "
+                + "MATCH (item4:Item)-[:ITEM4]->(match) "
+                + "MATCH (item5:Item)-[:ITEM5]->(match) "
+                + "MATCH (item6:Item)-[:ITEM6]->(match) "
+                + "RETURN spell1, spell2, item0, item1, item2, item3, item4, item5, item6;",
+                match.getId());
+            // @formatter:on
+            ExecutionResult results = engine.execute(stmt);
+            ResourceIterator<Map<String, Object>> itr = results.iterator();
+
+            while(itr.hasNext()){
+                Map<String, Object> found = itr.next();
+
+                Node spell1Node = (Node) found.get("spell1");
+                Node spell2Node = (Node) found.get("spell2");
+                Node item0Node = (Node) found.get("item0");
+                Node item1Node = (Node) found.get("item1");
+                Node item2Node = (Node) found.get("item2");
+                Node item3Node = (Node) found.get("item3");
+                Node item4Node = (Node) found.get("item4");
+                Node item5Node = (Node) found.get("item5");
+                Node item6Node = (Node) found.get("item6");
+
+                match.setSpell1(new SummonerSpell4j(spell1Node));
+                match.setSpell2(new SummonerSpell4j(spell2Node));
+                List<ItemDto> items = new LinkedList<>();
+                items.add(new Item4j(item0Node));
+                items.add(new Item4j(item1Node));
+                items.add(new Item4j(item2Node));
+                items.add(new Item4j(item3Node));
+                items.add(new Item4j(item4Node));
+                items.add(new Item4j(item5Node));
+                items.add(new Item4j(item6Node));
+                match.setItems(items);
+            }
+            tx.success();
+        }
     }
 
     @Override

@@ -159,6 +159,7 @@ public class RankedMatch4j extends Match{
     }
 
     @Override
+    @JsonView(Views.RestView.class)
     public void setRedTeam(List<MatchPlayer> team){
         super.setRedTeam(team);
     }

@@ -29,6 +29,7 @@ import league.entities.SummonerSpellDto;
 import league.entities.azhu.League;
 import league.entities.azhu.Match;
 import league.entities.azhu.Summoner;
+import league.neo4j.entities.GeneralMatch4j;
 import league.neo4j.entities.RankedMatch4j;
 import league.neo4j.entities.Views;
 
@@ -221,7 +222,7 @@ public class Neo4jRiotAPIImpl implements Neo4jAPI{
             List<MatchSummary> historyMatches = history.getMatches();
             if(historyMatches == null || historyMatches.isEmpty())
                 return null;
-            
+
             List<Long> matches = new LinkedList<>();
             for(MatchSummary historyMatch : historyMatches)
                 matches.add(historyMatch.getMatchId());
@@ -292,7 +293,7 @@ public class Neo4jRiotAPIImpl implements Neo4jAPI{
 
     @Override
     public Match getGame(long matchId, long summonerId) throws RiotPlsException{
-        // TODO Auto-generated method stub
+        // Return null? Shouldn't have lookup by id
         return null;
     }
 
@@ -316,8 +317,14 @@ public class Neo4jRiotAPIImpl implements Neo4jAPI{
             RecentGamesDto history = mapper.readValue(entity, RecentGamesDto.class);
 
             Set<Match> matches = new HashSet<>();
-            for(GameDto historyMatch : history.getGames())
-                matches.add(getGame(historyMatch.getGameId(), summonerId));
+            for(GameDto gameDto : history.getGames()){
+                Match game = db.getGame(gameDto.getGameId(), summonerId);
+                if(game == null){
+                    game = new GeneralMatch4j(gameDto, summonerId);
+                    db.cacheGame(game, summonerId);
+                }
+                matches.add(game);
+            }
             return matches;
         } catch(IOException e){
             log.log(Level.SEVERE, e.getMessage(), e);

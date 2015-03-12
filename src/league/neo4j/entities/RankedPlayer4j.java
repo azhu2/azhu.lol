@@ -5,9 +5,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import league.api.APIConstants;
 import league.api.RiotPlsException;
 import league.entities.ChampionDto;
-import league.entities.ImageDto;
 import league.entities.ItemDto;
 import league.entities.Mastery;
 import league.entities.Participant;
@@ -39,9 +39,6 @@ public class RankedPlayer4j extends MatchPlayer{
     private static Neo4jAPI api = Neo4jDynamicAPIImpl.getInstance();
     private static Logger log = Logger.getLogger(RankedMatch4j.class.getName());
     private static ObjectMapper mapper = new ObjectMapper();
-
-    private static final ItemDto DUMMY_ITEM = new ItemDto("No item", 0, null, "none", "none");
-    private static final ImageDto REMOVED_IMAGE = new ImageDto("item_removed.png");
 
     public RankedPlayer4j(){
 
@@ -104,7 +101,7 @@ public class RankedPlayer4j extends MatchPlayer{
             try{
                 ItemDto item = api.getItemFromId(itemId);
                 if(item == null && itemId != 0)
-                    item = new ItemDto("This item has been removed.", itemId, REMOVED_IMAGE, "Removed item",
+                    item = new ItemDto("This item has been removed.", itemId, APIConstants.REMOVED_IMAGE, "Removed item",
                             "Item removed");
                 items.add(item);
             } catch(RiotPlsException e){
@@ -123,7 +120,7 @@ public class RankedPlayer4j extends MatchPlayer{
         for(int i = 0; i < items.size(); i++){
             ItemDto item = items.get(i);
             if(item == null)
-                items.set(i, DUMMY_ITEM);
+                items.set(i, APIConstants.DUMMY_ITEM);
         }
     }
 
