@@ -318,14 +318,17 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
 
     @Override
     public League getLeague(long summonerId){
-        // TODO Auto-generated method stub
-        return null;
+        Summoner summoner = getSummonerFromId(summonerId);
+        return summoner.getLeague();
     }
 
     @Override
     public List<League> getLeagues(List<Long> idList){
-        // TODO Auto-generated method stub
-        return null;
+        List<Summoner> summoners = getSummoners(idList);
+        List<League> leagues = new LinkedList<>();
+        for(Summoner summoner : summoners)
+            leagues.add(summoner.getLeague());
+        return leagues;
     }
 
     @Override
@@ -454,7 +457,7 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
             match.setRedBans(bans);
         }
     }
-    
+
     @Override
     public boolean hasRankedMatch(long matchId){
         try(Transaction tx = db.beginTx()){
@@ -677,7 +680,7 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
             tx.success();
         }
 
-         populateMatch(match);
+        populateMatch(match);
         return match;
     }
 
@@ -794,18 +797,18 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
             // @formatter:on
             ExecutionResult results = engine.execute(stmt);
             ResourceIterator<Map<String, Object>> itr = results.iterator();
-    
+
             while(itr.hasNext()){
                 Map<String, Object> found = itr.next();
                 Node playerNode = (Node) found.get("player");
                 GeneralPlayer4j player = new GeneralPlayer4j(playerNode);
-    
+
                 Node championNode = (Node) found.get("champion");
                 Node summonerNode = (Node) found.get("summoner");
-    
+
                 player.setChampion(new Champion4j(championNode));
                 player.setSummoner(new Summoner4j(summonerNode));
-    
+
                 if(player.getTeamId() == LeagueConstants.BLUE_TEAM)
                     match.addToBlueTeam(player);
                 else
@@ -813,7 +816,7 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
             }
             tx.success();
         }
-    
+
         // Summoner spells & items
         try(Transaction tx = db.beginTx()){
             // @formatter:off
@@ -866,12 +869,12 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
     @Override
     public Set<Match> getAllGames(long summonerId){
         Set<Match> games = new HashSet<>();
-        
+
         try(Transaction tx = db.beginTx()){
             String stmt = String.format("MATCH (n:GeneralMatch) WHERE n.summonerId = %d RETURN n;", summonerId);
             ExecutionResult results = engine.execute(stmt);
             ResourceIterator<Map<String, Object>> itr = results.iterator();
-            
+
             while(itr.hasNext()){
                 Map<String, Object> found = itr.next();
                 Node node = (Node) found.get("n");

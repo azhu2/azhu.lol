@@ -109,16 +109,17 @@ public class Neo4jDynamicAPIImpl implements Neo4jAPI{
 
     @Override
     public League getLeague(long summonerId) throws RiotPlsException{
-        League result = api_db.getLeague(summonerId);
-        if(result != null)
-            return result;
-        result = api_riot.getLeague(summonerId);
-        return result;
+        Summoner summoner = getSummonerFromId(summonerId);
+        return summoner.getLeague();
     }
 
     @Override
     public List<League> getLeagues(List<Long> idList) throws RiotPlsException{
-        return api_riot.getLeagues(idList);
+        List<Summoner> summoners = getSummoners(idList);
+        List<League> leagues = new LinkedList<>();
+        for(Summoner summoner : summoners)
+            leagues.add(summoner.getLeague());
+        return leagues;
     }
 
     @Override
