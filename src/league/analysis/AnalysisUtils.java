@@ -81,18 +81,26 @@ public class AnalysisUtils{
     }
 
     /** Deals with RankedMatch4j */
-    public static SummaryData getSummary(Collection<Match> matchList, long summonerId){
+    public static SummaryData getRankedSummary(Collection<Match> matchList, long summonerId){
         SummaryData data = new SummaryData();
         for(Match match : matchList)
-            data.addMatch(match, summonerId);
+            data.addRankedMatch4j(match, summonerId);
         return data;
     }
 
     /** Deals with RankedMatchImpl */
-    public static SummaryData getSummary(Collection<Match> matchList){
+    public static SummaryData getRankedSummary(Collection<Match> matchList){
         SummaryData data = new SummaryData();
         for(Match match : matchList)
-            data.addMatch(match);
+            data.addRankedMatchImpl(match);
+        return data;
+    }
+    
+    /** Deals with GeneralMatch4j */
+    public static SummaryData getGeneralSummary(Collection<Match> matchList, long summonerId){
+        SummaryData data = new SummaryData();
+        for(Match match : matchList)
+            data.addGeneralMatch4j(match, summonerId);
         return data;
     }
 }

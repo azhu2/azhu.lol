@@ -2,9 +2,11 @@ package league.analysis;
 
 import league.entities.ChampionDto;
 import league.entities.ParticipantStats;
+import league.entities.RawStatsDto;
 import league.entities.azhu.Match;
 import league.entities.azhu.RankedMatchImpl;
 import league.entities.azhu.RankedPlayerImpl;
+import league.neo4j.entities.GeneralMatch4j;
 import league.neo4j.entities.RankedMatch4j;
 import league.neo4j.entities.RankedPlayer4j;
 
@@ -54,8 +56,13 @@ public class SummaryData{
         
     }
     
-    /** Deals with RankedMatchImpl */
+    /** Deals with RankedMatchImpl 
+     * @deprecated Use {@link #addRankedMatchImpl(Match)} instead*/
     public void addMatch(Match match){
+        addRankedMatchImpl(match);
+    }
+
+    public void addRankedMatchImpl(Match match){
         RankedMatchImpl rankedMatch = (RankedMatchImpl) match;
         RankedPlayerImpl player = (RankedPlayerImpl) rankedMatch.getQueryPlayer();
         timePlayed += match.getMatchDuration();
@@ -64,8 +71,7 @@ public class SummaryData{
         addStats(stats);
     }
     
-    /** Deals with RankedMatch4j */
-    public void addMatch(Match match, long summonerId){
+    public void addRankedMatch4j(Match match, long summonerId){
         RankedMatch4j rankedMatch = (RankedMatch4j) match;
         RankedPlayer4j player = (RankedPlayer4j) AnalysisUtils.getLookupPlayer(rankedMatch, summonerId);
         ParticipantStats stats = player.getStats();
@@ -73,7 +79,56 @@ public class SummaryData{
         numGames++;
         addStats(stats);
     }
+    
+    public void addGeneralMatch4j(Match match, long summonerId){
+        GeneralMatch4j generalMatch = (GeneralMatch4j) match;
+        RawStatsDto stats = generalMatch.getStats();
+        timePlayed += match.getMatchDuration();
+        numGames++;
+        addStats(stats);
+    }
 
+    private void addStats(RawStatsDto stats){
+        if(stats.isWin())
+            wins++;
+        else
+            losses++;
+        kills += stats.getChampionsKilled();
+        deaths += stats.getNumDeaths();
+        assists += stats.getAssists();
+        if(stats.getFirstBlood() != 0)
+            firstBloods++;
+        goldEarned += stats.getGoldEarned();
+        goldSpent += stats.getGoldSpent();
+        largestKillingSpree = Math.max(largestKillingSpree, stats.getLargestKillingSpree());
+        largestMultiKill = Math.max(largestMultiKill, stats.getLargestMultiKill());
+        magicDamageDealt += stats.getMagicDamageDealtPlayer();
+        magicDamageDealtToChampions += stats.getMagicDamageDealtToChampions();
+        magicDamageTaken += stats.getMagicDamageTaken();
+        physicalDamageDealt += stats.getPhysicalDamageDealtPlayer();
+        physicalDamageDealtToChampions += stats.getPhysicalDamageDealtToChampions();
+        physicalDamageTaken += stats.getPhysicalDamageTaken();
+        trueDamageDealt += stats.getTrueDamageDealtPlayer();
+        trueDamageDealtToChampions += stats.getTrueDamageDealtToChampions();
+        trueDamageTaken += stats.getTrueDamageTaken();
+        totalDamageDealt += stats.getTotalDamageDealt();
+        totalDamageDealtToChampions += stats.getTotalDamageDealtToChampions();
+        totalDamageTaken += stats.getTotalDamageTaken();
+        totalHeal += stats.getTotalHeal();
+        minionsKilled += stats.getMinionsKilled();
+        neutralMinionsKilled += stats.getNeutralMinionsKilled();
+        neutralMinionsKilledEnemyJungle += stats.getNeutralMinionsKilledEnemyJungle();
+        neutralMinionsKilledTeamJungle  += stats.getNeutralMinionsKilledYourJungle();
+        wardsKilled += stats.getWardKilled();
+        wardsPlaced += stats.getWardPlaced();
+        sightWardsBought += stats.getSightWardsBought();
+        visionWardsBought += stats.getVisionWardsBought();
+        doubleKills += stats.getDoubleKills();
+        tripleKills += stats.getTriplekills();
+        quadraKills += stats.getQuadrakills();
+        pentaKills += stats.getPentakills();
+    }
+    
     private void addStats(ParticipantStats stats){
         if(stats.isWinner())
             wins++;
@@ -277,4 +332,8 @@ public class SummaryData{
         this.champion = champion;
     }
 
+    @Override
+    public String toString(){
+        return "Summary data for " + champion.getName();
+    }
 }

@@ -21,7 +21,7 @@ public class RankedAnalysis{
 
         for(ChampionDto champ : champMatches.keySet()){
             List<Match> matches = champMatches.get(champ);
-            SummaryData data = AnalysisUtils.getSummary(matches);
+            SummaryData data = AnalysisUtils.getRankedSummary(matches);
             data.setChampion(champ);
             champData.put(champ, data);
         }
@@ -51,7 +51,7 @@ public class RankedAnalysis{
 
         for(ChampionDto champ : champMatches.keySet()){
             List<Match> matches = champMatches.get(champ);
-            SummaryData data = AnalysisUtils.getSummary(matches, summonerId);
+            SummaryData data = AnalysisUtils.getRankedSummary(matches, summonerId);
             data.setChampion(champ);
             champData.put(champ, data);
         }
