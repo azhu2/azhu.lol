@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.ServletException;
@@ -15,6 +16,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import league.analysis.GeneralAnalysis;
 import league.analysis.RankedAnalysis;
 import league.analysis.SummaryData;
 import league.api.APIConstants;
@@ -239,6 +241,19 @@ public class Neo4jLeagueResource{
         try{
             List<Match> matches = api.getAllRankedMatches(summonerId);
             Collection<SummaryData> champData = RankedAnalysis.getChampData(matches, summonerId);
+            return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(champData)).build();
+        } catch(RiotPlsException e){
+            return Response.status(e.getStatus()).entity(e.getMessage()).build();
+        }
+    }
+    
+    @GET
+    @Path("/general-stats/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getGeneralStats(@PathParam("id") long summonerId) throws ServletException, IOException{
+        try{
+            Set<Match> matches = api.getAllGames(summonerId);
+            Map<String, Collection<SummaryData>> champData = GeneralAnalysis.getChampData(matches, summonerId);
             return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(champData)).build();
         } catch(RiotPlsException e){
             return Response.status(e.getStatus()).entity(e.getMessage()).build();
