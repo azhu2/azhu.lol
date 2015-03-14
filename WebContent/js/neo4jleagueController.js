@@ -22,6 +22,11 @@ neo4jLeagueApp.config([ '$routeProvider', function($routeProvider, routeControll
 		controller : 'lookupController',
 		templateUrl : 'templates/ranked-stats.html'
 	});
+	
+	$routeProvider.when('/:summonerId/general-stats', {
+		controller : 'lookupController',
+		templateUrl : 'templates/general-stats.html'
+	});
 } ]);
 
 neo4jLeagueApp.controller('routeController',
@@ -150,6 +155,20 @@ neo4jLeagueApp.controller('lookupController', function($scope, $rootScope, $rout
 		$rootScope.showTab = true;
 	};
 
+
+	$rootScope.getGeneralStats = function(summonerId) {
+		clearData();
+		lookupSummoner = summonerId;
+
+		LeagueResource.generalStats(summonerId).get({
+			id : summonerId
+		}, function(data) {
+			if (summonerId == lookupSummoner)
+				$rootScope.generalStats = data;
+		});
+		$rootScope.showTab = true;
+	};
+	
 	$rootScope.lookupAllMatches = function(summonerId) {
 		lookupSummoner = summonerId;
 
@@ -264,6 +283,12 @@ neo4jLeagueApp.service('LeagueResource', function($resource) {
 
 	this.rankedStats = function() {
 		return $resource('/azhu.lol/neo4j/rest/ranked-stats/champions/:id', {
+			id : '@id'
+		});
+	};
+	
+	this.generalStats = function() {
+		return $resource('/azhu.lol/neo4j/rest/general-stats/:id', {
 			id : '@id'
 		});
 	};

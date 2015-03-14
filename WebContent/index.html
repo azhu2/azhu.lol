@@ -11,7 +11,7 @@
 <link href="css/index.css" rel="stylesheet">
 <link href="css/match.css" rel="stylesheet">
 <link href="css/summary.css" rel="stylesheet">
-<link href="css/ranked-stats.css" rel="stylesheet">
+<link href="css/stats.css" rel="stylesheet">
 </head>
 <body ng-app="neo4jLeagueApp">
 
@@ -47,9 +47,10 @@
 							</div>
 		
 							<div id="panelOptions" ng-show="showTabs">
-								<a ng-href="#{{ summoner.id }}/matches" ng-click="lookupMatches(summoner.id)">Match History</a>
 								<a ng-href="#{{ summoner.id }}/ranked" ng-click="lookupRanked(summoner.id)">Ranked Matches</a>
 								<a ng-href="#{{ summoner.id }}/ranked-stats" ng-click="getRankedStats(summoner.id)">Ranked Stats</a>
+								<a ng-href="#{{ summoner.id }}/matches" ng-click="lookupMatches(summoner.id)">Match History</a>
+								<a ng-href="#{{ summoner.id }}/general-stats" ng-click="getGeneralStats(summoner.id)">General Stats</a>
 							</div>
 						</div>
 					</div>
