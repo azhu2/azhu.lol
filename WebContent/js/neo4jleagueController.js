@@ -22,30 +22,30 @@ neo4jLeagueApp.config([ '$routeProvider', function($routeProvider, routeControll
 		controller : 'lookupController',
 		templateUrl : 'templates/ranked-stats.html'
 	});
-	
+
 	$routeProvider.when('/:summonerId/general-stats', {
 		controller : 'lookupController',
 		templateUrl : 'templates/general-stats.html'
 	});
 } ]);
 
-neo4jLeagueApp.controller('routeController',
-	function($rootScope, $routeParams, LeagueResource) {
-		$rootScope.version = version;
-		$rootScope.showTabs = false;
+neo4jLeagueApp.controller('routeController', function($rootScope, $routeParams,
+	LeagueResource) {
+	$rootScope.version = version;
+	$rootScope.showTabs = false;
 
-		LeagueResource.summonerFromId().get({
-			id : $routeParams.summonerId
-		}, function(data) {
-			$rootScope.summoner = data;
-			$rootScope.showTabs = true;
-		}, function(error) {
-			$rootScope.summoner = {};
-		});
-
-		$rootScope.showLookupResults = true;
-		$rootScope.showTab = false;
+	LeagueResource.summonerFromId().get({
+		id : $routeParams.summonerId
+	}, function(data) {
+		$rootScope.summoner = data;
+		$rootScope.showTabs = true;
+	}, function(error) {
+		$rootScope.summoner = {};
 	});
+
+	$rootScope.showLookupResults = true;
+	$rootScope.showTab = false;
+});
 
 neo4jLeagueApp.controller('lookupController', function($scope, $rootScope, $routeParams,
 	LeagueResource) {
@@ -68,7 +68,7 @@ neo4jLeagueApp.controller('lookupController', function($scope, $rootScope, $rout
 
 	$rootScope.lookup = function() {
 		$rootScope.showTabs = false;
-		
+
 		LeagueResource.lookupSummoner().get({
 			name : $scope.summonerName
 		}, function(data) {
@@ -94,7 +94,7 @@ neo4jLeagueApp.controller('lookupController', function($scope, $rootScope, $rout
 		$rootScope.showTab = true;
 		$rootScope.showAll = false;
 	};
-	
+
 	$rootScope.lookupAllRanked = function(summonerId) {
 		lookupSummoner = summonerId;
 
@@ -107,17 +107,17 @@ neo4jLeagueApp.controller('lookupController', function($scope, $rootScope, $rout
 		$rootScope.showTab = true;
 		$rootScope.showAll = true;
 	};
-	
+
 	var setRankedMatches = function(summonerId, data) {
-		for(var i = 0; i < data.length; i++){
+		for (var i = 0; i < data.length; i++) {
 			var match = data[i];
 			var players = match.players;
-			for(var j = 0; j < players.length; j++)
-				if(players[j].summoner.id == summonerId){
+			for (var j = 0; j < players.length; j++)
+				if (players[j].summoner.id == summonerId) {
 					match.lookupPlayer = j;
 				}
 		}
-		
+
 		$rootScope.newRanked = data;
 	};
 
@@ -131,7 +131,9 @@ neo4jLeagueApp.controller('lookupController', function($scope, $rootScope, $rout
 			if (summonerId == lookupSummoner) {
 				for (var i = 0; i < data.length; i++) {
 					if (data[i].teamId == 100)
-						data[i].champion = data[i].blueTeam[0];	// Hella hacky... it works...
+						data[i].champion = data[i].blueTeam[0]; // Hella
+					// hacky... it
+					// works...
 					else
 						data[i].champion = data[i].redTeam[0];
 				}
@@ -155,7 +157,6 @@ neo4jLeagueApp.controller('lookupController', function($scope, $rootScope, $rout
 		$rootScope.showTab = true;
 	};
 
-
 	$rootScope.getGeneralStats = function(summonerId) {
 		clearData();
 		lookupSummoner = summonerId;
@@ -168,7 +169,7 @@ neo4jLeagueApp.controller('lookupController', function($scope, $rootScope, $rout
 		});
 		$rootScope.showTab = true;
 	};
-	
+
 	$rootScope.lookupAllMatches = function(summonerId) {
 		lookupSummoner = summonerId;
 
@@ -227,13 +228,13 @@ neo4jLeagueApp.controller('lookupController', function($scope, $rootScope, $rout
 		});
 	};
 
-	var clearData = function(){
+	var clearData = function() {
 		$rootScope.newGames = [];
 		$rootScope.newRanked = [];
 		$rootScope.rankedStats = [];
 		$rootScope.generalStats = [];
 	};
-	
+
 	$scope.working = ' (slow)';
 });
 
@@ -287,7 +288,7 @@ neo4jLeagueApp.service('LeagueResource', function($resource) {
 			id : '@id'
 		});
 	};
-	
+
 	this.generalStats = function() {
 		return $resource('/azhu.lol/neo4j/rest/general-stats/:id', {
 			id : '@id'
@@ -298,26 +299,47 @@ neo4jLeagueApp.service('LeagueResource', function($resource) {
 // Some of these filters are really ugly
 neo4jLeagueApp.filter("queueFilter", function() {
 	return function(type) {
-		var filtered = type ? type.replace("RANKED_SOLO_5x5", "Ranked Solo 5v5") : "";
-		filtered = filtered.replace("RANKED_TEAM_5x5", "Ranked Team 5v5");
-		filtered = filtered.replace("RANKED_TEAM_3x3", "Ranked Team 3v3");
-		return filtered;
+		switch (type) {
+		case "RANKED_SOLO_5x5":
+			return "Ranked Solo 5v5";
+		case "RANKED_TEAM_5x5":
+			return "Ranked Team 5v5";
+		case "RANKED_TEAM_3x3":
+			return "Ranked Team 3v3";
+		default:
+			return type;
+		}
 	};
 }).filter("subTypeFilter", function() {
 	return function(type) {
-		var filtered = type ? type.replace("RANKED_SOLO_5x5", "Ranked Solo 5v5") : "";
-		filtered = filtered.replace("RANKED_TEAM_5x5", "Ranked Team 5v5");
-		filtered = filtered.replace("RANKED_TEAM_3x3", "Ranked Team 3v3");
-		filtered = filtered.replace("NORMAL_3x3", "Normal 3v3");
-		filtered = filtered.replace("BOT_3x3", "Bot 3v3");
-		filtered = filtered.replace("ARAM_UNRANKED_5x5", "ARAM");
-		filtered = filtered.replace("CAP_5x5", "Team Builder");
-		filtered = filtered.replace("ODIN_UNRANKED", "Dominion");
-		filtered = filtered.replace("COUNTER_PICK", "Nemesis Draft");
-		filtered = filtered.replace("BOT", "Bot");
-		filtered = filtered.replace("NORMAL", "Normal 5v5");
-		filtered = filtered.replace("NONE", "Custom");
-		return filtered;
+		switch (type) {
+		case "RANKED_SOLO_5x5":
+			return "Ranked Solo 5v5";
+		case "RANKED_TEAM_5x5":
+			return "Ranked Team 5v5";
+		case "RANKED_TEAM_3x3":
+			return "Ranked Team 3v3";
+		case "NORMAL_3x3":
+			return "Normal 3v3";
+		case "BOT_3x3":
+			return "Bot 3v3";
+		case "ARAM_UNRANKED_5x5":
+			return "ARAM";
+		case "CAP_5x5":
+			return "Team Builder";
+		case "ODIN_UNRANKED":
+			return "Dominion";
+		case "COUNTER_PICK":
+			return "Nemesis Draft";
+		case "BOT":
+			return "Bot";
+		case "NORMAL":
+			return "Normal 5v5";
+		case "NONE":
+			return "Custom";
+		default:
+			return type;
+		}
 	};
 }).filter('numberFixedLen', function() {
 	return function(n, len) {
