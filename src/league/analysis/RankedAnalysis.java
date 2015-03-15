@@ -48,7 +48,9 @@ public class RankedAnalysis{
         List<Match> filteredMatches = filterMatches(matchList);
         Map<ChampionDto, SummaryData> champData = new HashMap<>();
         Map<ChampionDto, List<Match>> champMatches = AnalysisUtils.getChampMatches(filteredMatches, summonerId);
-
+        
+        if(champMatches == null || champMatches.isEmpty())
+            return null;
         for(ChampionDto champ : champMatches.keySet()){
             List<Match> matches = champMatches.get(champ);
             SummaryData data = AnalysisUtils.getRankedSummary(matches, summonerId);

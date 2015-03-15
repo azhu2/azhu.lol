@@ -17,6 +17,9 @@ public class AnalysisUtils{
      * Separate a list of matches by champion played. Deals with RankedMatchImpl
      */
     public static Map<ChampionDto, List<Match>> getChampMatches(Collection<Match> matchList){
+        if(matchList == null || matchList.isEmpty())
+            return null;
+        
         Map<ChampionDto, List<Match>> map = new HashMap<>();
 
         for(Match game : matchList){
@@ -36,6 +39,9 @@ public class AnalysisUtils{
 
     /** Deals with RankedMatch4j */
     public static Map<ChampionDto, List<Match>> getChampMatches(Collection<Match> matchList, long summonerId){
+        if(matchList == null || matchList.isEmpty())
+            return null;
+        
         Map<ChampionDto, List<Match>> map = new HashMap<>();
 
         for(Match match : matchList){
@@ -65,7 +71,10 @@ public class AnalysisUtils{
     }
 
     /** Filter general matches (combine some groups, ignore others) */
-    public static Map<String, List<Match>> filterByQueueType(Collection<Match> matchList){
+    public static Map<String, List<Match>> filterByCustomQueueType(Collection<Match> matchList){
+        if(matchList == null || matchList.isEmpty())
+            return null;
+        
         Map<String, List<Match>> filtered = new HashMap<>();
 
         for(Match match : matchList){
@@ -98,9 +107,32 @@ public class AnalysisUtils{
 
         return filtered;
     }
+    
+    public static Map<String, List<Match>> filterByQueueType(Collection<Match> matchList){
+        if(matchList == null || matchList.isEmpty())
+            return null;
+        
+        Map<String, List<Match>> filtered = new HashMap<>();
+
+        for(Match match : matchList){
+            String type = match.getQueueType();
+            if(filtered.keySet().contains(type))
+                filtered.get(type).add(match);
+            else{
+                List<Match> list = new LinkedList<>();
+                list.add(match);
+                filtered.put(type, list);
+            }
+        }
+
+        return filtered;
+    }
 
     /** Deals with RankedMatch4j */
     public static SummaryData getRankedSummary(Collection<Match> matchList, long summonerId){
+        if(matchList == null || matchList.isEmpty())
+            return null;
+        
         SummaryData data = new SummaryData();
         for(Match match : matchList)
             data.addRankedMatch4j(match, summonerId);
@@ -109,6 +141,9 @@ public class AnalysisUtils{
 
     /** Deals with RankedMatchImpl */
     public static SummaryData getRankedSummary(Collection<Match> matchList){
+        if(matchList == null || matchList.isEmpty())
+            return null;
+        
         SummaryData data = new SummaryData();
         for(Match match : matchList)
             data.addRankedMatchImpl(match);
@@ -117,6 +152,9 @@ public class AnalysisUtils{
     
     /** Deals with GeneralMatch4j */
     public static SummaryData getGeneralSummary(Collection<Match> matchList, long summonerId){
+        if(matchList == null || matchList.isEmpty())
+            return null;
+        
         SummaryData data = new SummaryData();
         for(Match match : matchList)
             data.addGeneralMatch4j(match, summonerId);

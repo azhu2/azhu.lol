@@ -15,7 +15,7 @@ import league.neo4j.api.Neo4jDynamicAPIImpl;
 public class GeneralAnalysis{
 
     public static Map<String, Collection<SummaryData>> getChampData(Collection<Match> matchList, long summonerId){
-        Map<String, List<Match>> queueMap = AnalysisUtils.filterByQueueType(matchList);
+        Map<String, List<Match>> queueMap = AnalysisUtils.filterByCustomQueueType(matchList);
         Map<String, Collection<SummaryData>> dataMap = new HashMap<>();
         
         for(String queueType : queueMap.keySet()){
