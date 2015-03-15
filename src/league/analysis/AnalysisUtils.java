@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import league.LeagueConstants;
 import league.entities.ChampionDto;
 import league.entities.azhu.Match;
 import league.entities.azhu.MatchPlayer;
@@ -63,11 +64,29 @@ public class AnalysisUtils{
         return null;
     }
 
+    /** Filter general matches (combine some groups, ignore others) */
     public static Map<String, List<Match>> filterByQueueType(Collection<Match> matchList){
         Map<String, List<Match>> filtered = new HashMap<>();
 
         for(Match match : matchList){
             String type = match.getQueueType();
+            switch(type){
+                case LeagueConstants.SOLO_QUEUE_5v5:
+                    continue;
+                case LeagueConstants.RANKED_TEAM_5v5:
+                    continue;
+                case LeagueConstants.RANKED_TEAM_3v3:
+                    continue;
+                case LeagueConstants.BOT_3v3:
+                    continue;
+                case LeagueConstants.BOT_5v5:
+                    continue;
+                case LeagueConstants.CUSTOM:
+                    continue;
+                case LeagueConstants.TEAM_BUILDER_5v5:
+                    type = LeagueConstants.NORMAL_5v5;
+                    break;
+            }
             if(filtered.keySet().contains(type))
                 filtered.get(type).add(match);
             else{
