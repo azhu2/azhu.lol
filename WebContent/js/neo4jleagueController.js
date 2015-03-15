@@ -231,6 +231,7 @@ neo4jLeagueApp.controller('lookupController', function($scope, $rootScope, $rout
 		$rootScope.newGames = [];
 		$rootScope.newRanked = [];
 		$rootScope.rankedStats = [];
+		$rootScope.generalStats = [];
 	};
 	
 	$scope.working = ' (slow)';
