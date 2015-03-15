@@ -22,7 +22,7 @@
 			</h1>
 		
 			<div id="lookupSummoner" ng-controller="lookupController">
-				<form ng-submit="lookup()">
+				<form ng-submit="lookup();">
 					Find summoner <input type="text" ng-model="summonerName">
 					<button>Submit</button>
 				</form>
@@ -47,10 +47,10 @@
 							</div>
 		
 							<div id="panelOptions" ng-show="showTabs">
-								<a ng-href="#{{ summoner.id }}/ranked" ng-click="lookupRanked(summoner.id)">Ranked Matches</a>
-								<a ng-href="#{{ summoner.id }}/ranked-stats" ng-click="getRankedStats(summoner.id)">Ranked Stats</a>
-								<a ng-href="#{{ summoner.id }}/matches" ng-click="lookupMatches(summoner.id)">Match History</a>
-								<a ng-href="#{{ summoner.id }}/general-stats" ng-click="getGeneralStats(summoner.id)">General Stats</a>
+								<a ng-href="#{{ summoner.id }}/ranked" ng-click="lookupRanked(summoner.id);" ng-controller="rankedMatchesController">Ranked Matches</a>
+								<a ng-href="#{{ summoner.id }}/ranked-stats" ng-click="getRankedStats(summoner.id);" ng-controller="rankedStatsController">Ranked Stats</a>
+								<a ng-href="#{{ summoner.id }}/matches" ng-click="lookupMatches(summoner.id);" ng-controller="matchesController">Match History</a>
+								<a ng-href="#{{ summoner.id }}/general-stats" ng-click="getGeneralStats(summoner.id);" ng-controller="generalStatsController" >General Stats</a>
 							</div>
 						</div>
 					</div>

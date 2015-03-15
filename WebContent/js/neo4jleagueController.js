@@ -3,39 +3,39 @@ var version = "5.4.1";
 var neo4jLeagueApp = angular.module('neo4jLeagueApp', [ 'ngResource', 'ngRoute' ]);
 
 neo4jLeagueApp.config([ '$routeProvider', function($routeProvider, routeController) {
-	$routeProvider.when('/:summonerId', {
+	$routeProvider.when('/:summId', {
 		controller : 'routeController',
-		templateUrl : 'templates/matches.html' // idk why, but this is needed
+		templateUrl : 'blank.html' // idk why, but this is needed
 	});
 
-	$routeProvider.when('/:summonerId/matches', {
-		controller : 'lookupController',
+	$routeProvider.when('/:summId/matches', {
+		controller : 'matchesController',
 		templateUrl : 'templates/matches.html'
 	});
 
-	$routeProvider.when('/:summonerId/ranked', {
-		controller : 'lookupController',
+	$routeProvider.when('/:summId/ranked', {
+		controller : 'rankedMatchesController',
 		templateUrl : 'templates/ranked.html'
 	});
 
-	$routeProvider.when('/:summonerId/ranked-stats', {
-		controller : 'lookupController',
+	$routeProvider.when('/:summId/ranked-stats', {
+		controller : 'rankedStatsController',
 		templateUrl : 'templates/ranked-stats.html'
 	});
 
-	$routeProvider.when('/:summonerId/general-stats', {
-		controller : 'lookupController',
+	$routeProvider.when('/:summId/general-stats', {
+		controller : 'generalStatsController',
 		templateUrl : 'templates/general-stats.html'
 	});
 } ]);
 
-neo4jLeagueApp.controller('routeController', function($rootScope, $routeParams,
-	LeagueResource) {
+var lookupSummoner = function($rootScope, summonerId, LeagueResource) {
 	$rootScope.version = version;
 	$rootScope.showTabs = false;
+	$rootScope.summonerId = summonerId;
 
 	LeagueResource.summonerFromId().get({
-		id : $routeParams.summonerId
+		id : summonerId
 	}, function(data) {
 		$rootScope.summoner = data;
 		$rootScope.showTabs = true;
@@ -45,6 +45,18 @@ neo4jLeagueApp.controller('routeController', function($rootScope, $routeParams,
 
 	$rootScope.showLookupResults = true;
 	$rootScope.showTab = false;
+};
+
+neo4jLeagueApp.controller('routeController', function($rootScope, $routeParams,
+	LeagueResource) {
+	$rootScope.version = version;
+	$rootScope.showTabs = false;
+
+	// Lookup summoner if not done yet
+	if ($routeParams && $routeParams.summId && (!$rootScope.summonerId || ($rootScope.summonerId != $routeParams.summId)))
+		lookupSummoner($rootScope, $routeParams.summId, LeagueResource);
+	else
+		$rootScope.showTabs = true;
 });
 
 neo4jLeagueApp.controller('lookupController', function($scope, $rootScope, $routeParams,
@@ -52,10 +64,10 @@ neo4jLeagueApp.controller('lookupController', function($scope, $rootScope, $rout
 	$rootScope.version = version;
 	var lookupSummoner;
 
-	if ($routeParams.summonerId) {
+	if ($routeParams.summId) {
 		if (!$rootScope.summoner) {
 			LeagueResource.summonerFromId().get({
-				id : $routeParams.summonerId
+				id : $routeParams.summId
 			}, function(data) {
 				$rootScope.summoner = data;
 				$rootScope.showTabs = true;
@@ -80,49 +92,12 @@ neo4jLeagueApp.controller('lookupController', function($scope, $rootScope, $rout
 		$rootScope.showLookupResults = true;
 		$rootScope.showTab = false;
 	};
+});
 
-	$rootScope.lookupRanked = function(summonerId) {
-		lookupSummoner = summonerId;
-		clearData();
-
-		LeagueResource.lookupRanked(summonerId).query({
-			id : summonerId
-		}, function(data) {
-			if (summonerId == lookupSummoner)
-				setRankedMatches(summonerId, data);
-		});
-		$rootScope.showTab = true;
-		$rootScope.showAll = false;
-	};
-
-	$rootScope.lookupAllRanked = function(summonerId) {
-		lookupSummoner = summonerId;
-
-		LeagueResource.allRanked(summonerId).query({
-			id : summonerId
-		}, function(data) {
-			if (summonerId == lookupSummoner)
-				setRankedMatches(summonerId, data);
-		});
-		$rootScope.showTab = true;
-		$rootScope.showAll = true;
-	};
-
-	var setRankedMatches = function(summonerId, data) {
-		for (var i = 0; i < data.length; i++) {
-			var match = data[i];
-			var players = match.players;
-			for (var j = 0; j < players.length; j++)
-				if (players[j].summoner.id == summonerId) {
-					match.lookupPlayer = j;
-				}
-		}
-
-		$rootScope.newRanked = data;
-	};
-
-	$rootScope.lookupMatches = function(summonerId) {
-		clearData();
+neo4jLeagueApp.controller('matchesController', function($scope, $rootScope, $routeParams,
+	LeagueResource) {
+	var getMatches = function(summonerId) {
+		clearData($rootScope);
 		lookupSummoner = summonerId;
 
 		LeagueResource.matchHistory(summonerId).query({
@@ -130,10 +105,9 @@ neo4jLeagueApp.controller('lookupController', function($scope, $rootScope, $rout
 		}, function(data) {
 			if (summonerId == lookupSummoner) {
 				for (var i = 0; i < data.length; i++) {
+					// Hella hacky, but it works...
 					if (data[i].teamId == 100)
-						data[i].champion = data[i].blueTeam[0]; // Hella
-					// hacky... it
-					// works...
+						data[i].champion = data[i].blueTeam[0];
 					else
 						data[i].champion = data[i].redTeam[0];
 				}
@@ -144,30 +118,17 @@ neo4jLeagueApp.controller('lookupController', function($scope, $rootScope, $rout
 		$rootScope.showAll = false;
 	};
 
-	$rootScope.getRankedStats = function(summonerId) {
-		clearData();
-		lookupSummoner = summonerId;
+	// Lookup summoner if not done yet
+	if ($routeParams && $routeParams.summId && (!$rootScope.summonerId || ($rootScope.summonerId != $routeParams.summId))){
+		$rootScope.version = version;
+		$rootScope.showTabs = false;
 
-		LeagueResource.rankedStats(summonerId).query({
-			id : summonerId
-		}, function(data) {
-			if (summonerId == lookupSummoner)
-				$rootScope.rankedStats = data;
-		});
-		$rootScope.showTab = true;
-	};
+		lookupSummoner($rootScope, $routeParams.summId, LeagueResource);
+		getMatches($routeParams.summId);
+	}
 
-	$rootScope.getGeneralStats = function(summonerId) {
-		clearData();
-		lookupSummoner = summonerId;
-
-		LeagueResource.generalStats(summonerId).get({
-			id : summonerId
-		}, function(data) {
-			if (summonerId == lookupSummoner)
-				$rootScope.generalStats = data;
-		});
-		$rootScope.showTab = true;
+	$rootScope.lookupMatches = function(summonerId) {
+		getMatches(summonerId);
 	};
 
 	$rootScope.lookupAllMatches = function(summonerId) {
@@ -189,7 +150,7 @@ neo4jLeagueApp.controller('lookupController', function($scope, $rootScope, $rout
 		$rootScope.showTab = true;
 		$rootScope.showAll = true;
 	};
-
+	
 	// Used to check before pushing data if it's for the right match
 	var expandedMatch = 0;
 
@@ -200,20 +161,92 @@ neo4jLeagueApp.controller('lookupController', function($scope, $rootScope, $rout
 		}
 
 		expandedMatch++;
-		closeAllMatches($rootScope);
 		match.showExpand = true;
 	};
+});
 
-	var closeAllMatches = function($rootScope) {
-		if ($rootScope.matchData != null)
-			for (var i = 0; i < $rootScope.matchData.length; i++) {
-				$rootScope.matchData[i].showExpand = false;
-			}
+neo4jLeagueApp.controller('generalStatsController', function($scope, $rootScope,
+	$routeParams, LeagueResource) {
+	var lookupStats = function(summonerId) {
+		clearData($rootScope);
+		lookupSummoner = summonerId;
 
-		if ($rootScope.rankedData != null)
-			for (var i = 0; i < $rootScope.rankedData.length; i++) {
-				$rootScope.rankedData[i].showExpand = false;
-			}
+		LeagueResource.generalStats(summonerId).get({
+			id : summonerId
+		}, function(data) {
+			if (summonerId == lookupSummoner)
+				$rootScope.generalStats = data;
+		});
+		$rootScope.showTab = true;
+	};
+
+	// Lookup summoner if not done yet
+	if ($routeParams && $routeParams.summId && (!$rootScope.summonerId || ($rootScope.summonerId != $routeParams.summId))){
+		$rootScope.version = version;
+		$rootScope.showTabs = false;
+
+		lookupSummoner($rootScope, $routeParams.summId, LeagueResource);
+		lookupStats($routeParams.summId);
+	}
+
+	$rootScope.getGeneralStats = function(summonerId) {
+		lookupStats(summonerId);
+	};
+});
+
+neo4jLeagueApp.controller('rankedMatchesController', function($scope, $rootScope,
+	$routeParams, LeagueResource) {
+	var setRankedMatches = function(summonerId, data) {
+		for (var i = 0; i < data.length; i++) {
+			var match = data[i];
+			var players = match.players;
+			for (var j = 0; j < players.length; j++)
+				if (players[j].summoner.id == summonerId) {
+					match.lookupPlayer = j;
+				}
+		}
+
+		$rootScope.newRanked = data;
+	};
+
+	var getRanked = function(summonerId) {
+		lookupSummoner = summonerId;
+		clearData($rootScope);
+
+		LeagueResource.lookupRanked(summonerId).query({
+			id : summonerId
+		}, function(data) {
+			if (summonerId == lookupSummoner)
+				setRankedMatches(summonerId, data);
+		});
+		$rootScope.showTab = true;
+		$rootScope.showAll = false;
+	};
+
+	// Lookup summoner if not done yet
+	if ($routeParams && $routeParams.summId && (!$rootScope.summonerId || ($rootScope.summonerId != $routeParams.summId))){
+		$rootScope.version = version;
+		$rootScope.showTabs = false;
+
+		lookupSummoner($rootScope, $routeParams.summId, LeagueResource);
+		getRanked($routeParams.summId);
+	}
+
+	$rootScope.lookupRanked = function(summonerId) {
+		getRanked(summonerId);
+	};
+
+	$rootScope.lookupAllRanked = function(summonerId) {
+		lookupSummoner = summonerId;
+
+		LeagueResource.allRanked(summonerId).query({
+			id : summonerId
+		}, function(data) {
+			if (summonerId == lookupSummoner)
+				setRankedMatches(summonerId, data);
+		});
+		$rootScope.showTab = true;
+		$rootScope.showAll = true;
 	};
 
 	$rootScope.importAllRanked = function(summonerId) {
@@ -228,15 +261,57 @@ neo4jLeagueApp.controller('lookupController', function($scope, $rootScope, $rout
 		});
 	};
 
-	var clearData = function() {
-		$rootScope.newGames = [];
-		$rootScope.newRanked = [];
-		$rootScope.rankedStats = [];
-		$rootScope.generalStats = [];
+	$scope.working = ' (slow)';
+	
+	// Used to check before pushing data if it's for the right match
+	var expandedMatch = 0;
+
+	$rootScope.expandMatch = function(match, summoner) {
+		if (match.showExpand) {
+			match.showExpand = false;
+			return;
+		}
+
+		expandedMatch++;
+		match.showExpand = true;
+	};
+});
+
+neo4jLeagueApp.controller('rankedStatsController', function($scope, $rootScope,
+	$routeParams, LeagueResource) {
+	var lookupRankedStats = function(summonerId) {
+		clearData($rootScope);
+		lookupSummoner = summonerId;
+
+		LeagueResource.rankedStats(summonerId).query({
+			id : summonerId
+		}, function(data) {
+			if (summonerId == lookupSummoner)
+				$rootScope.rankedStats = data;
+		});
+		$rootScope.showTab = true;
 	};
 
-	$scope.working = ' (slow)';
+	// Lookup summoner if not done yet
+	if ($routeParams && $routeParams.summId && (!$rootScope.summonerId || ($rootScope.summonerId != $routeParams.summId))){
+		$rootScope.version = version;
+		$rootScope.showTabs = false;
+
+		lookupSummoner($rootScope, $routeParams.summId, LeagueResource);
+		lookupRankedStats($routeParams.summId);
+	}
+
+	$rootScope.getRankedStats = function(summonerId) {
+		lookupRankedStats(summonerId);
+	};
 });
+
+var clearData = function($rootScope) {
+	$rootScope.newGames = [];
+	$rootScope.newRanked = [];
+	$rootScope.rankedStats = [];
+	$rootScope.generalStats = [];
+};
 
 neo4jLeagueApp.service('LeagueResource', function($resource) {
 	this.lookupSummoner = function() {
