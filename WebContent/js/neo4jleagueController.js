@@ -296,7 +296,6 @@ neo4jLeagueApp.service('LeagueResource', function($resource) {
 	};
 });
 
-// Some of these filters are really ugly
 neo4jLeagueApp.filter("queueFilter", function() {
 	return function(type) {
 		switch (type) {
