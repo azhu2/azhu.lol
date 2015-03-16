@@ -1,4 +1,4 @@
-var version = "5.4.1";
+var version = "5.5.2";
 
 var neo4jLeagueApp = angular.module('neo4jLeagueApp', [ 'ngResource', 'ngRoute' ]);
 

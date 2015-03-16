@@ -175,7 +175,7 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
     public void cacheSummoner(Summoner summoner){
         if(summoner == null)
             return;
-        
+
         try(Transaction tx = db.beginTx()){
             Summoner s = new Summoner4j(summoner);
             String objectMap = mapper.writeValueAsString(s);
@@ -215,7 +215,7 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
     public void cacheChampion(ChampionDto champion){
         if(champion == null)
             return;
-        
+
         if(championMap.containsKey(champion.getId())){
             log.info("Neo4j: " + champion + " already cached.");
             return;
@@ -261,7 +261,7 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
     public void cacheItem(ItemDto item){
         if(item == null)
             return;
-        
+
         if(itemMap.containsKey(item.getId())){
             log.info("Neo4j: " + item + " already cached.");
             return;
@@ -307,7 +307,7 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
     public void cacheSummonerSpell(SummonerSpellDto spell){
         if(spell == null)
             return;
-        
+
         if(spellMap.containsKey(spell.getId())){
             log.info("Neo4j: " + spell + " already cached.");
             return;
@@ -546,7 +546,7 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
     public void cacheRankedMatch(Match match){
         if(match == null)
             return;
-        
+
         if(hasRankedMatch(match.getId())){
             log.info("Neo4j: Match " + match + " already cached.");
             return;
@@ -560,7 +560,8 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
         // Cache match itself
         try(Transaction tx = db.beginTx()){
             String objectMap = mapper.writeValueAsString(rankedMatch);
-            String stmt = String.format("CREATE (n:RankedMatch %s)", objectMap);
+            String stmt = String.format("MERGE (n:RankedMatch { id:%d }) ON CREATE SET n=%s ON MATCH SET n=%s;",
+                match.getId(), objectMap, objectMap);
             engine.execute(stmt);
 
             log.info("Neo4j: cached ranked match " + match);
@@ -687,11 +688,11 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
             Node node = getNode(stmt);
 
             if(node == null){
-                log.warning("Neo4j: General match " + matchId + " not found.");
+                log.warning("Neo4j: General match " + matchId + " not found for summoner " + summonerId);
                 return null;
             }
             match = new GeneralMatch4j(node);
-            log.info("Neo4j: Fetched general match " + match);
+            log.info("Neo4j: Fetched general match " + match + " for summoner " + summonerId);
             tx.success();
         }
 
@@ -703,7 +704,7 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
     public void cacheGame(Match match, long summonerId){
         if(match == null)
             return;
-        
+
         if(hasGame(match.getId(), summonerId)){
             log.info("Neo4j: Match " + match + " already cached.");
             return;
@@ -713,7 +714,9 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
         // Cache match itself
         try(Transaction tx = db.beginTx()){
             String objectMap = mapper.writeValueAsString(game);
-            String stmt = String.format("CREATE (n:GeneralMatch %s)", objectMap);
+            String stmt = String.format(
+                "MERGE (n:GeneralMatch { id:%d, summonerId:%d }) ON CREATE SET n=%s ON MATCH SET n=%s;",
+                match.getId(), summonerId, objectMap, objectMap);
             engine.execute(stmt);
 
             log.info("Neo4j: cached general match " + match);

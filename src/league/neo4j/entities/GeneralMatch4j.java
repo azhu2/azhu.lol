@@ -11,7 +11,6 @@ import league.api.RiotPlsException;
 import league.entities.ChampionDto;
 import league.entities.GameDto;
 import league.entities.ItemDto;
-import league.entities.ParticipantStats;
 import league.entities.PlayerDto;
 import league.entities.RawStatsDto;
 import league.entities.SummonerSpellDto;
@@ -283,5 +282,10 @@ public class GeneralMatch4j extends Match{
     @JsonView(Views.Neo4jView.class)
     public void setStatsString(String statsString){
         this.statsString = statsString;
+    }
+    
+    @Override
+    public String toString(){
+        return "General match " + getId();
     }
 }
