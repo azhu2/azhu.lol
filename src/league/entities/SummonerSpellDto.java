@@ -1,8 +1,5 @@
 package league.entities;
 
-import league.neo4j.entities.Views;
-
-import org.codehaus.jackson.map.annotate.JsonView;
 import org.neo4j.graphdb.Node;
 
 /**

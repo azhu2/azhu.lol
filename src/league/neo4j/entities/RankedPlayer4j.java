@@ -206,6 +206,8 @@ public class RankedPlayer4j extends MatchPlayer{
 
     @JsonView(Views.RestView.class)
     public void setSpell1(SummonerSpellDto spell1){
+        if(spell1 == null)
+            this.spell1 = APIConstants.DUMMY_SUMMONER_SPELL;
         this.spell1 = spell1;
     }
 
@@ -216,6 +218,8 @@ public class RankedPlayer4j extends MatchPlayer{
 
     @JsonView(Views.RestView.class)
     public void setSpell2(SummonerSpellDto spell2){
+        if(spell2 == null)
+            this.spell2 = APIConstants.DUMMY_SUMMONER_SPELL;
         this.spell2 = spell2;
     }
 
