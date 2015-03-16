@@ -29,7 +29,7 @@ neo4jLeagueApp.config([ '$routeProvider', function($routeProvider, routeControll
 	});
 } ]);
 
-var lookupSummoner = function($rootScope, summonerId, LeagueResource) {
+var lookupSummonerById = function($rootScope, summonerId, LeagueResource) {
 	$rootScope.version = version;
 	$rootScope.showTabs = false;
 	$rootScope.summonerId = summonerId;
@@ -54,7 +54,7 @@ neo4jLeagueApp.controller('routeController', function($rootScope, $routeParams,
 
 	// Lookup summoner if not done yet
 	if ($routeParams && $routeParams.summId && (!$rootScope.summonerId || ($rootScope.summonerId != $routeParams.summId)))
-		lookupSummoner($rootScope, $routeParams.summId, LeagueResource);
+		lookupSummonerById($rootScope, $routeParams.summId, LeagueResource);
 	else
 		$rootScope.showTabs = true;
 });
@@ -123,7 +123,7 @@ neo4jLeagueApp.controller('matchesController', function($scope, $rootScope, $rou
 		$rootScope.version = version;
 		$rootScope.showTabs = false;
 
-		lookupSummoner($rootScope, $routeParams.summId, LeagueResource);
+		lookupSummonerById($rootScope, $routeParams.summId, LeagueResource);
 		getMatches($routeParams.summId);
 	}
 
@@ -185,7 +185,7 @@ neo4jLeagueApp.controller('generalStatsController', function($scope, $rootScope,
 		$rootScope.version = version;
 		$rootScope.showTabs = false;
 
-		lookupSummoner($rootScope, $routeParams.summId, LeagueResource);
+		lookupSummonerById($rootScope, $routeParams.summId, LeagueResource);
 		lookupStats($routeParams.summId);
 	}
 
@@ -228,7 +228,7 @@ neo4jLeagueApp.controller('rankedMatchesController', function($scope, $rootScope
 		$rootScope.version = version;
 		$rootScope.showTabs = false;
 
-		lookupSummoner($rootScope, $routeParams.summId, LeagueResource);
+		lookupSummonerById($rootScope, $routeParams.summId, LeagueResource);
 		getRanked($routeParams.summId);
 	}
 
@@ -297,7 +297,7 @@ neo4jLeagueApp.controller('rankedStatsController', function($scope, $rootScope,
 		$rootScope.version = version;
 		$rootScope.showTabs = false;
 
-		lookupSummoner($rootScope, $routeParams.summId, LeagueResource);
+		lookupSummonerById($rootScope, $routeParams.summId, LeagueResource);
 		lookupRankedStats($routeParams.summId);
 	}
 
