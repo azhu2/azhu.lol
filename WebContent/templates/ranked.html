@@ -252,6 +252,8 @@
 			</div>			
 		</li>
 	</ul>
-	<button class="showAllButton" ng-disabled="true" ng-hide="showAll" ng-click="lookupAllRanked(summoner.id)">Show all</button>
+	<button class="prevButton" ng-disabled="startIndex <= 0" ng-click="lookupRankedWithOffset(summoner.id, startIndex - 15)">Previous</button>
+	<button class="nextButton" ng-disabled="startIndex + 15 >= totalMatches" ng-click="lookupRankedWithOffset(summoner.id, startIndex + 15)">Next</button>
+	
 	<button class="loadAllRanked" ng-disabled="disableImportButton" ng-click="importAllRanked(summoner.id)">Import all ranked matches{{ working }}</button>
 </div>

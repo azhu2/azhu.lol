@@ -221,6 +221,15 @@ neo4jLeagueApp.controller('rankedMatchesController', function($scope, $rootScope
 		});
 		$rootScope.showTab = true;
 		$rootScope.showAll = false;
+		
+		// Pagination
+		LeagueResource.allRanked(summonerId).query({
+			id : summonerId
+		}, function(data) {
+			if (summonerId == lookupSummoner)
+				$rootScope.totalMatches = data.length;
+		});
+		$rootScope.startIndex = 0;
 	};
 
 	// Lookup summoner if not done yet
@@ -234,6 +243,19 @@ neo4jLeagueApp.controller('rankedMatchesController', function($scope, $rootScope
 
 	$rootScope.lookupRanked = function(summonerId) {
 		getRanked(summonerId);
+	};
+	
+	$rootScope.lookupRankedWithOffset = function(summonerId, offset) {
+		clearData($rootScope);
+
+		LeagueResource.lookupRanked(summonerId).query({
+			id : summonerId,
+			start : offset
+		}, function(data) {
+			if (summonerId == lookupSummoner)
+				setRankedMatches(summonerId, data);
+		});
+		$rootScope.startIndex = offset;
 	};
 
 	$rootScope.lookupAllRanked = function(summonerId) {
