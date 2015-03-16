@@ -8,11 +8,13 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.ServletException;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -99,10 +101,16 @@ public class Neo4jLeagueResource{
     @GET
     @Path("/ranked-matches/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getRankedMatches(@PathParam("id") long summonerId) throws ServletException, IOException{
+    public Response getRankedMatches(@PathParam("id") long summonerId, @QueryParam("start") @DefaultValue("0") int startIndex) throws ServletException, IOException{
         try{
-            List<Match> history = api.getRankedMatches(summonerId);
-            return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(history)).build();
+            if(startIndex <= 0){
+                List<Match> history = api.getRankedMatches(summonerId);
+                return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(history)).build();
+            }
+            List<Match> history = api.getAllRankedMatches(summonerId);
+            startIndex = Math.min(history.size(), startIndex);
+            int endIndex = Math.min(history.size(), startIndex + APIConstants.MAX_PAGE_SIZE);
+            return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(history.subList(startIndex, endIndex))).build();
         } catch(RiotPlsException e){
             return Response.status(e.getStatus()).entity(e.getMessage()).build();
         }
