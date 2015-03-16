@@ -86,7 +86,7 @@ public class GeneralMatch4j extends Match{
         setLevel((int) (long) node.getProperty("level"));
         setTeamId((int) (long) node.getProperty("teamId"));
         setSummonerId((long) node.getProperty("summonerId"));
-        
+
         try{
             setStats(mapper.readValue((String) node.getProperty("statsString"), RawStatsDto.class));
         } catch(IOException e){
@@ -101,14 +101,16 @@ public class GeneralMatch4j extends Match{
         List<Summoner> summoners;
         try{
             summoners = api.getSummoners(summonerIds);
-            for(int i = 0; i < summonerIds.size(); i++){
-                ChampionDto champion = api.getChampionFromId(fellowPlayers.get(i).getChampionId());
-                MatchPlayer player = new GeneralPlayer4j(summoners.get(i), champion, fellowPlayers.get(i).getTeamId());
-                if(player.getTeamId() == LeagueConstants.BLUE_TEAM)
-                    addToBlueTeam(player);
-                else
-                    addToRedTeam(player);
-            }
+            if(summoners != null && !summoners.isEmpty())
+                for(int i = 0; i < summonerIds.size(); i++){
+                    ChampionDto champion = api.getChampionFromId(fellowPlayers.get(i).getChampionId());
+                    MatchPlayer player = new GeneralPlayer4j(summoners.get(i), champion, fellowPlayers.get(i)
+                                                                                                      .getTeamId());
+                    if(player.getTeamId() == LeagueConstants.BLUE_TEAM)
+                        addToBlueTeam(player);
+                    else
+                        addToRedTeam(player);
+                }
         } catch(RiotPlsException e){
             log.warning(e.getMessage());
         }
@@ -283,7 +285,7 @@ public class GeneralMatch4j extends Match{
     public void setStatsString(String statsString){
         this.statsString = statsString;
     }
-    
+
     @Override
     public String toString(){
         return "General match " + getId();

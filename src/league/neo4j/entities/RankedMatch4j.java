@@ -106,13 +106,14 @@ public class RankedMatch4j extends Match{
         List<Summoner> summoners;
         try{
             summoners = api.getSummoners(summonerIds);
-            for(int i = 0; i < participantIdentities.size(); i++){
-                MatchPlayer player = new RankedPlayer4j(summoners.get(i), participants.get(i));
-                if(player.getTeamId() == LeagueConstants.BLUE_TEAM)
-                    bluePlayers.add(player);
-                else
-                    redPlayers.add(player);
-            }
+            if(summoners != null && !summoners.isEmpty())
+                for(int i = 0; i < participantIdentities.size(); i++){
+                    MatchPlayer player = new RankedPlayer4j(summoners.get(i), participants.get(i));
+                    if(player.getTeamId() == LeagueConstants.BLUE_TEAM)
+                        bluePlayers.add(player);
+                    else
+                        redPlayers.add(player);
+                }
         } catch(RiotPlsException e){
             log.warning(e.getMessage());
         }
