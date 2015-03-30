@@ -696,7 +696,7 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
             tx.success();
         }
 
-        populateMatch(match);
+        populateMatch(match, summonerId);
         return match;
     }
 
@@ -706,7 +706,7 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
             return;
 
         if(hasGame(match.getId(), summonerId)){
-            log.info("Neo4j: Match " + match + " already cached.");
+            log.info("Neo4j: Match " + match + " already cached for summoner " + summonerId);
             return;
         }
         GeneralMatch4j game = (GeneralMatch4j) match;
@@ -714,12 +714,10 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
         // Cache match itself
         try(Transaction tx = db.beginTx()){
             String objectMap = mapper.writeValueAsString(game);
-            String stmt = String.format(
-                "MERGE (n:GeneralMatch { id:%d, summonerId:%d }) ON CREATE SET n=%s ON MATCH SET n=%s;",
-                match.getId(), summonerId, objectMap, objectMap);
+            String stmt = String.format("CREATE (n:GeneralMatch %s);", objectMap);
             engine.execute(stmt);
 
-            log.info("Neo4j: cached general match " + match);
+            log.info("Neo4j: cached general match " + match + " for summoner " + summonerId);
             tx.success();
         } catch(IOException e){
             log.warning(e.getMessage());
@@ -733,7 +731,7 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
                 cacheItem(item);
 
             // @formatter:off
-            String statement = "MATCH (match:GeneralMatch) WHERE match.id=%d "
+            String statement = "MATCH (match:GeneralMatch) WHERE match.id=%d AND match.summonerId = %d "
                              + "MATCH (spell1:Summonerspell) WHERE spell1.id=%d "
                              + "MATCH (spell2:Summonerspell) WHERE spell2.id=%d "
                              + "MATCH (item0:Item) WHERE item0.id=%d "
@@ -752,7 +750,7 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
                              + "CREATE (item4)-[:ITEM4]->(match) "
                              + "CREATE (item5)-[:ITEM5]->(match) "
                              + "CREATE (item6)-[:ITEM6]->(match);";
-            String stmt = String.format(statement, match.getId(), game.getSpell1().getId(),
+            String stmt = String.format(statement, match.getId(), summonerId, game.getSpell1().getId(),
                 game.getSpell2().getId(), game.getItems().get(0).getId(),
                 game.getItems().get(1).getId(), game.getItems().get(2).getId(),
                 game.getItems().get(3).getId(), game.getItems().get(4).getId(),
@@ -760,7 +758,7 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
             // @formatter:on
             engine.execute(stmt);
 
-            log.info("Neo4j: cached general stats for " + game);
+            log.info("Neo4j: cached general stats for " + game + " for summoner " + summonerId);
             tx.success();
         }
 
@@ -775,14 +773,14 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
                 cacheSummoner(generalPlayer.getSummoner());
 
                 // @formatter:off
-                String statement = "MATCH (match:GeneralMatch) WHERE match.id=%d "
+                String statement = "MATCH (match:GeneralMatch) WHERE match.id=%d AND match.summonerId = %d "
                                  + "MATCH (champion:Champion) WHERE champion.id=%d "
                                  + "MATCH (summoner:Summoner) WHERE summoner.id=%d "
                                  + "CREATE (player:GeneralPlayer %s) "
                                  + "CREATE (player)-[:PLAYED_IN]->(match) "
                                  + "CREATE (champion)-[:CHAMP_PLAYED]->(player) "
                                  + "CREATE (summoner)-[:SUMMONER]->(player);";
-                String stmt = String.format(statement, match.getId(), generalPlayer.getChampion().getId(),
+                String stmt = String.format(statement, match.getId(), summonerId, generalPlayer.getChampion().getId(),
                                     generalPlayer.getSummoner().getId(), objectMap);
                 // @formatter:on
                 engine.execute(stmt);
@@ -805,16 +803,17 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
         }
     }
 
-    private void populateMatch(GeneralMatch4j match){
+    private void populateMatch(GeneralMatch4j match, long summonerId){
         // Fetch players
         try(Transaction tx = db.beginTx()){
             // @formatter:off
             String stmt = String.format(
-                  "MATCH (player:GeneralPlayer)-[:PLAYED_IN]->(match:GeneralMatch) WHERE match.id = %d "
+                  "MATCH (player:GeneralPlayer)-[:PLAYED_IN]->(match:GeneralMatch) "
+                + "WHERE match.id = %d AND match.summonerId = %d "
                 + "MATCH (champion:Champion)-[:CHAMP_PLAYED]->(player) "
                 + "MATCH (summoner:Summoner)-[:SUMMONER]->(player) "
                 + "RETURN player, champion, summoner;",
-                match.getId());
+                match.getId(), summonerId);
             // @formatter:on
             ExecutionResult results = engine.execute(stmt);
             ResourceIterator<Map<String, Object>> itr = results.iterator();
@@ -842,7 +841,7 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
         try(Transaction tx = db.beginTx()){
             // @formatter:off
             String stmt = String.format(
-                  "MATCH (match:GeneralMatch) WHERE match.id = %d "
+                  "MATCH (match:GeneralMatch) WHERE match.id = %d  AND match.summonerId = %d "
                 + "MATCH (spell1:Summonerspell)-[:SPELL1]->(match) "
                 + "MATCH (spell2:Summonerspell)-[:SPELL2]->(match) "
                 + "MATCH (item0:Item)-[:ITEM0]->(match) "
@@ -853,7 +852,7 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
                 + "MATCH (item5:Item)-[:ITEM5]->(match) "
                 + "MATCH (item6:Item)-[:ITEM6]->(match) "
                 + "RETURN spell1, spell2, item0, item1, item2, item3, item4, item5, item6;",
-                match.getId());
+                match.getId(), summonerId);
             // @formatter:on
             ExecutionResult results = engine.execute(stmt);
             ResourceIterator<Map<String, Object>> itr = results.iterator();
