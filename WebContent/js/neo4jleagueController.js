@@ -1,6 +1,6 @@
 var version = "5.5.2";
 
-var neo4jLeagueApp = angular.module('neo4jLeagueApp', [ 'ngResource', 'ngRoute' ]);
+var neo4jLeagueApp = angular.module('neo4jLeagueApp', [ 'ngResource', 'ngRoute', 'angular.filter' ]);
 
 neo4jLeagueApp.config([ '$routeProvider', function($routeProvider, routeController) {
 	$routeProvider.when('/:summId', {

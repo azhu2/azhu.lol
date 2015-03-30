@@ -70,7 +70,7 @@
 								<div class="playerStat playerCS">CS</div>
 							</div>
 							<ul class="expandPlayersBlue">
-								<li ng-repeat="player in match.blueTeam">
+								<li ng-repeat="player in match.blueTeam | unique: 'summoner.id'">
 									<div class="playerInfo">
 										<div class="playerStat playerRank rank rank_{{ player.summoner.league == null ? 'UNRANKED' : player.summoner.league.tier }}">
 											{{ player.summoner.league == null ? 'UNRANKED' : player.summoner.league.tier + ' ' + player.summoner.league.division }}
@@ -139,7 +139,7 @@
 							</div>
 							
 							<ul class="expandPlayersRed">
-								<li ng-repeat="player in match.redTeam">
+								<li ng-repeat="player in match.redTeam | unique: 'summoner.id'">
 									<div class="playerInfo">
 										<div class="playerStat playerRank rank rank_{{ player.summoner.league == null ? 'UNRANKED' : player.summoner.league.tier }}">
 											{{ player.summoner.league == null ? 'UNRANKED' : player.summoner.league.tier + ' ' + player.summoner.league.division }}
