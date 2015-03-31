@@ -43,6 +43,8 @@
 #stats .champion div {
 	display: inline-block;
 	font-weight: bold;
+	position: relative;
+	bottom: 4px;
 }
 
 #stats .champion img {
