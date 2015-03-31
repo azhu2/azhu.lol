@@ -25,11 +25,89 @@
 				<td class="takenDamage">Damage Taken</td>
 			</tr>
 		
-			<tr ng-repeat="champData in queueData | orderBy:'wins':true" class="champData champ_{{ champData.champion.id }}">
+			<tr ng-repeat="champData in queueData | orderBy:'wins':true" class="champData champ_{{ champData.champion.id }}"
+				ng-if="champData.champion">
 				<td class="champion">
 					<img class="championImage" alt="{{ champData.champion == null ? 'champion' : champData.champion.name }}"
 						ng-src="{{ champData.champion == null ? '' : 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/champion/' + champData.champion.image.full }}">
 					<div class="championName">{{ champData.champion.name }}</div>
+				</td>
+				
+				<td class="games">{{ champData.wins + champData.losses }}</td>
+				<td class="wins">{{ champData.wins }}</td>
+				<td class="losses">{{ champData.losses }}</td>
+				<td class="winrate">{{ champData.wins / (champData.wins + champData.losses) * 100 | number:0 }}%</td>
+				<td class="kills">{{ champData.kills / (champData.wins + champData.losses) | number:2 }}</td>
+				<td class="deaths">{{ champData.deaths / (champData.wins + champData.losses) | number:2 }}</td>
+				<td class="assists">{{ champData.assists / (champData.wins + champData.losses) | number:2 }}</td>
+				<td class="kda">{{ champData.deaths === 0 ? '---' : ((champData.kills + champData.assists) / champData.deaths | number:2) }}</td>
+				<td class="cs">{{ (champData.minionsKilled + champData.neutralMinionsKilled) / (champData.wins + champData.losses) | number:1 }}</td>
+				<td class="cspm">{{ (champData.minionsKilled + champData.neutralMinionsKilled) / (champData.timePlayed) * 60 | number:2 }}</td>
+				<td class="gold">{{ champData.goldEarned / (champData.wins + champData.losses) | number:0 }}</td>
+				<td class="gpm">{{ champData.goldEarned / (champData.timePlayed) * 60 | number:1 }}</td>
+				<td class="gameLength">{{ champData.timePlayed / 60 / (champData.wins + champData.losses ) | number:0 }}:{{ champData.timePlayed / (champData.wins + champData.losses ) % 60 | numberFixedLen:2 }}</td>
+				
+				<td class="totalDamage">
+					<div class="damageGraph total"
+						ng-style="{ 'width': champData.totalDamageDealt / 500000 / (champData.wins + champData.losses) * 100 + '%' }">
+						<div class="textOverlay">
+							{{ champData.totalDamageDealt / (champData.wins + champData.losses) | number:0 }}
+						</div>
+						<img class="damage physical" src="img/damage_physical.png" 
+							ng-attr-title="Physical: {{ champData.physicalDamageDealt / (champData.wins + champData.losses) | number:0 }} ({{ champData.physicalDamageDealt / champData.totalDamageDealt * 100 | number:1 }}%)"
+							ng-style="{ 'width': (champData.physicalDamageDealt / champData.totalDamageDealt * 100) + '%' }">
+						<img class="damage magic" src="img/damage_magic.png" 
+							ng-attr-title="Magic: {{ champData.magicDamageDealt / (champData.wins + champData.losses) | number:0 }} ({{ champData.magicDamageDealt / champData.totalDamageDealt * 100 | number:1 }}%)"
+							ng-style="{ 'width': (champData.magicDamageDealt / champData.totalDamageDealt * 100) + '%' }">
+						<img class="damage true" src="img/damage_true.png" 
+							ng-attr-title="True: {{ champData.trueDamageDealt / (champData.wins + champData.losses) | number:0 }} ({{ champData.trueDamageDealt / champData.totalDamageDealt * 100 | number:1 }}%)"
+							ng-style="{ 'width': (champData.trueDamageDealt / champData.totalDamageDealt * 100) + '%' }">
+					</div>
+				</td>
+				<td class="champsDamage">
+					<div class="damageGraph champs"
+						ng-style="{ 'width': champData.totalDamageDealtToChampions / 80000 / (champData.wins + champData.losses) * 100 + '%' }">
+						<div class="textOverlay">
+							{{ champData.totalDamageDealtToChampions / (champData.wins + champData.losses) | number:0 }}
+						</div>
+						<img class="damage physical" src="img/damage_physical.png" 
+							ng-attr-title="Physical: {{ champData.physicalDamageDealtToChampions / (champData.wins + champData.losses) | number:0 }} ({{ champData.physicalDamageDealtToChampions / champData.totalDamageDealtToChampions * 100 | number:1 }}%)"
+							ng-style="{ 'width': (champData.physicalDamageDealtToChampions / champData.totalDamageDealtToChampions * 100) + '%' }">
+						<img class="damage magic" src="img/damage_magic.png" 
+							ng-attr-title="Magic: {{ champData.magicDamageDealtToChampions / (champData.wins + champData.losses) | number:0 }} ({{ champData.magicDamageDealtToChampions / champData.totalDamageDealtToChampions * 100 | number:1 }}%)"
+							ng-style="{ 'width': (champData.magicDamageDealtToChampions / champData.totalDamageDealtToChampions * 100) + '%' }">
+						<img class="damage true" src="img/damage_true.png"
+							ng-attr-title="True: {{ champData.trueDamageDealtToChampions / (champData.wins + champData.losses) | number:0 }} ({{ champData.trueDamageDealtToChampions / champData.totalDamageDealtToChampions * 100 | number:1 }}%)"
+							ng-style="{ 'width': (champData.trueDamageDealtToChampions / champData.totalDamageDealtToChampions * 100) + '%' }">
+					</div>
+				</td>
+				<td class="takenDamage">
+					<div class="damageGraph taken"
+						ng-style="{ 'width': champData.totalDamageTaken / 80000 / (champData.wins + champData.losses) * 100 + '%' }">
+						<div class="textOverlay">
+							{{ champData.totalDamageTaken / (champData.wins + champData.losses) | number:0 }}
+						</div>
+						<img class="damage physical" src="img/damage_physical.png" 
+							ng-attr-title="Physical: {{ champData.physicalDamageTaken / (champData.wins + champData.losses) | number:0 }} ({{ champData.physicalDamageTaken / champData.totalDamageTaken * 100 | number:1 }}%)"
+							ng-style="{ 'width': (champData.physicalDamageTaken / champData.totalDamageTaken * 100) + '%' }">
+						<img class="damage magic" src="img/damage_magic.png" 
+							ng-attr-title="Magic: {{ champData.magicDamageTaken / (champData.wins + champData.losses) | number:0 }} ({{ champData.magicDamageTaken / champData.totalDamageTaken * 100 | number:1 }}%)"
+							ng-style="{ 'width': (champData.magicDamageTaken / champData.totalDamageTaken * 100) + '%' }">
+						<img class="damage true" src="img/damage_true.png" 
+							ng-attr-title="True: {{ champData.trueDamageTaken / (champData.wins + champData.losses) | number:0 }} ({{ champData.trueDamageTaken / champData.totalDamageTaken * 100 | number:1 }}%)"
+							ng-style="{ 'width': (champData.trueDamageTaken / champData.totalDamageTaken * 100) + '%' }">
+					</div>
+				</td>
+			</tr>
+			
+			
+			<!-- Not sure how to (easily) search array for champion-less element, so this happened.
+				This code should be taken behind a barn and shot. But it works. -->
+			<tr ng-repeat="champData in queueData | orderBy:'wins':true" class="champData" id="totals"
+				ng-if="!champData.champion">
+				<td class="champion">
+					<img class="championImage">
+					<div class="championName">Total</div>
 				</td>
 				
 				<td class="games">{{ champData.wins + champData.losses }}</td>

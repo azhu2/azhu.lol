@@ -24,6 +24,10 @@
 	background: #CCCCEE;
 }
 
+#stats #totals > td {
+	background: #AAAAAA;
+}
+
 #stats .headings {
 	font-weight: bold;
 	text-transform: uppercase;

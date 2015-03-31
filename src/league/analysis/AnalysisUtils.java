@@ -37,13 +37,14 @@ public class AnalysisUtils{
         return map;
     }
 
-    /** Deals with RankedMatch4j */
+    /** Deals with Ranked/GeneralMatch4j */
     public static Map<ChampionDto, List<Match>> getChampMatches(Collection<Match> matchList, long summonerId){
         if(matchList == null || matchList.isEmpty())
             return null;
         
         Map<ChampionDto, List<Match>> map = new HashMap<>();
 
+        List<Match> totals = new LinkedList<>();
         for(Match match : matchList){
             ChampionDto champ = getLookupPlayer(match, summonerId).getChampion();
             for(MatchPlayer player : match.getPlayers()){
@@ -57,7 +58,9 @@ public class AnalysisUtils{
                 list.add(match);
                 map.put(champ, list);
             }
+            totals.add(match);
         }
+        map.put(null, totals);          // null key for totals
 
         return map;
     }
