@@ -47,20 +47,19 @@ var lookupSummonerById = function($rootScope, summonerId, LeagueResource) {
 	$rootScope.showTab = false;
 };
 
-neo4jLeagueApp.controller('routeController', function($rootScope, $routeParams,
-	LeagueResource) {
+neo4jLeagueApp.controller('routeController', function($rootScope, $routeParams, LeagueResource) {
 	$rootScope.version = version;
 	$rootScope.showTabs = false;
 
 	// Lookup summoner if not done yet
-	if ($routeParams && $routeParams.summId && (!$rootScope.summonerId || ($rootScope.summonerId != $routeParams.summId)))
+	if ($routeParams && $routeParams.summId
+		&& (!$rootScope.summonerId || ($rootScope.summonerId != $routeParams.summId)))
 		lookupSummonerById($rootScope, $routeParams.summId, LeagueResource);
 	else
 		$rootScope.showTabs = true;
 });
 
-neo4jLeagueApp.controller('lookupController', function($scope, $rootScope, $routeParams,
-	LeagueResource) {
+neo4jLeagueApp.controller('lookupController', function($scope, $rootScope, $routeParams, LeagueResource) {
 	$rootScope.version = version;
 	var lookupSummoner;
 
@@ -94,8 +93,7 @@ neo4jLeagueApp.controller('lookupController', function($scope, $rootScope, $rout
 	};
 });
 
-neo4jLeagueApp.controller('matchesController', function($scope, $rootScope, $routeParams,
-	LeagueResource) {
+neo4jLeagueApp.controller('matchesController', function($scope, $rootScope, $routeParams, LeagueResource) {
 	var getMatches = function(summonerId) {
 		clearData($rootScope);
 		lookupSummoner = summonerId;
@@ -119,7 +117,8 @@ neo4jLeagueApp.controller('matchesController', function($scope, $rootScope, $rou
 	};
 
 	// Lookup summoner if not done yet
-	if ($routeParams && $routeParams.summId && (!$rootScope.summonerId || ($rootScope.summonerId != $routeParams.summId))){
+	if ($routeParams && $routeParams.summId
+		&& (!$rootScope.summonerId || ($rootScope.summonerId != $routeParams.summId))) {
 		$rootScope.version = version;
 		$rootScope.showTabs = false;
 
@@ -150,7 +149,7 @@ neo4jLeagueApp.controller('matchesController', function($scope, $rootScope, $rou
 		$rootScope.showTab = true;
 		$rootScope.showAll = true;
 	};
-	
+
 	// Used to check before pushing data if it's for the right match
 	var expandedMatch = 0;
 
@@ -165,8 +164,7 @@ neo4jLeagueApp.controller('matchesController', function($scope, $rootScope, $rou
 	};
 });
 
-neo4jLeagueApp.controller('generalStatsController', function($scope, $rootScope,
-	$routeParams, LeagueResource) {
+neo4jLeagueApp.controller('generalStatsController', function($scope, $rootScope, $routeParams, LeagueResource) {
 	var lookupStats = function(summonerId) {
 		clearData($rootScope);
 		lookupSummoner = summonerId;
@@ -181,7 +179,8 @@ neo4jLeagueApp.controller('generalStatsController', function($scope, $rootScope,
 	};
 
 	// Lookup summoner if not done yet
-	if ($routeParams && $routeParams.summId && (!$rootScope.summonerId || ($rootScope.summonerId != $routeParams.summId))){
+	if ($routeParams && $routeParams.summId
+		&& (!$rootScope.summonerId || ($rootScope.summonerId != $routeParams.summId))) {
 		$rootScope.version = version;
 		$rootScope.showTabs = false;
 
@@ -194,8 +193,7 @@ neo4jLeagueApp.controller('generalStatsController', function($scope, $rootScope,
 	};
 });
 
-neo4jLeagueApp.controller('rankedMatchesController', function($scope, $rootScope,
-	$routeParams, LeagueResource) {
+neo4jLeagueApp.controller('rankedMatchesController', function($scope, $rootScope, $routeParams, LeagueResource) {
 	var setRankedMatches = function(summonerId, data) {
 		for (var i = 0; i < data.length; i++) {
 			var match = data[i];
@@ -221,7 +219,7 @@ neo4jLeagueApp.controller('rankedMatchesController', function($scope, $rootScope
 		});
 		$rootScope.showTab = true;
 		$rootScope.showAll = false;
-		
+
 		// Pagination
 		LeagueResource.allRanked(summonerId).query({
 			id : summonerId
@@ -233,7 +231,8 @@ neo4jLeagueApp.controller('rankedMatchesController', function($scope, $rootScope
 	};
 
 	// Lookup summoner if not done yet
-	if ($routeParams && $routeParams.summId && (!$rootScope.summonerId || ($rootScope.summonerId != $routeParams.summId))){
+	if ($routeParams && $routeParams.summId
+		&& (!$rootScope.summonerId || ($rootScope.summonerId != $routeParams.summId))) {
 		$rootScope.version = version;
 		$rootScope.showTabs = false;
 
@@ -244,7 +243,7 @@ neo4jLeagueApp.controller('rankedMatchesController', function($scope, $rootScope
 	$rootScope.lookupRanked = function(summonerId) {
 		getRanked(summonerId);
 	};
-	
+
 	$rootScope.lookupRankedWithOffset = function(summonerId, offset) {
 		clearData($rootScope);
 
@@ -284,7 +283,7 @@ neo4jLeagueApp.controller('rankedMatchesController', function($scope, $rootScope
 	};
 
 	$scope.working = ' (slow)';
-	
+
 	// Used to check before pushing data if it's for the right match
 	var expandedMatch = 0;
 
@@ -299,8 +298,7 @@ neo4jLeagueApp.controller('rankedMatchesController', function($scope, $rootScope
 	};
 });
 
-neo4jLeagueApp.controller('rankedStatsController', function($scope, $rootScope,
-	$routeParams, LeagueResource) {
+neo4jLeagueApp.controller('rankedStatsController', function($scope, $rootScope, $routeParams, LeagueResource) {
 	var lookupRankedStats = function(summonerId) {
 		clearData($rootScope);
 		lookupSummoner = summonerId;
@@ -315,7 +313,8 @@ neo4jLeagueApp.controller('rankedStatsController', function($scope, $rootScope,
 	};
 
 	// Lookup summoner if not done yet
-	if ($routeParams && $routeParams.summId && (!$rootScope.summonerId || ($rootScope.summonerId != $routeParams.summId))){
+	if ($routeParams && $routeParams.summId
+		&& (!$rootScope.summonerId || ($rootScope.summonerId != $routeParams.summId))) {
 		$rootScope.version = version;
 		$rootScope.showTabs = false;
 

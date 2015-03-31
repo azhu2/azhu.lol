@@ -14,50 +14,100 @@ public class SummaryData{
     private int numGames = 0;
     private int wins = 0;
     private int losses = 0;
-    private long timePlayed = 0;
-    private long kills = 0;
-    private long deaths = 0;
-    private long assists = 0;
-    private long firstBloods = 0;
-    private long firstBloodAssists = 0;
-    private long goldEarned = 0;
-    private long goldSpent = 0;
-    private long largestKillingSpree = 0;
-    private long largestMultiKill = 0;
-    private long magicDamageDealt = 0;
-    private long magicDamageDealtToChampions = 0;
-    private long magicDamageTaken = 0;
-    private long physicalDamageDealt = 0;
-    private long physicalDamageDealtToChampions = 0;
-    private long physicalDamageTaken = 0;
-    private long trueDamageDealt = 0;
-    private long trueDamageDealtToChampions = 0;
-    private long trueDamageTaken = 0;
-    private long totalDamageDealt = 0;
-    private long totalDamageDealtToChampions = 0;
-    private long totalDamageTaken = 0;
-    private long totalHeal = 0;
-    private long minionsKilled = 0;
-    private long neutralMinionsKilled = 0;
-    private long neutralMinionsKilledEnemyJungle = 0;
-    private long neutralMinionsKilledTeamJungle = 0;
-    private long wardsKilled = 0;
-    private long wardsPlaced = 0;
-    private long sightWardsBought = 0;
-    private long visionWardsBought = 0;
+    private double timePlayed = 0;
+    private double kills = 0;
+    private double deaths = 0;
+    private double assists = 0;
+    private double firstBloods = 0;
+    private double firstBloodAssists = 0;
+    private double goldEarned = 0;
+    private double goldSpent = 0;
+    private double largestKillingSpree = 0;
+    private double largestMultiKill = 0;
+    private double magicDamageDealt = 0;
+    private double magicDamageDealtToChampions = 0;
+    private double magicDamageTaken = 0;
+    private double physicalDamageDealt = 0;
+    private double physicalDamageDealtToChampions = 0;
+    private double physicalDamageTaken = 0;
+    private double trueDamageDealt = 0;
+    private double trueDamageDealtToChampions = 0;
+    private double trueDamageTaken = 0;
+    private double totalDamageDealt = 0;
+    private double totalDamageDealtToChampions = 0;
+    private double totalDamageTaken = 0;
+    private double totalHeal = 0;
+    private double minionsKilled = 0;
+    private double neutralMinionsKilled = 0;
+    private double neutralMinionsKilledEnemyJungle = 0;
+    private double neutralMinionsKilledTeamJungle = 0;
+    private double wardsKilled = 0;
+    private double wardsPlaced = 0;
+    private double sightWardsBought = 0;
+    private double visionWardsBought = 0;
     private long doubleKills = 0;
     private long tripleKills = 0;
     private long quadraKills = 0;
     private long pentaKills = 0;
+
+    private double winrate;
+    private double kda;
+    private double cs;
+    private double cspm;
+    private double gpm;
     
     private ChampionDto champion;
 
     public SummaryData(){
-        
+
     }
-    
-    /** Deals with RankedMatchImpl 
-     * @deprecated Use {@link #addRankedMatchImpl(Match)} instead*/
+
+    /**
+     * Process all games to get per-game, per-minute stats, kda, and winrate
+     */
+    public void process(){
+        timePlayed /= numGames;
+        kills /= numGames;
+        deaths /= numGames;
+        assists /= numGames;
+        firstBloods /= numGames;
+        firstBloodAssists /= numGames;
+        goldEarned /= numGames;
+        goldSpent /= numGames;
+        magicDamageDealt /= numGames;
+        magicDamageDealtToChampions /= numGames;
+        magicDamageTaken /= numGames;
+        physicalDamageDealt /= numGames;
+        physicalDamageDealtToChampions /= numGames;
+        physicalDamageTaken /= numGames;
+        trueDamageDealt /= numGames;
+        trueDamageDealtToChampions /= numGames;
+        trueDamageTaken /= numGames;
+        totalDamageDealt /= numGames;
+        totalDamageDealtToChampions /= numGames;
+        totalDamageTaken /= numGames;
+        totalHeal /= numGames;
+        minionsKilled /= numGames;
+        neutralMinionsKilled /= numGames;
+        neutralMinionsKilledEnemyJungle /= numGames;
+        neutralMinionsKilledTeamJungle /= numGames;
+        wardsKilled /= numGames;
+        wardsPlaced /= numGames;
+        sightWardsBought /= numGames;
+        visionWardsBought /= numGames;
+        
+        winrate = (double) wins / numGames;
+        kda = deaths != 0 ? (kills + assists) / deaths : kills + assists;
+        cs = minionsKilled + neutralMinionsKilled;
+        cspm = cs / timePlayed * 60;
+        gpm = goldEarned / timePlayed * 60;
+    }
+
+    /**
+     * Deals with RankedMatchImpl
+     * 
+     * @deprecated Use {@link #addRankedMatchImpl(Match)} instead
+     */
     public void addMatch(Match match){
         addRankedMatchImpl(match);
     }
@@ -70,7 +120,7 @@ public class SummaryData{
         numGames++;
         addStats(stats);
     }
-    
+
     public void addRankedMatch4j(Match match, long summonerId){
         RankedMatch4j rankedMatch = (RankedMatch4j) match;
         RankedPlayer4j player = (RankedPlayer4j) AnalysisUtils.getLookupPlayer(rankedMatch, summonerId);
@@ -79,7 +129,7 @@ public class SummaryData{
         numGames++;
         addStats(stats);
     }
-    
+
     public void addGeneralMatch4j(Match match, long summonerId){
         GeneralMatch4j generalMatch = (GeneralMatch4j) match;
         RawStatsDto stats = generalMatch.getStats();
@@ -118,7 +168,7 @@ public class SummaryData{
         minionsKilled += stats.getMinionsKilled();
         neutralMinionsKilled += stats.getNeutralMinionsKilled();
         neutralMinionsKilledEnemyJungle += stats.getNeutralMinionsKilledEnemyJungle();
-        neutralMinionsKilledTeamJungle  += stats.getNeutralMinionsKilledYourJungle();
+        neutralMinionsKilledTeamJungle += stats.getNeutralMinionsKilledYourJungle();
         wardsKilled += stats.getWardKilled();
         wardsPlaced += stats.getWardPlaced();
         sightWardsBought += stats.getSightWardsBought();
@@ -128,7 +178,7 @@ public class SummaryData{
         quadraKills += stats.getQuadrakills();
         pentaKills += stats.getPentakills();
     }
-    
+
     private void addStats(ParticipantStats stats){
         if(stats.isWinner())
             wins++;
@@ -161,7 +211,7 @@ public class SummaryData{
         minionsKilled += stats.getMinionsKilled();
         neutralMinionsKilled += stats.getNeutralMinionsKilled();
         neutralMinionsKilledEnemyJungle += stats.getNeutralMinionsKilledEnemyJungle();
-        neutralMinionsKilledTeamJungle  += stats.getNeutralMinionsKilledTeamJungle();
+        neutralMinionsKilledTeamJungle += stats.getNeutralMinionsKilledTeamJungle();
         wardsKilled += stats.getWardsKilled();
         wardsPlaced += stats.getWardsPlaced();
         sightWardsBought += stats.getSightWardsBoughtInGame();
@@ -171,7 +221,7 @@ public class SummaryData{
         quadraKills += stats.getQuadrakills();
         pentaKills += stats.getPentakills();
     }
-    
+
     public int getNumGames(){
         return numGames;
     }
@@ -184,127 +234,127 @@ public class SummaryData{
         return losses;
     }
 
-    public long getTimePlayed(){
+    public double getTimePlayed(){
         return timePlayed;
     }
 
-    public long getKills(){
+    public double getKills(){
         return kills;
     }
 
-    public long getDeaths(){
+    public double getDeaths(){
         return deaths;
     }
 
-    public long getAssists(){
+    public double getAssists(){
         return assists;
     }
 
-    public long getFirstBloods(){
+    public double getFirstBloods(){
         return firstBloods;
     }
 
-    public long getFirstBloodAssists(){
+    public double getFirstBloodAssists(){
         return firstBloodAssists;
     }
 
-    public long getGoldEarned(){
+    public double getGoldEarned(){
         return goldEarned;
     }
 
-    public long getGoldSpent(){
+    public double getGoldSpent(){
         return goldSpent;
     }
 
-    public long getLargestKillingSpree(){
+    public double getLargestKillingSpree(){
         return largestKillingSpree;
     }
 
-    public long getLargestMultiKill(){
+    public double getLargestMultiKill(){
         return largestMultiKill;
     }
 
-    public long getMagicDamageDealt(){
+    public double getMagicDamageDealt(){
         return magicDamageDealt;
     }
 
-    public long getMagicDamageDealtToChampions(){
+    public double getMagicDamageDealtToChampions(){
         return magicDamageDealtToChampions;
     }
 
-    public long getMagicDamageTaken(){
+    public double getMagicDamageTaken(){
         return magicDamageTaken;
     }
 
-    public long getPhysicalDamageDealt(){
+    public double getPhysicalDamageDealt(){
         return physicalDamageDealt;
     }
 
-    public long getPhysicalDamageDealtToChampions(){
+    public double getPhysicalDamageDealtToChampions(){
         return physicalDamageDealtToChampions;
     }
 
-    public long getPhysicalDamageTaken(){
+    public double getPhysicalDamageTaken(){
         return physicalDamageTaken;
     }
 
-    public long getTrueDamageDealt(){
+    public double getTrueDamageDealt(){
         return trueDamageDealt;
     }
 
-    public long getTrueDamageDealtToChampions(){
+    public double getTrueDamageDealtToChampions(){
         return trueDamageDealtToChampions;
     }
 
-    public long getTrueDamageTaken(){
+    public double getTrueDamageTaken(){
         return trueDamageTaken;
     }
 
-    public long getTotalDamageDealt(){
+    public double getTotalDamageDealt(){
         return totalDamageDealt;
     }
 
-    public long getTotalDamageDealtToChampions(){
+    public double getTotalDamageDealtToChampions(){
         return totalDamageDealtToChampions;
     }
 
-    public long getTotalDamageTaken(){
+    public double getTotalDamageTaken(){
         return totalDamageTaken;
     }
 
-    public long getTotalHeal(){
+    public double getTotalHeal(){
         return totalHeal;
     }
 
-    public long getMinionsKilled(){
+    public double getMinionsKilled(){
         return minionsKilled;
     }
 
-    public long getNeutralMinionsKilled(){
+    public double getNeutralMinionsKilled(){
         return neutralMinionsKilled;
     }
 
-    public long getNeutralMinionsKilledEnemyJungle(){
+    public double getNeutralMinionsKilledEnemyJungle(){
         return neutralMinionsKilledEnemyJungle;
     }
 
-    public long getNeutralMinionsKilledTeamJungle(){
+    public double getNeutralMinionsKilledTeamJungle(){
         return neutralMinionsKilledTeamJungle;
     }
 
-    public long getWardsKilled(){
+    public double getWardsKilled(){
         return wardsKilled;
     }
 
-    public long getWardsPlaced(){
+    public double getWardsPlaced(){
         return wardsPlaced;
     }
 
-    public long getSightWardsBought(){
+    public double getSightWardsBought(){
         return sightWardsBought;
     }
 
-    public long getVisionWardsBought(){
+    public double getVisionWardsBought(){
         return visionWardsBought;
     }
 
@@ -335,5 +385,25 @@ public class SummaryData{
     @Override
     public String toString(){
         return "Summary data for " + champion.getName();
+    }
+
+    public double getWinrate(){
+        return winrate;
+    }
+
+    public double getKda(){
+        return kda;
+    }
+
+    public double getCs(){
+        return cs;
+    }
+
+    public double getCspm(){
+        return cspm;
+    }
+
+    public double getGpm(){
+        return gpm;
     }
 }

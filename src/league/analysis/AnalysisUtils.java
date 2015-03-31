@@ -161,6 +161,7 @@ public class AnalysisUtils{
         SummaryData data = new SummaryData();
         for(Match match : matchList)
             data.addGeneralMatch4j(match, summonerId);
+        data.process();
         return data;
     }
 }
