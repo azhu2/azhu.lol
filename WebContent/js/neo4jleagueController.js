@@ -334,6 +334,15 @@ neo4jLeagueApp.controller('rankedStatsController', function($scope, $rootScope, 
 	$rootScope.getRankedStats = function(summonerId) {
 		lookupRankedStats(summonerId);
 	};
+	
+	$scope.sortBy = function(sortColumn) {
+		if (sortColumn === $scope.sort) {
+			$scope.reverse = !$scope.reverse;
+			return;
+		}
+		$scope.sort = sortColumn;
+		$scope.reverse = true;
+	};
 });
 
 var clearData = function($rootScope) {
