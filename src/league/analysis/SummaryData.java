@@ -10,6 +10,10 @@ import league.neo4j.entities.GeneralMatch4j;
 import league.neo4j.entities.RankedMatch4j;
 import league.neo4j.entities.RankedPlayer4j;
 
+/**
+ * Per-champion statistics for a set of games. add[type of match]() to add a match to the set
+ * and call process() after all matches are finished for averages stats
+ */
 public class SummaryData{
     private int numGames = 0;
     private int wins = 0;
