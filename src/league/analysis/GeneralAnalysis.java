@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import league.api.RiotPlsException;
 import league.entities.ChampionDto;
@@ -13,7 +14,8 @@ import league.neo4j.api.Neo4jAPI;
 import league.neo4j.api.Neo4jDynamicAPIImpl;
 
 public class GeneralAnalysis{
-
+    private static Logger log = Logger.getLogger(GeneralAnalysis.class.getName());
+    
     public static Map<String, Collection<SummaryData>> getChampData(Collection<Match> matchList, long summonerId){
         Map<String, List<Match>> queueMap = AnalysisUtils.filterByCustomQueueType(matchList);
         Map<String, Collection<SummaryData>> dataMap = new HashMap<>();
@@ -30,6 +32,7 @@ public class GeneralAnalysis{
                 champData.put(champ, data);
             }
             
+            log.info("General stats generated for " + summonerId);
             dataMap.put(queueType, champData.values());
         }
 

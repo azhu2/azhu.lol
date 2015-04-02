@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import league.LeagueConstants;
 import league.api.NewDatabaseAPIImpl;
@@ -12,7 +13,8 @@ import league.entities.ChampionDto;
 import league.entities.azhu.Match;
 
 public class RankedAnalysis{
-
+    private static Logger log = Logger.getLogger(GeneralAnalysis.class.getName());
+    
     /** Deals with RankedMatchImpl */
     public static Collection<SummaryData> getChampData(Collection<Match> matchList){
         List<Match> filteredMatches = filterMatches(matchList);
@@ -58,6 +60,7 @@ public class RankedAnalysis{
             champData.put(champ, data);
         }
 
+        log.info("Ranked stats generated for " + summonerId);
         return champData.values();
     }
 
