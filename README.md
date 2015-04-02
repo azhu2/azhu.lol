@@ -7,5 +7,5 @@ Stack:
 <li>AngularJS</li>
 <li>Jersey</li>
 <li>Java</li>
-<li>Neo4j (migrating from mySQL)</li>
+<li>Neo4j (legacy mySQL endpoint still active)</li>
 </ul>
