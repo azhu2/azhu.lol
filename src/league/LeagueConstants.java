@@ -12,7 +12,8 @@ public class LeagueConstants{
     public static final String BOT_5v5 = "BOT";
     public static final String BOT_3v3 = "BOT_3x3";
     public static final String CUSTOM = "NONE";
-
+    public static final String URF_BOT = "URF_BOT";
+    
     public static final int MAX_TEAM_SIZE = 6;
     public static final int BAN_COUNT = 3;
 }

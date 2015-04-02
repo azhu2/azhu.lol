@@ -448,6 +448,10 @@ neo4jLeagueApp.filter("queueFilter", function() {
 			return "Bot";
 		case "NORMAL":
 			return "Normal 5v5";
+		case "URF_BOT":
+			return "Ultra Rapid Fire! Bot.";
+		case "URF":
+			return "Ultra Rapid Fire!";
 		case "NONE":
 			return "Custom";
 		default:

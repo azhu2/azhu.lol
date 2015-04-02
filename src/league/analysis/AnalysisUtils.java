@@ -95,6 +95,8 @@ public class AnalysisUtils{
                     continue;
                 case LeagueConstants.CUSTOM:
                     continue;
+                case LeagueConstants.URF_BOT:
+                    continue;
                 case LeagueConstants.TEAM_BUILDER_5v5:
                     type = LeagueConstants.NORMAL_5v5;
                     break;
