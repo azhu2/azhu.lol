@@ -53,10 +53,6 @@
 	width: 20px;
 }
 
-#stats .gameLength {
-	width: 100px;
-}
-
 #stats .damageGraph {
 	background: url("../img/damage_background.png");
 	height: 15px;

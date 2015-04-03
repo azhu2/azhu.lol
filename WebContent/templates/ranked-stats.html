@@ -1,7 +1,7 @@
 <div id="stats" class="rankedStats" ng-show="showTab">
-	<h2>Ranked Stats (SR only)</h2>
+	<h2 ng-init="sortBy('numGames')">Ranked Stats (SR only)</h2>
 	
-	<table ng-init="sortBy('numGames')">
+	<table>
 		<tr class="headings">
 			<td class="champion" ng-click="sortBy('champion.name')">Champion</td>
 			<td class="games" ng-click="sortBy('numGames')">Games</td>
@@ -20,6 +20,7 @@
 			<td class="totalDamage" ng-click="sortBy('totalDamageDealt')">Damage Dealt</td>
 			<td class="champDamage" ng-click="sortBy('totalDamageDealtToChampions')">Damage to Champions</td>
 			<td class="takenDamage" ng-click="sortBy('totalDamageTaken')">Damage Taken</td>
+			<td class="multikill" ng-click="sortBy('largestMultiKill')">Largest Multikill</td>
 		</tr>
 	
 		<tr ng-repeat="champData in rankedStats | orderBy:sort:reverse" class="champData champ_{{ champData.champion.id }}"
@@ -95,6 +96,7 @@
 						ng-style="{ 'width': (champData.trueDamageTaken / champData.totalDamageTaken * 100) + '%' }">
 				</div>
 			</td>
+			<td class="multikill">{{ champData.largestMultiKill }}</td>
 		</tr>
 		
 		
@@ -172,6 +174,7 @@
 						ng-style="{ 'width': (champData.trueDamageTaken / champData.totalDamageTaken * 100) + '%' }">
 				</div>
 			</td>
+			<td class="multikill">{{ champData.largestMultiKill }}</td>
 		</tr>
 	</table>
 </div>
