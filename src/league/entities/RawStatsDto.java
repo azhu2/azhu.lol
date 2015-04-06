@@ -42,11 +42,11 @@ public class RawStatsDto{
     protected int numDeaths;
     protected int numItemsBought;
     protected int objectivePlayerScore;
-    protected int pentakills;
+    protected int pentaKills;
     protected int physicalDamageDealtPlayer;
     protected int physicalDamageDealtToChampions;
     protected int physicalDamageTaken;
-    protected int quadrakills;
+    protected int quadraKills;
     protected int sightWardsBought;
     protected int spell1Cast;
     protected int spell2Cast;
@@ -66,7 +66,7 @@ public class RawStatsDto{
     protected int totalScoreRank;
     protected int totalTimeCrowdControlDealt;
     protected int totalUnitsHealed;
-    protected int triplekills;
+    protected int tripleKills;
     protected int trueDamageDealtPlayer;
     protected int trueDamageDealtToChampions;
     protected int trueDamageTaken;
@@ -406,12 +406,12 @@ public class RawStatsDto{
         this.objectivePlayerScore = objectivePlayerScore;
     }
 
-    public int getPentakills(){
-        return pentakills;
+    public int getPentaKills(){
+        return pentaKills;
     }
 
-    public void setPentakills(int pentakills){
-        this.pentakills = pentakills;
+    public void setPentaKills(int pentakills){
+        this.pentaKills = pentakills;
     }
 
     public int getPhysicalDamageDealtPlayer(){
@@ -438,12 +438,12 @@ public class RawStatsDto{
         this.physicalDamageTaken = phyiscalDamageTaken;
     }
 
-    public int getQuadrakills(){
-        return quadrakills;
+    public int getQuadraKills(){
+        return quadraKills;
     }
 
-    public void setQuadrakills(int quadrakills){
-        this.quadrakills = quadrakills;
+    public void setQuadraKills(int quadrakills){
+        this.quadraKills = quadrakills;
     }
 
     public int getSightWardsBought(){
@@ -598,12 +598,12 @@ public class RawStatsDto{
         this.totalUnitsHealed = totalUnitsHealed;
     }
 
-    public int getTriplekills(){
-        return triplekills;
+    public int getTripleKills(){
+        return tripleKills;
     }
 
-    public void setTriplekills(int triplekills){
-        this.triplekills = triplekills;
+    public void setTripleKills(int triplekills){
+        this.tripleKills = triplekills;
     }
 
     public int getTrueDamageDealtPlayer(){

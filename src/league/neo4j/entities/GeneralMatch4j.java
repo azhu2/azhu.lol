@@ -86,9 +86,11 @@ public class GeneralMatch4j extends Match{
         setLevel((int) (long) node.getProperty("level"));
         setTeamId((int) (long) node.getProperty("teamId"));
         setSummonerId((long) node.getProperty("summonerId"));
-
+        
+        String stats = (String) node.getProperty("statsString");
+        
         try{
-            setStats(mapper.readValue((String) node.getProperty("statsString"), RawStatsDto.class));
+            setStats(mapper.readValue(stats, RawStatsDto.class));
         } catch(IOException e){
             log.warning(e.getMessage());
         }

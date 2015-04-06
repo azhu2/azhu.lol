@@ -95,11 +95,11 @@ public class GeneralStatsImpl extends RawStatsDto{
         numDeaths = stats.getNumDeaths();
         numItemsBought = stats.getNumItemsBought();
         objectivePlayerScore = stats.getObjectivePlayerScore();
-        pentakills = stats.getPentakills();
+        pentaKills = stats.getPentaKills();
         physicalDamageDealtPlayer = stats.getPhysicalDamageDealtPlayer();
         physicalDamageDealtToChampions = stats.getPhysicalDamageDealtToChampions();
         physicalDamageTaken = stats.getPhysicalDamageTaken();
-        quadrakills = stats.getQuadrakills();
+        quadraKills = stats.getQuadraKills();
         sightWardsBought = stats.getSightWardsBought();
         spell1Cast = stats.getSpell1Cast();
         spell2Cast = stats.getSpell2Cast();
@@ -119,7 +119,7 @@ public class GeneralStatsImpl extends RawStatsDto{
         totalScoreRank = stats.getTotalScoreRank();
         totalTimeCrowdControlDealt = stats.getTotalTimeCrowdControlDealt();
         totalUnitsHealed = stats.getTotalUnitsHealed();
-        triplekills = stats.getTriplekills();
+        tripleKills = stats.getTripleKills();
         trueDamageDealtPlayer = stats.getTrueDamageDealtPlayer();
         trueDamageDealtToChampions = stats.getTrueDamageDealtToChampions();
         trueDamageTaken = stats.getTrueDamageTaken();

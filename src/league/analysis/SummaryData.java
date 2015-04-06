@@ -178,9 +178,9 @@ public class SummaryData{
         sightWardsBought += stats.getSightWardsBought();
         visionWardsBought += stats.getVisionWardsBought();
         doubleKills += stats.getDoubleKills();
-        tripleKills += stats.getTriplekills();
-        quadraKills += stats.getQuadrakills();
-        pentaKills += stats.getPentakills();
+        tripleKills += stats.getTripleKills();
+        quadraKills += stats.getQuadraKills();
+        pentaKills += stats.getPentaKills();
     }
 
     private void addStats(ParticipantStats stats){

@@ -30,7 +30,7 @@
 
 #stats .headings {
 	font-weight: bold;
-	text-transform: uppercase;
+	font-variant: small-caps;
 	font-size: 0.9em;
 	height: 25px;
 }
@@ -87,4 +87,24 @@
 	margin-top: 3px;
 	margin-left: 2px;
 	font-weight: bold;
+}
+
+#stats .details td {
+	padding: 4px;
+	font-size: 0.9em;
+}
+
+#stats .details div>div {
+	margin-left: 10px;
+	margin-right: 10px;
+	display: inline-block;
+}
+
+#stats .details .statLabel {
+	font-weight: bold;
+	font-variant: small-caps
+}
+
+#stats #queueDetails {
+	font-size: 0.8em;
 }
