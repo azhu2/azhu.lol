@@ -1,5 +1,5 @@
 <div id="stats" class="generalStats" ng-show="showTab">
-	<h2 ng-init="sortBy('numGames')">General Stats</h2>
+	<h2 ng-init="sort=['-numGames', '-wins']">General Stats</h2>
 	
 	<div class="queueType" ng-repeat="(queueName, queueData) in generalStats">
 		<h3>{{ queueName | subTypeFilter }}</h3>
