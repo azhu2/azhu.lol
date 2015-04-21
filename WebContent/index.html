@@ -48,10 +48,10 @@
 							</div>
 		
 							<div id="panelOptions" ng-show="showTabs">
-								<a ng-href="#{{ summoner.id }}/ranked" ng-click="lookupRanked(summoner.id);" ng-controller="rankedMatchesController">Ranked Matches</a>
-								<a ng-href="#{{ summoner.id }}/ranked-stats" ng-click="getRankedStats(summoner.id);" ng-controller="rankedStatsController">Ranked Stats</a>
-								<a ng-href="#{{ summoner.id }}/matches" ng-click="lookupMatches(summoner.id);" ng-controller="matchesController">Match History</a>
-								<a ng-href="#{{ summoner.id }}/general-stats" ng-click="getGeneralStats(summoner.id);" ng-controller="generalStatsController" >General Stats</a>
+								<a ng-href="#{{ summoner.id }}/ranked" ng-controller="rankedMatchesController">Ranked Matches</a>
+								<a ng-href="#{{ summoner.id }}/ranked-stats" ng-controller="rankedStatsController">Ranked Stats</a>
+								<a ng-href="#{{ summoner.id }}/matches" ng-controller="matchesController">Match History</a>
+								<a ng-href="#{{ summoner.id }}/general-stats" ng-controller="generalStatsController" >General Stats</a>
 							</div>
 						</div>
 					</div>

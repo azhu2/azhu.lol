@@ -1,4 +1,4 @@
-<div id="matches" ng-show="showTab">
+<div id="matches" ng-show="showTab" ng-init="lookupRanked();">
 	<h2>Ranked Matches</h2>
 	<ul id="ranked-history">
 		<li ng-repeat="match in newRanked | orderBy:'matchCreation':true track by $index ">

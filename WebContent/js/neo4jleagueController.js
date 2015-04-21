@@ -126,11 +126,12 @@ neo4jLeagueApp.controller('matchesController', function($scope, $rootScope, $rou
 		getMatches($routeParams.summId);
 	}
 
-	$rootScope.lookupMatches = function(summonerId) {
-		getMatches(summonerId);
+	$scope.lookupMatches = function() {
+		getMatches($rootScope.summoner.id);
 	};
 
-	$rootScope.lookupAllMatches = function(summonerId) {
+	$scope.lookupAllMatches = function() {
+		var summonerId = $rootScope.summoner.id;
 		lookupSummoner = summonerId;
 
 		LeagueResource.matchHistoryAll(summonerId).query({
@@ -188,8 +189,8 @@ neo4jLeagueApp.controller('generalStatsController', function($scope, $rootScope,
 		lookupStats($routeParams.summId);
 	}
 
-	$rootScope.getGeneralStats = function(summonerId) {
-		lookupStats(summonerId);
+	$scope.getGeneralStats = function() {
+		lookupStats($rootScope.summoner.id);
 	};
 
 	$scope.sortBy = function(sortColumn) {
@@ -249,11 +250,11 @@ neo4jLeagueApp.controller('rankedMatchesController', function($scope, $rootScope
 		getRanked($routeParams.summId);
 	}
 
-	$rootScope.lookupRanked = function(summonerId) {
-		getRanked(summonerId);
+	$scope.lookupRanked = function() {
+		getRanked($rootScope.summoner.id);
 	};
 
-	$rootScope.lookupRankedWithOffset = function(summonerId, offset) {
+	$scope.lookupRankedWithOffset = function(summonerId, offset) {
 		clearData($rootScope);
 
 		LeagueResource.lookupRanked(summonerId).query({
@@ -331,8 +332,8 @@ neo4jLeagueApp.controller('rankedStatsController', function($scope, $rootScope, 
 		lookupRankedStats($routeParams.summId);
 	}
 
-	$rootScope.getRankedStats = function(summonerId) {
-		lookupRankedStats(summonerId);
+	$scope.getRankedStats = function() {
+		lookupRankedStats($rootScope.summoner.id);
 	};
 	
 	$scope.sortBy = function(sortColumn) {
@@ -346,10 +347,10 @@ neo4jLeagueApp.controller('rankedStatsController', function($scope, $rootScope, 
 });
 
 var clearData = function($rootScope) {
-//	$rootScope.newGames = [];
-//	$rootScope.newRanked = [];
-//	$rootScope.rankedStats = [];
-//	$rootScope.generalStats = [];
+	$rootScope.newGames = [];
+	$rootScope.newRanked = [];
+	$rootScope.rankedStats = [];
+	$rootScope.generalStats = [];
 };
 
 neo4jLeagueApp.service('LeagueResource', function($resource) {
