@@ -116,18 +116,17 @@ neo4jLeagueApp.controller('matchesController', function($scope, $rootScope, $rou
 		$rootScope.showAll = false;
 	};
 
-	// Lookup summoner if not done yet
-	if ($routeParams && $routeParams.summId
-		&& (!$rootScope.summonerId || ($rootScope.summonerId != $routeParams.summId))) {
-		$rootScope.version = version;
-		$rootScope.showTabs = false;
-
-		lookupSummonerById($rootScope, $routeParams.summId, LeagueResource);
-		getMatches($routeParams.summId);
-	}
-
 	$scope.lookupMatches = function() {
-		getMatches($rootScope.summoner.id);
+		// Lookup summoner if not done yet
+		if ($routeParams && $routeParams.summId
+			&& (!$rootScope.summonerId || ($rootScope.summonerId != $routeParams.summId))) {
+			$rootScope.version = version;
+			$rootScope.showTabs = false;
+
+			lookupSummonerById($rootScope, $routeParams.summId, LeagueResource);
+			getMatches($routeParams.summId);
+		} else
+			getMatches($rootScope.summoner.id);
 	};
 
 	$scope.lookupAllMatches = function() {
@@ -179,18 +178,17 @@ neo4jLeagueApp.controller('generalStatsController', function($scope, $rootScope,
 		$rootScope.showTab = true;
 	};
 
-	// Lookup summoner if not done yet
-	if ($routeParams && $routeParams.summId
-		&& (!$rootScope.summonerId || ($rootScope.summonerId != $routeParams.summId))) {
-		$rootScope.version = version;
-		$rootScope.showTabs = false;
-
-		lookupSummonerById($rootScope, $routeParams.summId, LeagueResource);
-		lookupStats($routeParams.summId);
-	}
-
 	$scope.getGeneralStats = function() {
-		lookupStats($rootScope.summoner.id);
+		// Lookup summoner if not done yet
+		if ($routeParams && $routeParams.summId
+			&& (!$rootScope.summonerId || ($rootScope.summonerId != $routeParams.summId))) {
+			$rootScope.version = version;
+			$rootScope.showTabs = false;
+
+			lookupSummonerById($rootScope, $routeParams.summId, LeagueResource);
+			lookupStats($routeParams.summId);
+		} else
+			lookupStats($rootScope.summoner.id);
 	};
 
 	$scope.sortBy = function(sortColumn) {
@@ -240,18 +238,17 @@ neo4jLeagueApp.controller('rankedMatchesController', function($scope, $rootScope
 		$rootScope.startIndex = 0;
 	};
 
-	// Lookup summoner if not done yet
-	if ($routeParams && $routeParams.summId
-		&& (!$rootScope.summonerId || ($rootScope.summonerId != $routeParams.summId))) {
-		$rootScope.version = version;
-		$rootScope.showTabs = false;
-
-		lookupSummonerById($rootScope, $routeParams.summId, LeagueResource);
-		getRanked($routeParams.summId);
-	}
-
 	$scope.lookupRanked = function() {
-		getRanked($rootScope.summoner.id);
+		// Lookup summoner if not done yet
+		if ($routeParams && $routeParams.summId
+			&& (!$rootScope.summonerId || ($rootScope.summonerId != $routeParams.summId))) {
+			$rootScope.version = version;
+			$rootScope.showTabs = false;
+
+			lookupSummonerById($rootScope, $routeParams.summId, LeagueResource);
+			getRanked($routeParams.summId);
+		} else
+			getRanked($rootScope.summoner.id);
 	};
 
 	$scope.lookupRankedWithOffset = function(summonerId, offset) {
@@ -322,20 +319,19 @@ neo4jLeagueApp.controller('rankedStatsController', function($scope, $rootScope, 
 		$rootScope.showTab = true;
 	};
 
-	// Lookup summoner if not done yet
-	if ($routeParams && $routeParams.summId
-		&& (!$rootScope.summonerId || ($rootScope.summonerId != $routeParams.summId))) {
-		$rootScope.version = version;
-		$rootScope.showTabs = false;
-
-		lookupSummonerById($rootScope, $routeParams.summId, LeagueResource);
-		lookupRankedStats($routeParams.summId);
-	}
-
 	$scope.getRankedStats = function() {
-		lookupRankedStats($rootScope.summoner.id);
+		// Lookup summoner if not done yet
+		if ($routeParams && $routeParams.summId
+			&& (!$rootScope.summonerId || ($rootScope.summonerId != $routeParams.summId))) {
+			$rootScope.version = version;
+			$rootScope.showTabs = false;
+
+			lookupSummonerById($rootScope, $routeParams.summId, LeagueResource);
+			lookupRankedStats($routeParams.summId);
+		} else
+			lookupRankedStats($rootScope.summoner.id);
 	};
-	
+
 	$scope.sortBy = function(sortColumn) {
 		if (sortColumn === $scope.sort) {
 			$scope.reverse = !$scope.reverse;
