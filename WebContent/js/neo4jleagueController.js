@@ -346,10 +346,10 @@ neo4jLeagueApp.controller('rankedStatsController', function($scope, $rootScope, 
 });
 
 var clearData = function($rootScope) {
-	$rootScope.newGames = [];
-	$rootScope.newRanked = [];
-	$rootScope.rankedStats = [];
-	$rootScope.generalStats = [];
+//	$rootScope.newGames = [];
+//	$rootScope.newRanked = [];
+//	$rootScope.rankedStats = [];
+//	$rootScope.generalStats = [];
 };
 
 neo4jLeagueApp.service('LeagueResource', function($resource) {
