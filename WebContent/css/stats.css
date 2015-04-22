@@ -1,9 +1,15 @@
+#stats h3 {
+	margin-top: 30px;
+	margin-bottom: 10px;	
+}
+
 #stats tr {
 	margin: 10px;
 }
 
 #stats table {
-	margin: 10px;
+	margin-left: 10px;
+	margin-right: 10px;
 	font-size: 0.9em;
 }
 
