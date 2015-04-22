@@ -48,7 +48,7 @@
 			<td class="totalDamage">
 				<div class="damageGraph total"
 					ng-style="{ 'width': champData.totalDamageDealt / 500000 * 100 + '%' }">
-					<div class="textOverlay">
+					<div class="textOverlay unselectable">
 						{{ champData.totalDamageDealt | number:0 }}
 					</div>
 					<img class="damage physical" src="img/damage_physical.png" 
@@ -65,7 +65,7 @@
 			<td class="champsDamage">
 				<div class="damageGraph champs"
 					ng-style="{ 'width': champData.totalDamageDealtToChampions / 80000 * 100 + '%' }">
-					<div class="textOverlay">
+					<div class="textOverlay unselectable">
 						{{ champData.totalDamageDealtToChampions | number:0 }}
 					</div>
 					<img class="damage physical" src="img/damage_physical.png" 
@@ -82,7 +82,7 @@
 			<td class="takenDamage">
 				<div class="damageGraph taken"
 					ng-style="{ 'width': champData.totalDamageTaken / 80000 * 100 + '%' }">
-					<div class="textOverlay">
+					<div class="textOverlay unselectable">
 						{{ champData.totalDamageTaken | number:0 }}
 					</div>
 					<img class="damage physical" src="img/damage_physical.png" 
@@ -126,7 +126,7 @@
 			<td class="totalDamage">
 				<div class="damageGraph total"
 					ng-style="{ 'width': champData.totalDamageDealt / 500000 * 100 + '%' }">
-					<div class="textOverlay">
+					<div class="textOverlay unselectable">
 						{{ champData.totalDamageDealt | number:0 }}
 					</div>
 					<img class="damage physical" src="img/damage_physical.png" 
@@ -143,7 +143,7 @@
 			<td class="champsDamage">
 				<div class="damageGraph champs"
 					ng-style="{ 'width': champData.totalDamageDealtToChampions / 80000 * 100 + '%' }">
-					<div class="textOverlay">
+					<div class="textOverlay unselectable">
 						{{ champData.totalDamageDealtToChampions | number:0 }}
 					</div>
 					<img class="damage physical" src="img/damage_physical.png" 
@@ -160,7 +160,7 @@
 			<td class="takenDamage">
 				<div class="damageGraph taken"
 					ng-style="{ 'width': champData.totalDamageTaken / 80000 * 100 + '%' }">
-					<div class="textOverlay">
+					<div class="textOverlay unselectable">
 						{{ champData.totalDamageTaken | number:0 }}
 					</div>
 					<img class="damage physical" src="img/damage_physical.png" 
