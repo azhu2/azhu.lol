@@ -27,7 +27,7 @@
 		
 			<tbody>
 				<tr ng-repeat-start="champData in queueData | orderBy:sort:reverse" class="champData champ_{{ champData.champion.id }}"
-					ng-if="champData.champion" ng-init="champData.showDetails = false" ng-click="champData.showDetails = !champData.showDetails">
+					ng-if="champData.champion" ng-click="expandChampion(queueData, champData);">
 					<td class="champion">
 						<img class="championImage" alt="{{ champData.champion == null ? 'champion' : champData.champion.name }}"
 							ng-src="{{ champData.champion == null ? '' : 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/champion/' + champData.champion.image.full }}">

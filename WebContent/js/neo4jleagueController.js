@@ -47,6 +47,7 @@ var lookupSummonerById = function($rootScope, summonerId, LeagueResource) {
 	$rootScope.showTab = false;
 };
 
+var routeController; // IDE navigation marker
 neo4jLeagueApp.controller('routeController', function($rootScope, $routeParams, LeagueResource) {
 	$rootScope.version = version;
 	$rootScope.showTabs = false;
@@ -59,6 +60,7 @@ neo4jLeagueApp.controller('routeController', function($rootScope, $routeParams, 
 		$rootScope.showTabs = true;
 });
 
+var lookupController; // IDE navigation marker
 neo4jLeagueApp.controller('lookupController', function($scope, $rootScope, $routeParams, LeagueResource) {
 	$rootScope.version = version;
 	var lookupSummoner;
@@ -93,6 +95,7 @@ neo4jLeagueApp.controller('lookupController', function($scope, $rootScope, $rout
 	};
 });
 
+var matchesController; // IDE navigation marker
 neo4jLeagueApp.controller('matchesController', function($scope, $rootScope, $routeParams, LeagueResource) {
 	var getMatches = function(summonerId) {
 		clearData($rootScope);
@@ -164,6 +167,7 @@ neo4jLeagueApp.controller('matchesController', function($scope, $rootScope, $rou
 	};
 });
 
+var generalStatsController; // IDE navigation marker
 neo4jLeagueApp.controller('generalStatsController', function($scope, $rootScope, $routeParams, LeagueResource) {
 	var lookupStats = function(summonerId) {
 		clearData($rootScope);
@@ -199,8 +203,19 @@ neo4jLeagueApp.controller('generalStatsController', function($scope, $rootScope,
 		$scope.sort = sortColumn;
 		$scope.reverse = true;
 	};
+
+	$scope.expandChampion = function(queueData, champData) {
+		for (var i = 0; i < queueData.length; i++) {
+			if (queueData[i] == champData)
+				queueData[i].showDetails = !queueData[i].showDetails;
+			else
+				queueData[i].showDetails = false;
+
+		}
+	};
 });
 
+var rankedMatchesController; // IDE navigation marker
 neo4jLeagueApp.controller('rankedMatchesController', function($scope, $rootScope, $routeParams, LeagueResource) {
 	var setRankedMatches = function(summonerId, data) {
 		for (var i = 0; i < data.length; i++) {
@@ -305,6 +320,7 @@ neo4jLeagueApp.controller('rankedMatchesController', function($scope, $rootScope
 	};
 });
 
+var rankedStatsController; // IDE navigation marker
 neo4jLeagueApp.controller('rankedStatsController', function($scope, $rootScope, $routeParams, LeagueResource) {
 	var lookupRankedStats = function(summonerId) {
 		clearData($rootScope);
