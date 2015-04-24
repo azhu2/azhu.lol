@@ -377,6 +377,7 @@
 	border-color: #888888;
 	text-align: center;
 	margin: 1px;
+	cursor: help;;
 }
 
 #matches .match .expandMatch .damageGraph .textOverlay {
