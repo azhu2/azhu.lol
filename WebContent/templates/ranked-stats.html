@@ -23,12 +23,12 @@
 			<td class="multikill" ng-click="sortBy('largestMultiKill')">Largest Multikill</td>
 		</tr>
 	
-		<tr ng-repeat="champData in rankedStats | orderBy:sort:reverse" class="champData champ_{{ champData.champion.id }}"
-			ng-if="champData.champion">
+		<tr ng-repeat="champData in rankedStats | orderBy:sort:reverse" class="champData champ_{{ champData.category.id }}"
+			ng-if="champData.category">
 			<td class="champion">
-				<img class="championImage" alt="{{ champData.champion == null ? 'champion' : champData.champion.name }}"
-					ng-src="{{ champData.champion == null ? '' : 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/champion/' + champData.champion.image.full }}">
-				<div class="championName">{{ champData.champion.name }}</div>
+				<img class="championImage" alt="{{ champData.category == null ? 'champion' : champData.category.name }}"
+					ng-src="{{ champData.category == null ? '' : 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/champion/' + champData.category.image.full }}">
+				<div class="championName">{{ champData.category.name }}</div>
 			</td>
 			
 			<td class="games">{{ champData.numGames }}</td>
@@ -103,7 +103,7 @@
 		<!-- Not sure how to (easily) search array for champion-less element, so this happened.
 			This code should be taken behind a barn and shot. But it works. -->
 		<tr ng-repeat="champData in rankedStats | orderBy:'wins':true" class="champData" id="totals"
-			ng-if="!champData.champion">
+			ng-if="!champData.category">
 			<td class="champion">
 				<img class="championImage">
 				<div class="championName">Total</div>

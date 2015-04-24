@@ -11,15 +11,38 @@ import league.entities.ChampionDto;
 import league.entities.azhu.Match;
 import league.entities.azhu.MatchPlayer;
 import league.entities.azhu.RankedMatchImpl;
+import league.entities.azhu.Summoner;
 
 public class AnalysisUtils{
+    public static Map<Summoner, List<Match>> getPlayerMatches(Collection<Match> matchList){
+        if(matchList == null || matchList.isEmpty())
+            return null;
+
+        Map<Summoner, List<Match>> map = new HashMap<>();
+
+        for(Match match : matchList){
+            List<MatchPlayer> players = match.getPlayers();
+            for(MatchPlayer player : players){
+                Summoner summoner = player.getSummoner();
+                if(map.containsKey(summoner))
+                    map.get(summoner).add(match);
+                else{
+                    List<Match> list = new LinkedList<>();
+                    map.put(summoner, list);
+                }
+            }
+        }
+
+        return null;
+    }
+
     /**
      * Separate a list of matches by champion played. Deals with RankedMatchImpl
      */
     public static Map<ChampionDto, List<Match>> getChampMatches(Collection<Match> matchList){
         if(matchList == null || matchList.isEmpty())
             return null;
-        
+
         Map<ChampionDto, List<Match>> map = new HashMap<>();
 
         for(Match game : matchList){
@@ -41,7 +64,7 @@ public class AnalysisUtils{
     public static Map<ChampionDto, List<Match>> getChampMatches(Collection<Match> matchList, long summonerId){
         if(matchList == null || matchList.isEmpty())
             return null;
-        
+
         Map<ChampionDto, List<Match>> map = new HashMap<>();
 
         List<Match> totals = new LinkedList<>();
@@ -77,7 +100,7 @@ public class AnalysisUtils{
     public static Map<String, List<Match>> filterByCustomQueueType(Collection<Match> matchList){
         if(matchList == null || matchList.isEmpty())
             return null;
-        
+
         Map<String, List<Match>> filtered = new HashMap<>();
 
         for(Match match : matchList){
@@ -112,11 +135,11 @@ public class AnalysisUtils{
 
         return filtered;
     }
-    
+
     public static Map<String, List<Match>> filterByQueueType(Collection<Match> matchList){
         if(matchList == null || matchList.isEmpty())
             return null;
-        
+
         Map<String, List<Match>> filtered = new HashMap<>();
 
         for(Match match : matchList){
@@ -137,7 +160,7 @@ public class AnalysisUtils{
     public static SummaryData getRankedSummary(Collection<Match> matchList, long summonerId){
         if(matchList == null || matchList.isEmpty())
             return null;
-        
+
         SummaryData data = new SummaryData();
         for(Match match : matchList)
             data.addRankedMatch4j(match, summonerId);
@@ -149,19 +172,19 @@ public class AnalysisUtils{
     public static SummaryData getRankedSummary(Collection<Match> matchList){
         if(matchList == null || matchList.isEmpty())
             return null;
-        
+
         SummaryData data = new SummaryData();
         for(Match match : matchList)
             data.addRankedMatchImpl(match);
         data.process();
         return data;
     }
-    
+
     /** Deals with GeneralMatch4j */
     public static SummaryData getGeneralSummary(Collection<Match> matchList, long summonerId){
         if(matchList == null || matchList.isEmpty())
             return null;
-        
+
         SummaryData data = new SummaryData();
         for(Match match : matchList)
             data.addGeneralMatch4j(match, summonerId);

@@ -1,6 +1,5 @@
 package league.analysis;
 
-import league.entities.ChampionDto;
 import league.entities.ParticipantStats;
 import league.entities.RawStatsDto;
 import league.entities.azhu.Match;
@@ -60,7 +59,7 @@ public class SummaryData{
     private double cspm;
     private double gpm;
     
-    private ChampionDto champion;
+    private Object category;
 
     public SummaryData(){
 
@@ -378,17 +377,17 @@ public class SummaryData{
         return pentaKills;
     }
 
-    public ChampionDto getChampion(){
-        return champion;
+    public Object getCategory(){
+        return category;
     }
 
-    public void setChampion(ChampionDto champion){
-        this.champion = champion;
+    public void setCategory(Object category){
+        this.category = category;
     }
 
     @Override
     public String toString(){
-        return "Summary data for " + champion.getName();
+        return "Summary data for " + category;
     }
 
     public double getWinrate(){

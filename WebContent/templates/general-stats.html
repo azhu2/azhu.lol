@@ -26,12 +26,12 @@
 			</thead>
 		
 			<tbody>
-				<tr ng-repeat-start="champData in queueData | orderBy:sort:reverse" class="champData champ_{{ champData.champion.id }}"
-					ng-if="champData.champion" ng-click="expandChampion(queueData, champData);">
+				<tr ng-repeat-start="champData in queueData | orderBy:sort:reverse" class="champData champ_{{ champData.category.id }}"
+					ng-if="champData.category" ng-click="expandChampion(queueData, champData);">
 					<td class="champion">
-						<img class="championImage" alt="{{ champData.champion == null ? 'champion' : champData.champion.name }}"
-							ng-src="{{ champData.champion == null ? '' : 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/champion/' + champData.champion.image.full }}">
-						<div class="championName">{{ champData.champion.name }}</div>
+						<img class="championImage" alt="{{ champData.category == null ? 'champion' : champData.category.name }}"
+							ng-src="{{ champData.category == null ? '' : 'https://ddragon.leagueoflegends.com/cdn/' + version + '/img/champion/' + champData.category.image.full }}">
+						<div class="championName">{{ champData.category.name }}</div>
 					</td>
 					
 					<td class="games">{{ champData.numGames }}</td>
@@ -123,7 +123,7 @@
 				<!-- Not sure how to (easily) search array for champion-less element, so this happened.
 					This code should be taken behind a barn and shot. But it works. -->
 				<tr ng-repeat="champData in queueData | orderBy:'wins':true" class="champData" id="totals"
-					ng-if="!champData.champion" ng-init="queueData.showDetails = false; queueData.summary = champData" ng-click="queueData.showDetails = !queueData.showDetails">
+					ng-if="!champData.category" ng-init="queueData.showDetails = false; queueData.summary = champData" ng-click="queueData.showDetails = !queueData.showDetails">
 					<td class="champion">
 						<img class="championImage">
 						<div class="championName">Total</div>

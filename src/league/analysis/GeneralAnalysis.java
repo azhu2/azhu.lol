@@ -28,7 +28,7 @@ public class GeneralAnalysis{
             for(ChampionDto champ : champMatches.keySet()){
                 List<Match> matches = champMatches.get(champ);
                 SummaryData data = AnalysisUtils.getGeneralSummary(matches, summonerId);
-                data.setChampion(champ);
+                data.setCategory(champ);
                 champData.put(champ, data);
             }
             
