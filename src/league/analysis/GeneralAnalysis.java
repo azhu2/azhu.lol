@@ -32,10 +32,10 @@ public class GeneralAnalysis{
                 champData.put(champ, data);
             }
             
-            log.info("General stats generated for " + summonerId);
             dataMap.put(queueType, champData.values());
         }
-
+        log.info("General stats generated for " + summonerId);
+        
         return dataMap;
     }
 
