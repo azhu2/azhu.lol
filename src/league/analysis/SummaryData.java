@@ -114,6 +114,13 @@ public class SummaryData{
     public void addMatch(Match match){
         addRankedMatchImpl(match);
     }
+    
+    public void addMatch(Match match, long summonerId){
+        if(match instanceof RankedMatch4j)
+            addRankedMatch4j(match, summonerId);
+        else if(match instanceof GeneralMatch4j)
+            addGeneralMatch4j(match, summonerId);
+    }
 
     public void addRankedMatchImpl(Match match){
         RankedMatchImpl rankedMatch = (RankedMatchImpl) match;

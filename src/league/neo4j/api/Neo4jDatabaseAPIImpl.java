@@ -129,6 +129,28 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
         return node;
     }
 
+    private class CacheThread extends Thread{
+        private String stmt;
+        private String msg;
+
+        public CacheThread(String stmt, String msg){
+            this.stmt = stmt;
+            this.msg = msg;
+        }
+
+        public void run(){
+            try(Transaction tx = db.beginTx()){
+                engine.execute(stmt);
+                log.info(msg);
+                tx.success();
+            }
+        }
+    }
+
+    private void cacheItem(String statement, String logMessage){
+        new CacheThread(statement, logMessage).run();
+    }
+
     @Override
     public Summoner getSummonerFromId(long summonerId){
         try(Transaction tx = db.beginTx()){
@@ -176,15 +198,12 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
         if(summoner == null)
             return;
 
-        try(Transaction tx = db.beginTx()){
+        try{
             Summoner s = new Summoner4j(summoner);
             String objectMap = mapper.writeValueAsString(s);
             String stmt = String.format("MERGE (n:Summoner { id:%d }) ON CREATE SET n=%s ON MATCH SET n=%s;",
                 summoner.getId(), objectMap, objectMap);
-            engine.execute(stmt);
-
-            log.info("Neo4j: cached summoner " + summoner);
-            tx.success();
+            cacheItem(stmt, "Neo4j: cached summoner " + summoner);
         } catch(IOException e){
             log.warning(e.getMessage());
         }
@@ -222,15 +241,12 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
         }
 
         championMap.put(champion.getId(), champion);
-        try(Transaction tx = db.beginTx()){
+        try{
             ChampionDto c = new Champion4j(champion);
             String objectMap = mapper.writeValueAsString(c);
             String stmt = String.format("MERGE (n:Champion { id:%d }) ON CREATE SET n=%s ON MATCH SET n=%s;",
                 champion.getId(), objectMap, objectMap);
-            engine.execute(stmt);
-
-            log.info("Neo4j: cached champion " + champion);
-            tx.success();
+            cacheItem(stmt, "Neo4j: cached champion " + champion);
         } catch(IOException e){
             log.warning(e.getMessage());
         }
@@ -268,15 +284,12 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
         }
 
         itemMap.put(item.getId(), item);
-        try(Transaction tx = db.beginTx()){
+        try{
             ItemDto i = new Item4j(item);
             String objectMap = mapper.writeValueAsString(i);
             String stmt = String.format("MERGE (n:Item { id:%d }) ON CREATE SET n=%s ON MATCH SET n=%s;", item.getId(),
                 objectMap, objectMap);
-            engine.execute(stmt);
-
-            log.info("Neo4j: cached item " + item);
-            tx.success();
+            cacheItem(stmt, "Neo4j: cached item " + item);
         } catch(IOException e){
             log.warning(e.getMessage());
         }
@@ -314,15 +327,12 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
         }
 
         spellMap.put(spell.getId(), spell);
-        try(Transaction tx = db.beginTx()){
+        try{
             SummonerSpellDto i = new SummonerSpell4j(spell);
             String objectMap = mapper.writeValueAsString(i);
             String stmt = String.format("MERGE (n:Summonerspell { id:%d }) ON CREATE SET n=%s ON MATCH SET n=%s;",
                 spell.getId(), objectMap, objectMap);
-            engine.execute(stmt);
-
-            log.info("Neo4j: cached summoner spell " + spell);
-            tx.success();
+            cacheItem(stmt, "Neo4j: cached summoner spell " + spell);
         } catch(IOException e){
             log.warning(e.getMessage());
         }
@@ -558,14 +568,11 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
             rankedMatch = (RankedMatch4j) match;
 
         // Cache match itself
-        try(Transaction tx = db.beginTx()){
+        try{
             String objectMap = mapper.writeValueAsString(rankedMatch);
             String stmt = String.format("MERGE (n:RankedMatch { id:%d }) ON CREATE SET n=%s ON MATCH SET n=%s;",
                 match.getId(), objectMap, objectMap);
-            engine.execute(stmt);
-
-            log.info("Neo4j: cached ranked match " + match);
-            tx.success();
+            cacheItem(stmt, "Neo4j: cached ranked match " + match);
         } catch(IOException e){
             log.warning(e.getMessage());
         }
@@ -578,7 +585,7 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
             else
                 rankedPlayer = (RankedPlayer4j) player;
 
-            try(Transaction tx = db.beginTx()){
+            try{
                 String objectMap = mapper.writeValueAsString(rankedPlayer);
 
                 cacheChampion(rankedPlayer.getChampion());
@@ -621,10 +628,7 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
                     rankedPlayer.getItems().get(3).getId(), rankedPlayer.getItems().get(4).getId(),
                     rankedPlayer.getItems().get(5).getId(), rankedPlayer.getItems().get(6).getId(), objectMap);
                 // @formatter:on
-                engine.execute(stmt);
-
-                log.info("Neo4j: cached ranked player " + player);
-                tx.success();
+                cacheItem(stmt, "Neo4j: cached ranked player " + player);
             } catch(IOException e){
                 log.warning(e.getMessage());
                 continue;
@@ -634,33 +638,23 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
         // Link banned champions
         for(ChampionDto ban : rankedMatch.getBlueBans()){
             cacheChampion(ban);
-            try(Transaction tx = db.beginTx()){
-                // @formatter:off
+            // @formatter:off
                 String stmt = String.format("MATCH (match:RankedMatch) WHERE match.id = %d "
                                           + "MATCH (ban:Champion) WHERE ban.id=%d "
                                           + "CREATE (ban)-[:BANNED_BLUE]->(match);",
                                           match.getId(), ban.getId());
                 // @formatter:on
-                engine.execute(stmt);
-
-                log.info("Neo4j: cached blue banned champion " + ban);
-                tx.success();
-            }
+            cacheItem(stmt, "Neo4j: cached blue banned champion " + ban);
         }
         for(ChampionDto ban : rankedMatch.getRedBans()){
             cacheChampion(ban);
-            try(Transaction tx = db.beginTx()){
-                // @formatter:off
+            // @formatter:off
                 String stmt = String.format("MATCH (match:RankedMatch) WHERE match.id = %d "
                                           + "MATCH (ban:Champion) WHERE ban.id=%d " 
                                           + "CREATE (ban)-[:BANNED_RED]->(match);",
                                           match.getId(), ban.getId());
                 // @formatter:on
-                engine.execute(stmt);
-
-                log.info("Neo4j: cached red banned champion " + ban);
-                tx.success();
-            }
+            cacheItem(stmt, "Neo4j: cached red banned champion " + ban);
         }
     }
 
@@ -712,25 +706,21 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
         GeneralMatch4j game = (GeneralMatch4j) match;
 
         // Cache match itself
-        try(Transaction tx = db.beginTx()){
+        try{
             String objectMap = mapper.writeValueAsString(game);
             String stmt = String.format("CREATE (n:GeneralMatch %s);", objectMap);
-            engine.execute(stmt);
-
-            log.info("Neo4j: cached general match " + match + " for summoner " + summonerId);
-            tx.success();
+            cacheItem(stmt, "Neo4j: cached general match " + match + " for summoner " + summonerId);
         } catch(IOException e){
             log.warning(e.getMessage());
         }
 
         // Cache and link summoner spells and items
-        try(Transaction tx = db.beginTx()){
-            cacheSummonerSpell(game.getSpell1());
-            cacheSummonerSpell(game.getSpell2());
-            for(ItemDto item : game.getItems())
-                cacheItem(item);
+        cacheSummonerSpell(game.getSpell1());
+        cacheSummonerSpell(game.getSpell2());
+        for(ItemDto item : game.getItems())
+            cacheItem(item);
 
-            // @formatter:off
+        // @formatter:off
             String statement = "MATCH (match:GeneralMatch) WHERE match.id=%d AND match.summonerId = %d "
                              + "MATCH (spell1:Summonerspell) WHERE spell1.id=%d "
                              + "MATCH (spell2:Summonerspell) WHERE spell2.id=%d "
@@ -756,37 +746,30 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
                 game.getItems().get(3).getId(), game.getItems().get(4).getId(),
                 game.getItems().get(5).getId(), game.getItems().get(6).getId());
             // @formatter:on
-            engine.execute(stmt);
-
-            log.info("Neo4j: cached general stats for " + game + " for summoner " + summonerId);
-            tx.success();
-        }
+        cacheItem(stmt, "Neo4j: cached general stats for " + game + " for summoner " + summonerId);
 
         // Cache and link players
         for(MatchPlayer player : game.getPlayers()){
             GeneralPlayer4j generalPlayer = (GeneralPlayer4j) player;
 
-            try(Transaction tx = db.beginTx()){
+            try{
                 String objectMap = mapper.writeValueAsString(generalPlayer);
 
                 cacheChampion(generalPlayer.getChampion());
                 cacheSummoner(generalPlayer.getSummoner());
 
                 // @formatter:off
-                String statement = "MATCH (match:GeneralMatch) WHERE match.id=%d AND match.summonerId = %d "
+                statement = "MATCH (match:GeneralMatch) WHERE match.id=%d AND match.summonerId = %d "
                                  + "MATCH (champion:Champion) WHERE champion.id=%d "
                                  + "MATCH (summoner:Summoner) WHERE summoner.id=%d "
                                  + "CREATE (player:GeneralPlayer %s) "
                                  + "CREATE (player)-[:PLAYED_IN]->(match) "
                                  + "CREATE (champion)-[:CHAMP_PLAYED]->(player) "
                                  + "CREATE (summoner)-[:SUMMONER]->(player);";
-                String stmt = String.format(statement, match.getId(), summonerId, generalPlayer.getChampion().getId(),
+               stmt = String.format(statement, match.getId(), summonerId, generalPlayer.getChampion().getId(),
                                     generalPlayer.getSummoner().getId(), objectMap);
                 // @formatter:on
-                engine.execute(stmt);
-
-                log.info("Neo4j: cached general player " + player);
-                tx.success();
+                cacheItem(stmt, "Neo4j: cached general player " + player);
             } catch(IOException e){
                 log.warning(e.getMessage());
                 continue;

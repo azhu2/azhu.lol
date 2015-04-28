@@ -19,6 +19,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import league.analysis.GeneralAnalysis;
+import league.analysis.PlayerAnalysis;
 import league.analysis.RankedAnalysis;
 import league.analysis.SummaryData;
 import league.api.APIConstants;
@@ -98,10 +99,15 @@ public class Neo4jLeagueResource{
         }
     }
 
+    /*
+     * TODO Eliminate sublist (?) and return size of ranked matches, not all of them
+     */
+
     @GET
     @Path("/ranked-matches/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getRankedMatches(@PathParam("id") long summonerId, @QueryParam("start") @DefaultValue("0") int startIndex) throws ServletException, IOException{
+    public Response getRankedMatches(@PathParam("id") long summonerId,
+            @QueryParam("start") @DefaultValue("0") int startIndex) throws ServletException, IOException{
         try{
             if(startIndex <= 0){
                 List<Match> history = api.getRankedMatches(summonerId);
@@ -110,7 +116,8 @@ public class Neo4jLeagueResource{
             List<Match> history = api.getAllRankedMatches(summonerId);
             startIndex = Math.min(history.size(), startIndex);
             int endIndex = Math.min(history.size(), startIndex + APIConstants.MAX_PAGE_SIZE);
-            return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(history.subList(startIndex, endIndex))).build();
+            return Response.status(APIConstants.HTTP_OK)
+                           .entity(mapper.writeValueAsString(history.subList(startIndex, endIndex))).build();
         } catch(RiotPlsException e){
             return Response.status(e.getStatus()).entity(e.getMessage()).build();
         }
@@ -254,7 +261,7 @@ public class Neo4jLeagueResource{
             return Response.status(e.getStatus()).entity(e.getMessage()).build();
         }
     }
-    
+
     @GET
     @Path("/general-stats/{id}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -262,6 +269,19 @@ public class Neo4jLeagueResource{
         try{
             Set<Match> matches = api.getAllGames(summonerId);
             Map<String, Collection<SummaryData>> champData = GeneralAnalysis.getChampData(matches, summonerId);
+            return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(champData)).build();
+        } catch(RiotPlsException e){
+            return Response.status(e.getStatus()).entity(e.getMessage()).build();
+        }
+    }
+    
+    @GET
+    @Path("/player-stats/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getPlayerStats(@PathParam("id") long summonerId) throws ServletException, IOException{
+        try{
+            Set<Match> matches = api.getAllGames(summonerId);
+            Map<String, Collection<SummaryData>> champData = PlayerAnalysis.getPlayerData(matches, summonerId);
             return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(champData)).build();
         } catch(RiotPlsException e){
             return Response.status(e.getStatus()).entity(e.getMessage()).build();

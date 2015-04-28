@@ -143,6 +143,9 @@ public class Neo4jDynamicAPIImpl implements Neo4jAPI{
         List<Long> matchIds = getRankedMatchIds(summonerId);
         List<Match> matches = new LinkedList<>();
 
+        if(matchIds == null || matchIds.isEmpty())
+            return matches;
+        
         for(Long matchId : matchIds){
             Match match = api_db.getRankedMatch(matchId);
             if(match == null){

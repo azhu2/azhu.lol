@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import league.LeagueConstants;
 import league.entities.ChampionDto;
@@ -12,27 +13,62 @@ import league.entities.azhu.Match;
 import league.entities.azhu.MatchPlayer;
 import league.entities.azhu.RankedMatchImpl;
 import league.entities.azhu.Summoner;
+import league.neo4j.entities.GeneralMatch4j;
+import league.neo4j.entities.RankedMatch4j;
 
 public class AnalysisUtils{
-    public static Map<Summoner, List<Match>> getPlayerMatches(Collection<Match> matchList){
+    private static Logger log = Logger.getLogger(AnalysisUtils.class.getName());
+
+    /**
+     * Organize matches by other players on team
+     */
+    public static Map<Summoner, List<Match>> getPlayerMatches(Collection<Match> matchList, long summonerId){
         if(matchList == null || matchList.isEmpty())
             return null;
 
         Map<Summoner, List<Match>> map = new HashMap<>();
 
         for(Match match : matchList){
-            List<MatchPlayer> players = match.getPlayers();
+            List<MatchPlayer> players = getPlayerTeam(match, summonerId);
             for(MatchPlayer player : players){
                 Summoner summoner = player.getSummoner();
                 if(map.containsKey(summoner))
                     map.get(summoner).add(match);
                 else{
                     List<Match> list = new LinkedList<>();
+                    list.add(match);
                     map.put(summoner, list);
                 }
             }
         }
 
+        return map;
+    }
+
+    /**
+     * Find the team id of a given player in a match
+     */
+    public static List<MatchPlayer> getPlayerTeam(Match match, long summonerId){
+        int teamId = -1;
+
+        if(match instanceof GeneralMatch4j){
+            GeneralMatch4j genMatch = (GeneralMatch4j) match;
+            teamId = genMatch.getTeamId();
+        } else if(match instanceof RankedMatch4j){
+            RankedMatch4j rankMatch = (RankedMatch4j) match;
+            for(MatchPlayer player : rankMatch.getPlayers())
+                if(player.getSummoner().getId() == summonerId)
+                    teamId = player.getTeamId();
+        } else{
+            log.warning("Match not GeneralMatch4j or RankedMatch4j");
+            return null;
+        }
+
+        if(teamId == LeagueConstants.BLUE_TEAM)
+            return match.getBlueTeam();
+        else if(teamId == LeagueConstants.RED_TEAM)
+            return match.getRedTeam();
+        log.severe("Player team couldn't be found for " + match);
         return null;
     }
 
@@ -188,6 +224,17 @@ public class AnalysisUtils{
         SummaryData data = new SummaryData();
         for(Match match : matchList)
             data.addGeneralMatch4j(match, summonerId);
+        data.process();
+        return data;
+    }
+
+    public static SummaryData getPlayerSummary(Collection<Match> matchList, long summonerId){
+        if(matchList == null || matchList.isEmpty())
+            return null;
+
+        SummaryData data = new SummaryData();
+        for(Match match : matchList)
+            data.addMatch(match, summonerId);
         data.process();
         return data;
     }
