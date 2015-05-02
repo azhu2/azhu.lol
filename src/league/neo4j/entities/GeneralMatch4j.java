@@ -144,6 +144,7 @@ public class GeneralMatch4j extends Match{
         }
 
         processItems();
+        processSpells();
     }
 
     /**
@@ -155,6 +156,16 @@ public class GeneralMatch4j extends Match{
             if(item == null)
                 items.set(i, APIConstants.DUMMY_ITEM);
         }
+    }
+    
+    /**
+     * Replace null summoner spells with a dummy SummonerSpellDto object
+     */
+    private void processSpells(){
+        if(spell1 == null)
+            spell1 = APIConstants.DUMMY_SUMMONER_SPELL;
+        if(spell2 == null)
+            spell2 = APIConstants.DUMMY_SUMMONER_SPELL;
     }
 
     @Override
