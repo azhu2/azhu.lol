@@ -1,8 +1,38 @@
-<div id="player-stats" ng-show="showTab" ng-init="getPlayerStats();">
-	<h2>Player Stats</h2>
+<div id="stats" class="playerStats" ng-show="showTab" ng-init="getPlayerStats();">
+	<h2>Summoner Stats</h2>
 	
 	<div class="queueType" ng-repeat="(queueName, queueData) in playerStats">
 		<h3>{{ queueName | subTypeFilter }}</h3>
 	
+		<table>
+			<thead>
+				<td class="summoner" ng-click="sortBy('summoner')">Summoner</td>
+				<td class="games" ng-click="sortBy('numGames')">Games</td>
+				<td class="wins" ng-click="sortBy('wins')">Wins</td>
+				<td class="losses" ng-click="sortBy('losses')">Losses</td>
+				<td class="winrate" ng-click="sortBy('winrate')">Winrate</td>
+				<td class="kills" ng-click="sortBy('kills')">Kills</td>
+				<td class="deaths" ng-click="sortBy('deaths')">Deaths</td>
+				<td class="assists" ng-click="sortBy('assists')">Assists</td>
+				<td class="kda" ng-click="sortBy('kda')">KDA</td>
+				
+			</thead>
+		
+			<tbody>
+				<tr ng-repeat="playerStats in queueData | orderBy:['-numGames', '-wins'] | limitTo:20"
+					ng-if="playerStats.category.id != summoner.id">
+					<td class="summoner">{{ playerStats.category.name }}</td>
+					<td class="games">{{ playerStats.numGames }}</td>
+					<td class="wins">{{ playerStats.wins }}</td>
+					<td class="losses">{{ playerStats.losses }}</td>
+					<td class="winrate">{{ playerStats.winrate * 100 | number:0 }}%</td>
+					<td class="kills">{{ playerStats.kills | number:2 }}</td>
+					<td class="deaths">{{ playerStats.deaths | number:2 }}</td>
+					<td class="assists">{{ playerStats.assists | number:2 }}</td>
+					<td class="kda">{{ playerStats.kda | number:2 }}</td>
+
+				</tr>
+			</tbody>
+		</table>
 	</div>
-</div>cfnsu
+</div>
