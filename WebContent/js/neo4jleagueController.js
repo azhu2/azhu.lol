@@ -27,6 +27,11 @@ neo4jLeagueApp.config([ '$routeProvider', function($routeProvider, routeControll
 		controller : 'generalStatsController',
 		templateUrl : 'templates/general-stats.html'
 	});
+	
+	$routeProvider.when('/:summId/player-stats', {
+		controller : 'playerStatsController',
+		templateUrl : 'templates/player-stats.html'
+	});
 } ]);
 
 var lookupSummonerById = function($rootScope, summonerId, LeagueResource) {
@@ -358,11 +363,41 @@ neo4jLeagueApp.controller('rankedStatsController', function($scope, $rootScope, 
 	};
 });
 
+var playerStatsController; // IDE navigation marker
+neo4jLeagueApp.controller('playerStatsController', function($scope, $rootScope, $routeParams, LeagueResource) {
+	var lookupPlayerStats = function(summonerId) {
+		clearData($rootScope);
+		lookupSummoner = summonerId;
+
+		LeagueResource.playerStats(summonerId).get({
+			id : summonerId
+		}, function(data) {
+			if (summonerId == lookupSummoner)
+				$rootScope.playerStats = data;
+		});
+		$rootScope.showTab = true;
+	};
+
+	$scope.getPlayerStats = function() {
+		// Lookup summoner if not done yet
+		if ($routeParams && $routeParams.summId
+			&& (!$rootScope.summonerId || ($rootScope.summonerId != $routeParams.summId))) {
+			$rootScope.version = version;
+			$rootScope.showTabs = false;
+
+			lookupSummonerById($rootScope, $routeParams.summId, LeagueResource);
+			lookupPlayerStats($routeParams.summId);
+		} else
+			lookupPlayerStats($rootScope.summoner.id);
+	};
+});
+
 var clearData = function($rootScope) {
 	$rootScope.newGames = [];
 	$rootScope.newRanked = [];
 	$rootScope.rankedStats = [];
 	$rootScope.generalStats = [];
+	$rootScope.playerStats = [];
 };
 
 neo4jLeagueApp.service('LeagueResource', function($resource) {
@@ -418,6 +453,12 @@ neo4jLeagueApp.service('LeagueResource', function($resource) {
 
 	this.generalStats = function() {
 		return $resource('/azhu.lol/neo4j/rest/general-stats/:id', {
+			id : '@id'
+		});
+	};
+	
+	this.playerStats = function() {
+		return $resource('/azhu.lol/neo4j/rest/player-stats/:id', {
 			id : '@id'
 		});
 	};

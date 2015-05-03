@@ -1,0 +1,8 @@
+<div id="player-stats" ng-show="showTab" ng-init="getPlayerStats();">
+	<h2>Player Stats</h2>
+	
+	<div class="queueType" ng-repeat="(queueName, queueData) in playerStats">
+		<h3>{{ queueName | subTypeFilter }}</h3>
+	
+	</div>
+</div>cfnsu
