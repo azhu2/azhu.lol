@@ -2,25 +2,25 @@
 	<h2 ng-init="sort=['-numGames', '-wins']">Ranked Stats (SR only)</h2>
 	
 	<table>
-		<tr class="headings">
-			<td class="champion" ng-click="sortBy('champion.name')">Champion</td>
-			<td class="games" ng-click="sortBy('numGames')">Games</td>
-			<td class="wins" ng-click="sortBy('wins')">Wins</td>
-			<td class="losses" ng-click="sortBy('losses')">Losses</td>
-			<td class="winrate" ng-click="sortBy('winrate')">Winrate</td>
-			<td class="kills" ng-click="sortBy('kills')">Kills</td>
-			<td class="deaths" ng-click="sortBy('deaths')">Deaths</td>
-			<td class="assists" ng-click="sortBy('assists')">Assists</td>
-			<td class="kda" ng-click="sortBy('kda')">KDA</td>
-			<td class="cs" ng-click="sortBy('cs')">CS</td>
-			<td class="cspm" ng-click="sortBy('cspm')">CS/min</td>
-			<td class="gold" ng-click="sortBy('goldEarned')">Gold</td>
-			<td class="gpm" ng-click="sortBy('gpm')">Gold/min</td>
-			<td class="gameLength" ng-click="sortBy('timePlayed')">Game Length</td>
-			<td class="totalDamage" ng-click="sortBy('totalDamageDealt')">Damage Dealt</td>
-			<td class="champDamage" ng-click="sortBy('totalDamageDealtToChampions')">Damage to Champions</td>
-			<td class="takenDamage" ng-click="sortBy('totalDamageTaken')">Damage Taken</td>
-			<td class="multikill" ng-click="sortBy('largestMultiKill')">Largest Multikill</td>
+		<thead class="headings">
+			<th class="champion" ng-click="sortBy('champion.name')">Champion</td>
+			<th class="games" ng-click="sortBy('numGames')">Games</td>
+			<th class="wins" ng-click="sortBy('wins')">Wins</td>
+			<th class="losses" ng-click="sortBy('losses')">Losses</td>
+			<th class="winrate" ng-click="sortBy('winrate')">Winrate</td>
+			<th class="kills" ng-click="sortBy('kills')">Kills</td>
+			<th class="deaths" ng-click="sortBy('deaths')">Deaths</td>
+			<th class="assists" ng-click="sortBy('assists')">Assists</td>
+			<th class="kda" ng-click="sortBy('kda')">KDA</td>
+			<th class="cs" ng-click="sortBy('cs')">CS</td>
+			<th class="cspm" ng-click="sortBy('cspm')">CS/min</td>
+			<th class="gold" ng-click="sortBy('goldEarned')">Gold</td>
+			<th class="gpm" ng-click="sortBy('gpm')">Gold/min</td>
+			<th class="gameLength" ng-click="sortBy('timePlayed')">Game Length</td>
+			<th class="totalDamage" ng-click="sortBy('totalDamageDealt')">Damage Dealt</td>
+			<th class="champDamage" ng-click="sortBy('totalDamageDealtToChampions')">Damage to Champions</td>
+			<th class="takenDamage" ng-click="sortBy('totalDamageTaken')">Damage Taken</td>
+			<th class="multikill" ng-click="sortBy('largestMultiKill')">Largest Multikill</td>
 		</tr>
 	
 		<tr ng-repeat="champData in rankedStats | orderBy:sort:reverse" class="champData champ_{{ champData.category.id }}"
