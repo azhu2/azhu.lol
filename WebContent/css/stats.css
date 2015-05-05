@@ -24,16 +24,20 @@
 	padding-right: 2px;
 }
 
-#stats td:nth-child(even) {
-	background: #EECCCC;
+#stats td {
+	background: #BBBBFF;
 }
 
-#stats td:nth-child(odd) {
+#stats thead th {
+	background: #AAAAEE;
+}
+
+#stats .showAllRows > td {
 	background: #CCCCEE;
 }
 
 #stats #totals > td {
-	background: #AAAAAA;
+	background: #8888AA;
 }
 
 #stats .headings {
@@ -101,6 +105,7 @@
 #stats .details td {
 	padding: 4px;
 	font-size: 0.9em;
+	background: #CCCCEE;
 }
 
 #stats .details div>div {

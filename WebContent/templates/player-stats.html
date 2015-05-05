@@ -21,7 +21,7 @@
 			<tbody>
 				<tr ng-repeat="playerStats in queueData | orderBy:['-numGames', '-wins'] | limitTo:20"
 					ng-if="playerStats.category.id != summoner.id">
-					<td class="summoner">{{ playerStats.category.name }}</td>
+					<td class="summoner"><a ng-href="#{{ playerStats.category.id }}">{{ playerStats.category.name }}</a></td>
 					<td class="games">{{ playerStats.numGames }}</td>
 					<td class="wins">{{ playerStats.wins }}</td>
 					<td class="losses">{{ playerStats.losses }}</td>
@@ -30,7 +30,6 @@
 					<td class="deaths">{{ playerStats.deaths | number:2 }}</td>
 					<td class="assists">{{ playerStats.assists | number:2 }}</td>
 					<td class="kda">{{ playerStats.kda | number:2 }}</td>
-
 				</tr>
 			</tbody>
 		</table>
