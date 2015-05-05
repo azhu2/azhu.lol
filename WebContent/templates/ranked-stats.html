@@ -21,7 +21,7 @@
 			<th class="champDamage" ng-click="sortBy('totalDamageDealtToChampions')">Damage to Champions</td>
 			<th class="takenDamage" ng-click="sortBy('totalDamageTaken')">Damage Taken</td>
 			<th class="multikill" ng-click="sortBy('largestMultiKill')">Largest Multikill</td>
-		</tr>
+		</thead>
 	
 		<tr ng-repeat="champData in rankedStats | orderBy:sort:reverse" class="champData champ_{{ champData.category.id }}"
 			ng-if="champData.category">
