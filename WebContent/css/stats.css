@@ -29,7 +29,7 @@
 }
 
 #stats thead th {
-	background: #AAAAEE;
+	background: #8888AA;
 }
 
 #stats .showAllRows > td {
@@ -37,7 +37,7 @@
 }
 
 #stats #totals > td {
-	background: #8888AA;
+	background: #AAAAEE;
 }
 
 #stats .headings {
