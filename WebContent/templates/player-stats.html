@@ -4,7 +4,7 @@
 	<div class="queueType" ng-repeat="(queueName, queueData) in playerStats">
 		<h3>{{ queueName | subTypeFilter }}</h3>
 	
-		<table ng-init="queueData.sort='numGames'; queueData.reverse = true;">
+		<table ng-init="queueData.sort='numGames'; queueData.reverse = true; queueData.lines = 5; queueData.showMore = false; queueData.showAll = false;">
 			<thead>
 				<th class="summoner" ng-click="sortBy(queueData, 'summoner')">Summoner</th>
 				<th class="games" ng-click="sortBy(queueData, 'numGames')">Games</th>
@@ -18,7 +18,7 @@
 			</thead>
 		
 			<tbody>
-				<tr ng-repeat="playerStats in queueData | orderBy:queueData.sort:queueData.reverse | limitTo:20"
+				<tr ng-repeat="playerStats in queueData | orderBy:queueData.sort:queueData.reverse | limitTo:queueData.lines"
 					ng-if="playerStats.category.id != summoner.id">
 					<td class="summoner"><a ng-href="#{{ playerStats.category.id }}">{{ playerStats.category.name }}</a></td>
 					<td class="games">{{ playerStats.numGames }}</td>
@@ -29,6 +29,16 @@
 					<td class="deaths">{{ playerStats.deaths | number:2 }}</td>
 					<td class="assists">{{ playerStats.assists | number:2 }}</td>
 					<td class="kda">{{ playerStats.kda | number:2 }}</td>
+				</tr>
+				
+				<tr class="showMoreRows" ng-hide="queueData.showMore || queueData.showAll"
+					ng-click="queueData.showMore = true; queueData.lines=25;">
+					<td colspan="100%">(more)</td>
+				</tr>
+				
+				<tr class="showAllRows" ng-hide="!queueData.showMore || queueData.showAll"
+					ng-click="queueData.showAll = true; queueData.lines=9999;">
+					<td colspan="100%">(all)</td>
 				</tr>
 			</tbody>
 		</table>
