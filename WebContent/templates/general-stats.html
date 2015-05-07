@@ -1,34 +1,34 @@
 <div id="stats" class="generalStats" ng-show="showTab" ng-init="getGeneralStats();">
-	<h2 ng-init="sort=['-numGames', '-wins'];">General Stats</h2>
+	<h2>General Stats</h2>
 	
 	<div class="queueType" ng-repeat="(queueName, queueData) in generalStats">
 		<h3 ng-init="queueData.lines = 6; queueData.showAll = false;">
 			{{ queueName | subTypeFilter }}
 		</h3>
 	
-		<table>
+		<table ng-init="queueData.sort = 'numGames'; queueData.reverse = true;">
 			<thead class="headings">
-				<th class="champion" ng-click="sortBy('champion.name')">Champion</td>
-				<th class="games" ng-click="sortBy('numGames')">Games</td>
-				<th class="wins" ng-click="sortBy('wins')">Wins</td>
-				<th class="losses" ng-click="sortBy('losses')">Losses</td>
-				<th class="winrate" ng-click="sortBy('winrate')">Winrate</td>
-				<th class="kills" ng-click="sortBy('kills')">Kills</td>
-				<th class="deaths" ng-click="sortBy('deaths')">Deaths</td>
-				<th class="assists" ng-click="sortBy('assists')">Assists</td>
-				<th class="kda" ng-click="sortBy('kda')">KDA</td>
-				<th class="cs" ng-click="sortBy('cs')">CS</td>
-				<th class="cspm" ng-click="sortBy('cspm')">CS/ min</td>
-				<th class="gold" ng-click="sortBy('goldEarned')">Gold</td>
-				<th class="gpm" ng-click="sortBy('gpm')">Gold/ min</td>
-				<th class="gameLength" ng-click="sortBy('timePlayed')">Game Length</td>
-				<th class="totalDamage" ng-click="sortBy('totalDamageDealt')">Damage Dealt</td>
-				<th class="champDamage" ng-click="sortBy('totalDamageDealtToChampions')">Damage to Champions</td>
-				<th class="takenDamage" ng-click="sortBy('totalDamageTaken')">Damage Taken</td>
+				<th class="champion" ng-click="sortBy(queueData, 'champion.name')">Champion</td>
+				<th class="games" ng-click="sortBy(queueData, 'numGames')">Games</td>
+				<th class="wins" ng-click="sortBy(queueData, 'wins')">Wins</td>
+				<th class="losses" ng-click="sortBy(queueData, 'losses')">Losses</td>
+				<th class="winrate" ng-click="sortBy(queueData, 'winrate')">Winrate</td>
+				<th class="kills" ng-click="sortBy(queueData, 'kills')">Kills</td>
+				<th class="deaths" ng-click="sortBy(queueData, 'deaths')">Deaths</td>
+				<th class="assists" ng-click="sortBy(queueData, 'assists')">Assists</td>
+				<th class="kda" ng-click="sortBy(queueData, 'kda')">KDA</td>
+				<th class="cs" ng-click="sortBy(queueData, 'cs')">CS</td>
+				<th class="cspm" ng-click="sortBy(queueData, 'cspm')">CS/ min</td>
+				<th class="gold" ng-click="sortBy(queueData, 'goldEarned')">Gold</td>
+				<th class="gpm" ng-click="sortBy(queueData, 'gpm')">Gold/ min</td>
+				<th class="gameLength" ng-click="sortBy(queueData, 'timePlayed')">Game Length</td>
+				<th class="totalDamage" ng-click="sortBy(queueData, 'totalDamageDealt')">Damage Dealt</td>
+				<th class="champDamage" ng-click="sortBy(queueData, 'totalDamageDealtToChampions')">Damage to Champions</td>
+				<th class="takenDamage" ng-click="sortBy(queueData, 'totalDamageTaken')">Damage Taken</td>
 			</thead>
 		
 			<tbody>
-				<tr ng-repeat-start="champData in queueData | orderBy:sort:reverse | limitTo:queueData.lines" class="champData champ_{{ champData.category.id }}"
+				<tr ng-repeat-start="champData in queueData | orderBy:queueData.sort:queueData.reverse | limitTo:queueData.lines" class="champData champ_{{ champData.category.id }}"
 					ng-if="champData.category" ng-click="expandChampion(queueData, champData);">
 					<td class="champion">
 						<img class="championImage" alt="{{ champData.category == null ? 'champion' : champData.category.name }}"

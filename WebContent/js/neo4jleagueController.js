@@ -200,22 +200,21 @@ neo4jLeagueApp.controller('generalStatsController', function($scope, $rootScope,
 			lookupStats($rootScope.summoner.id);
 	};
 
-	$scope.sortBy = function(sortColumn) {
-		if (sortColumn === $scope.sort) {
-			$scope.reverse = !$scope.reverse;
+	$scope.sortBy = function(queueData, sortColumn) {
+		if (sortColumn === queueData.sort) {
+			queueData.reverse = !queueData.reverse;
 			return;
 		}
-		$scope.sort = sortColumn;
-		$scope.reverse = true;
+		queueData.sort = sortColumn;
+		queueData.reverse = true;
 	};
-
+	
 	$scope.expandChampion = function(queueData, champData) {
 		for (var i = 0; i < queueData.length; i++) {
 			if (queueData[i] == champData)
 				queueData[i].showDetails = !queueData[i].showDetails;
 			else
 				queueData[i].showDetails = false;
-
 		}
 	};
 });
