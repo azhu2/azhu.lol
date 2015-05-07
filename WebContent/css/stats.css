@@ -32,6 +32,10 @@
 	background: #8888AA;
 }
 
+#stats .showMoreRows > td {
+	background: #CCCCEE;
+}
+
 #stats .showAllRows > td {
 	background: #CCCCEE;
 }
