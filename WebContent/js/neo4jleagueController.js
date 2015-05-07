@@ -390,6 +390,15 @@ neo4jLeagueApp.controller('playerStatsController', function($scope, $rootScope, 
 		} else
 			lookupPlayerStats($rootScope.summoner.id);
 	};
+	
+	$scope.sortBy = function(queueData, sortColumn) {
+		if (sortColumn === queueData.sort) {
+			queueData.reverse = !queueData.reverse;
+			return;
+		}
+		queueData.sort = sortColumn;
+		queueData.reverse = true;
+	};
 });
 
 var clearData = function($rootScope) {

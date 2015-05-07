@@ -4,21 +4,21 @@
 	<div class="queueType" ng-repeat="(queueName, queueData) in playerStats">
 		<h3>{{ queueName | subTypeFilter }}</h3>
 	
-		<table>
+		<table ng-init="queueData.sort='numGames'; queueData.reverse = true;">
 			<thead>
-				<th class="summoner" ng-click="sortBy('summoner')">Summoner</td>
-				<th class="games" ng-click="sortBy('numGames')">Games</td>
-				<th class="wins" ng-click="sortBy('wins')">Wins</td>
-				<th class="losses" ng-click="sortBy('losses')">Losses</td>
-				<th class="winrate" ng-click="sortBy('winrate')">Winrate</td>
-				<th class="kills" ng-click="sortBy('kills')">Kills</td>
-				<th class="deaths" ng-click="sortBy('deaths')">Deaths</td>
-				<th class="assists" ng-click="sortBy('assists')">Assists</td>
-				<th class="kda" ng-click="sortBy('kda')">KDA</td>
+				<th class="summoner" ng-click="sortBy(queueData, 'summoner')">Summoner</td>
+				<th class="games" ng-click="sortBy(queueData, 'numGames')">Games</td>
+				<th class="wins" ng-click="sortBy(queueData, 'wins')">Wins</td>
+				<th class="losses" ng-click="sortBy(queueData, 'losses')">Losses</td>
+				<th class="winrate" ng-click="sortBy(queueData, 'winrate')">Winrate</td>
+				<th class="kills" ng-click="sortBy(queueData, 'kills')">Kills</td>
+				<th class="deaths" ng-click="sortBy(queueData, 'deaths')">Deaths</td>
+				<th class="assists" ng-click="sortBy(queueData, 'assists')">Assists</td>
+				<th class="kda" ng-click="sortBy(queueData, 'kda')">KDA</td>
 			</thead>
 		
 			<tbody>
-				<tr ng-repeat="playerStats in queueData | orderBy:['-numGames', '-wins'] | limitTo:20"
+				<tr ng-repeat="playerStats in queueData | orderBy:queueData.sort:queueData.reverse | limitTo:20"
 					ng-if="playerStats.category.id != summoner.id">
 					<td class="summoner"><a ng-href="#{{ playerStats.category.id }}">{{ playerStats.category.name }}</a></td>
 					<td class="games">{{ playerStats.numGames }}</td>
