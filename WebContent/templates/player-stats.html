@@ -6,15 +6,17 @@
 	
 		<table ng-init="queueData.sort='numGames'; queueData.reverse = true; queueData.lines = 5; queueData.showMore = false; queueData.showAll = false;">
 			<thead>
-				<th class="summoner" ng-click="sortBy(queueData, 'summoner')">Summoner</th>
-				<th class="games" ng-click="sortBy(queueData, 'numGames')">Games</th>
-				<th class="wins" ng-click="sortBy(queueData, 'wins')">Wins</th>
-				<th class="losses" ng-click="sortBy(queueData, 'losses')">Losses</th>
-				<th class="winrate" ng-click="sortBy(queueData, 'winrate')">Winrate</th>
-				<th class="kills" ng-click="sortBy(queueData, 'kills')">Kills</th>
-				<th class="deaths" ng-click="sortBy(queueData, 'deaths')">Deaths</th>
-				<th class="assists" ng-click="sortBy(queueData, 'assists')">Assists</th>
-				<th class="kda" ng-click="sortBy(queueData, 'kda')">KDA</th>
+				<tr>
+					<th class="summoner" ng-click="sortBy(queueData, 'summoner')">Summoner</th>
+					<th class="games" ng-click="sortBy(queueData, 'numGames')">Games</th>
+					<th class="wins" ng-click="sortBy(queueData, 'wins')">Wins</th>
+					<th class="losses" ng-click="sortBy(queueData, 'losses')">Losses</th>
+					<th class="winrate" ng-click="sortBy(queueData, 'winrate')">Winrate</th>
+					<th class="kills" ng-click="sortBy(queueData, 'kills')">Kills</th>
+					<th class="deaths" ng-click="sortBy(queueData, 'deaths')">Deaths</th>
+					<th class="assists" ng-click="sortBy(queueData, 'assists')">Assists</th>
+					<th class="kda" ng-click="sortBy(queueData, 'kda')">KDA</th>
+				</tr>
 			</thead>
 		
 			<tbody>

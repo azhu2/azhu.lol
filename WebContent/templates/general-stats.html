@@ -8,23 +8,25 @@
 	
 		<table ng-init="queueData.sort = 'numGames'; queueData.reverse = true;">
 			<thead class="headings">
-				<th class="champion" ng-click="sortBy(queueData, 'champion.name')">Champion</th>
-				<th class="games" ng-click="sortBy(queueData, 'numGames')">Games</th>
-				<th class="wins" ng-click="sortBy(queueData, 'wins')">Wins</th>
-				<th class="losses" ng-click="sortBy(queueData, 'losses')">Losses</th>
-				<th class="winrate" ng-click="sortBy(queueData, 'winrate')">Winrate</th>
-				<th class="kills" ng-click="sortBy(queueData, 'kills')">Kills</th>
-				<th class="deaths" ng-click="sortBy(queueData, 'deaths')">Deaths</th>
-				<th class="assists" ng-click="sortBy(queueData, 'assists')">Assists</th>
-				<th class="kda" ng-click="sortBy(queueData, 'kda')">KDA</th>
-				<th class="cs" ng-click="sortBy(queueData, 'cs')">CS</th>
-				<th class="cspm" ng-click="sortBy(queueData, 'cspm')">CS/ min</th>
-				<th class="gold" ng-click="sortBy(queueData, 'goldEarned')">Gold</th>
-				<th class="gpm" ng-click="sortBy(queueData, 'gpm')">Gold/ min</th>
-				<th class="gameLength" ng-click="sortBy(queueData, 'timePlayed')">Game Length</th>
-				<th class="totalDamage" ng-click="sortBy(queueData, 'totalDamageDealt')">Damage Dealt</th>
-				<th class="champDamage" ng-click="sortBy(queueData, 'totalDamageDealtToChampions')">Damage to Champions</th>
-				<th class="takenDamage" ng-click="sortBy(queueData, 'totalDamageTaken')">Damage Taken</th>
+				<tr>
+					<th class="champion" ng-click="sortBy(queueData, 'champion.name')">Champion</th>
+					<th class="games" ng-click="sortBy(queueData, 'numGames')">Games</th>
+					<th class="wins" ng-click="sortBy(queueData, 'wins')">Wins</th>
+					<th class="losses" ng-click="sortBy(queueData, 'losses')">Losses</th>
+					<th class="winrate" ng-click="sortBy(queueData, 'winrate')">Winrate</th>
+					<th class="kills" ng-click="sortBy(queueData, 'kills')">Kills</th>
+					<th class="deaths" ng-click="sortBy(queueData, 'deaths')">Deaths</th>
+					<th class="assists" ng-click="sortBy(queueData, 'assists')">Assists</th>
+					<th class="kda" ng-click="sortBy(queueData, 'kda')">KDA</th>
+					<th class="cs" ng-click="sortBy(queueData, 'cs')">CS</th>
+					<th class="cspm" ng-click="sortBy(queueData, 'cspm')">CS/ min</th>
+					<th class="gold" ng-click="sortBy(queueData, 'goldEarned')">Gold</th>
+					<th class="gpm" ng-click="sortBy(queueData, 'gpm')">Gold/ min</th>
+					<th class="gameLength" ng-click="sortBy(queueData, 'timePlayed')">Game Length</th>
+					<th class="totalDamage" ng-click="sortBy(queueData, 'totalDamageDealt')">Damage Dealt</th>
+					<th class="champDamage" ng-click="sortBy(queueData, 'totalDamageDealtToChampions')">Damage to Champions</th>
+					<th class="takenDamage" ng-click="sortBy(queueData, 'totalDamageTaken')">Damage Taken</th>
+				</tr>
 			</thead>
 		
 			<tbody>
