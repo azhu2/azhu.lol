@@ -1,7 +1,15 @@
-<div id="matches" ng-show="showTab" ng-init="lookupMatches();">
+<div id="matches" ng-show="showTab" ng-init="lookupMatches();" ng-controller="staticDataController" >
 	<h2>Match History</h2>
+	<div id="matchFilters">
+		<div id="champFilter" ng-init="getChampList();">
+			Filter by:
+			<select id="selectChamp" ng-options="champion.id as champion.name for champion in champs | orderBy:'name'" 
+				ng-model="champSelected"></select>
+		</div>
+	</div>
+	
 	<ul id="matches-list">
-		<li	ng-repeat="match in newGames | orderBy:'matchCreation':true track by $index ">
+		<li	ng-repeat="match in newGames | orderBy:'matchCreation':true track by $index" ng-if="champSelected == 0 ? true : match.champion.champion.id == champSelected">
 			<div class="match id_{{ match.id }}" ng-class="(match.stats.win == 1) ? 'win' : 'loss'">
 
 				<div class="topRow">

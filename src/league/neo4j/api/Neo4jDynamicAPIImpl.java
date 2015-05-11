@@ -204,4 +204,8 @@ public class Neo4jDynamicAPIImpl implements Neo4jAPI{
         return games;
     }
 
+    @Override
+    public Set<ChampionDto> getChampionList() throws RiotPlsException{
+        return api_db.getChampionList();
+    }
 }

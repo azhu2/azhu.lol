@@ -455,6 +455,14 @@ public class Neo4jRiotAPIImpl implements Neo4jAPI{
         }
         return leagues;
     }
+    
+    @Override
+    /**
+     * @deprecated Use DB version
+     */
+    public Set<ChampionDto> getChampionList(){
+        return null;
+    }
 
     private static String buildUri(String method){
         return BASE_URL + method + "?api_key=" + API_KEY;

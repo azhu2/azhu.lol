@@ -896,6 +896,27 @@ public class Neo4jDatabaseAPIImpl implements Neo4jDatabaseAPI{
         return null;
     }
 
+    @Override
+    public Set<ChampionDto> getChampionList() throws RiotPlsException{
+        Set<ChampionDto> champions = new HashSet<>();
+
+        try(Transaction tx = db.beginTx()){
+            String stmt = String.format("MATCH (n:Champion) RETURN n;");
+            ExecutionResult results = engine.execute(stmt);
+            ResourceIterator<Map<String, Object>> itr = results.iterator();
+
+            while(itr.hasNext()){
+                Map<String, Object> found = itr.next();
+                Node championNode = (Node) found.get("n");
+                Champion4j champion = new Champion4j(championNode);
+                champions.add(champion);
+            }
+
+            tx.success();
+        }
+        return champions;
+    }
+
     public static void main(String[] args){
         try{
             Neo4jDatabaseAPIImpl n = Neo4jDatabaseAPIImpl.getInstance();

@@ -27,7 +27,7 @@ neo4jLeagueApp.config([ '$routeProvider', function($routeProvider, routeControll
 		controller : 'generalStatsController',
 		templateUrl : 'templates/general-stats.html'
 	});
-	
+
 	$routeProvider.when('/:summId/player-stats', {
 		controller : 'playerStatsController',
 		templateUrl : 'templates/player-stats.html'
@@ -208,7 +208,7 @@ neo4jLeagueApp.controller('generalStatsController', function($scope, $rootScope,
 		queueData.sort = sortColumn;
 		queueData.reverse = true;
 	};
-	
+
 	$scope.expandChampion = function(queueData, champData) {
 		for (var i = 0; i < queueData.length; i++) {
 			if (queueData[i] == champData)
@@ -389,7 +389,7 @@ neo4jLeagueApp.controller('playerStatsController', function($scope, $rootScope, 
 		} else
 			lookupPlayerStats($rootScope.summoner.id);
 	};
-	
+
 	$scope.sortBy = function(queueData, sortColumn) {
 		if (sortColumn === queueData.sort) {
 			queueData.reverse = !queueData.reverse;
@@ -397,6 +397,18 @@ neo4jLeagueApp.controller('playerStatsController', function($scope, $rootScope, 
 		}
 		queueData.sort = sortColumn;
 		queueData.reverse = true;
+	};
+});
+
+var staticDataController; // IDE marker
+neo4jLeagueApp.controller('staticDataController', function($scope, LeagueResource) {
+	$scope.getChampList = function() {
+		LeagueResource.champList().query({}, function(data) {
+			$scope.champs = data;
+			var allChamps = {'id': 0, 'name': '--champion--'};
+			$scope.champs.push(allChamps);
+			$scope.champSelected = 0;
+		});
 	};
 });
 
@@ -464,11 +476,15 @@ neo4jLeagueApp.service('LeagueResource', function($resource) {
 			id : '@id'
 		});
 	};
-	
+
 	this.playerStats = function() {
 		return $resource('/azhu.lol/neo4j/rest/player-stats/:id', {
 			id : '@id'
 		});
+	};
+
+	this.champList = function() {
+		return $resource('/azhu.lol/neo4j/rest/champion/');
 	};
 });
 

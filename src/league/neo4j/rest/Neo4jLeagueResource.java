@@ -287,4 +287,16 @@ public class Neo4jLeagueResource{
             return Response.status(e.getStatus()).entity(e.getMessage()).build();
         }
     }
+    
+    @GET
+    @Path("/champion/")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getChampionList() throws ServletException, IOException{
+        try{
+            Set<ChampionDto> championList = api.getChampionList();
+            return Response.status(APIConstants.HTTP_OK).entity(mapper.writeValueAsString(championList)).build();
+        } catch(RiotPlsException e){
+            return Response.status(e.getStatus()).entity(e.getMessage()).build();
+        }
+    }
 }

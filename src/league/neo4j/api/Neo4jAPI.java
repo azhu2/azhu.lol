@@ -16,6 +16,7 @@ public interface Neo4jAPI{
     public ChampionDto getChampionFromId(int champId) throws RiotPlsException;
     public ItemDto getItemFromId(int itemId) throws RiotPlsException;
     public SummonerSpellDto getSummonerSpellFromId(int spellId) throws RiotPlsException;
+    public Set<ChampionDto> getChampionList() throws RiotPlsException;
     
     // Summoners
     public Summoner getSummonerFromId(long summonerId) throws RiotPlsException;
