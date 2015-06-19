@@ -1,3 +1,7 @@
 /build
 /target
 /lol.db/
+/.classpath
+/.project
+/.settings/
+/.tern-project
